@@ -1,12 +1,13 @@
 // ==UserScript==
-// @name Reddit Comments on Youtube
+// @name      Reddit Comments on Youtube
 // @namespace RCOY
-// @match *://*.youtube.com/*
-// @grant GM_addStyle
-// @require https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
-// @require https://unpkg.com/mithril@1
-// @require https://unpkg.com/bss@1
-// @require httsp://unpkg.com/lodash@4
+// @version   0.0.2
+// @match     *://*.youtube.com/*
+// @grant     GM_addStyle
+// @require   https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
+// @require   https://unpkg.com/mithril@1
+// @require   https://unpkg.com/bss@1
+// @require   httsp://unpkg.com/lodash@4
 // ==/UserScript==
 
 const COMMENT_LOAD_NUM = 20;
@@ -47,10 +48,13 @@ b.helper({
 });
 
 const api = {
+ getVideoIdFromUrl: url => {
+   const match = url.match(/v=(?<id>[^&]+)/i);
+   return match ? match.groups.id : false;
+ },
  getPostsForVideo(vidUrl) {
-   const match = vidUrl.match(/v=(?<id>[^&]+)/i);
-   if (!match) return;
-   const id = match.groups.id;
+   const id = api.getVideoIdFromUrl(vidUrl);
+   if (!id) return Promise.reject('must be a video URL');
    return m.request({
      method: 'get',
      background: true,
@@ -526,7 +530,10 @@ const appId = 'rcoy';
 
 let waitObj;
 waitForUrl(() => true, () => setTimeout(() => {
-  if(waitObj) waitObj.stop();
+  if(waitObj) {
+    waitObj.stop();
+    waitObj = null;
+  }
   state.openPost = null;
   const oldInstance = util.id(appId);
   if(oldInstance) {
@@ -535,6 +542,7 @@ waitForUrl(() => true, () => setTimeout(() => {
     const oldSwitchBtn = util.id(switchBtnId);
     if(oldSwitchBtn) oldSwitchBtn.remove();
   }
+  if(!api.getVideoIdFromUrl(location.href)) return;
   waitObj = waitForElems({
     sel: '#comments',
     stop: true,
