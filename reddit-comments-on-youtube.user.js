@@ -3,13 +3,13 @@
 // @namespace RCOY
 // @version   0.0.4
 // @match     *://*.youtube.com/*
-// @grant     GM_addStyle
+// @grant     none
 // @require   https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require   https://unpkg.com/mithril@1
 // @require   https://unpkg.com/bss@1
 // @require   httsp://unpkg.com/lodash@4
 // ==/UserScript==
-/* globals m b _ waitForElems waitForUrl GM_addStyle */
+/* globals m b _ waitForElems waitForUrl */
 
 const COMMENT_LOAD_NUM = 20
 
@@ -37,7 +37,10 @@ const partials = {
 }
 
 const state = {
-  openPost: null
+  openPost: null,
+  posts: [],
+  loading: false,
+  borders: BORDERS.day
 }
 
 const sizes = {
@@ -48,6 +51,42 @@ const sizes = {
 }
 
 // bss
+const styles = {
+  root: b`
+    --link-color #1b3e92
+    --author-color #215854
+    --op-color #1a1abd
+    --mod-color #109610
+    --admin-color red
+    --good-score-color #ff7a00
+    --bad-score-color #3070a9
+    --score-hidden-color #999
+  `,
+  fixBlockquotes: b
+    .$nest(
+      ' blockquote',
+      `
+        pl 8
+        bl 4px solid #a2a2a2
+        m 4 0 4 8 
+      `
+    )
+    .$nest(' blockquote:last-child', 'mb 0'),
+  postCommentRefresh: b`
+    background #ddd
+    border-radius 15
+    height 16
+    width 25
+    display inline-block
+    text-align center
+    box-sizing border-box
+    color black
+    cursor pointer
+    transition transform 1.5s
+    user-select none
+  `.$nest(':hover', 'transform scale(1.5) rotate(360deg)')
+}
+
 b.helper({
   badge: `
     br 4
@@ -162,27 +201,6 @@ const util = {
   }
 }
 
-const ScoreIndicator = () => {
-  const isGoodScore = score => {
-    if (score >= 500) return 'super-good'
-    if (score >= 20) return 'real-good'
-    if (score >= 1) return 'kinda-good'
-    if (score >= -5) return 'bad'
-    if (score >= -20) return 'real-bad'
-    return 'super-bad'
-  }
-  return {
-    view: ({ attrs: { score } }) =>
-      m(
-        'span.score',
-        {
-          class: isGoodScore(score)
-        },
-        score
-      )
-  }
-}
-
 const PostComments = ({ attrs: { post } }) => {
   let comments = []
   let loading = true
@@ -195,12 +213,12 @@ const PostComments = ({ attrs: { post } }) => {
   return {
     view: () =>
       loading
-        ? m('div.center', partials.loadingSpinner())
+        ? m('div' + b`ta center`, partials.loadingSpinner())
         : m('div.post-comments', [
             m(
               'div.post-comments-list',
               comments.length < 1
-                ? m('div.center', 'No comments yet...')
+                ? m('div' + b`ta center`, 'No comments yet...')
                 : comments.map((c, idx, arr) => {
                     if (c.kind === 'more')
                       return m(LoadMoreComments, { parentArray: arr, moreComments: c.data })
@@ -215,14 +233,14 @@ const LoadMoreComments = () => {
   let loading = false
   return {
     view(vnode) {
-      if (loading) return m('div.center', partials.loadingSpinner())
+      if (loading) return m('div' + b`ta center`, partials.loadingSpinner())
       const args = vnode.attrs
       const mc = args.moreComments
       const count = mc.children && mc.children.length
       // dont show button if no comments to load...
       if (count <= 0) return ''
       return m(
-        'a.link.btn-load-more-comments[href=#]',
+        'a.btn-load-more-comments[href=#]' + b`d inline-block;mt 5`,
         {
           onclick: e => {
             e.preventDefault()
@@ -315,27 +333,27 @@ const PostComment = ({ attrs: { comment } }) => {
       _.mergeWith(cmt, newCmt.data, (o, i, key) => (key === 'collapsed' ? o : i))
       m.redraw()
     })
+  const getAuthorStyle = cmt =>
+    cmt.is_submitter
+      ? b`content '[OP]'; c var(--op-color)`
+      : cmt.distinguished === 'moderator'
+      ? b`content '[MOD]'; c var(--mod-color)`
+      : cmt.distinguished === 'admin'
+      ? b`content '[ADMIN]'; c var(--admin-color)`
+      : null
   return {
     view: ({ attrs: { comment: cmt } }) => {
       const createdAt = new Date(cmt.created_utc * 1000)
       const editedAt = cmt.edited && new Date(cmt.edited * 1000)
       const borderColor = state.borders[cmt.depth % state.borders.length]
-      const cmtClasses = [
-        cmt.is_submitter ? 'post-comment-op' : '',
-        cmt.distinguished === 'moderator' ? 'post-comment-mod' : '',
-        cmt.distinguished === 'admin' ? 'post-comment-admin' : ''
-      ]
-        .join(' ')
-        .trim()
       return m(
-        'div.post-comment',
-        {
-          style: `border-left-color: ${borderColor};`
-        },
+        'div.post-comment' +
+          b`p 0 0 0 17; border-left 3px solid #555;blc ${borderColor}` +
+          b`blc ${borderColor}`.$nest(':not(:last-child)', 'mb 20'),
         [
-          m('div.post-comment-info', [
+          m('div.post-comment-info' + b`fs 90%;c #666;mb 5`, [
             m(
-              'strong.post-comment-collapse',
+              'strong.post-comment-collapse' + b`ff monospace; cursor pointer; user-select none`,
               {
                 onclick: () => (cmt.collapsed = !cmt.collapsed)
               },
@@ -344,27 +362,38 @@ const PostComment = ({ attrs: { comment } }) => {
               '] '
             ),
             m(
-              'a[target=_blank].post-comment-author',
+              'a[target=_blank].post-comment-author' +
+                b`c var(--author-color)`.$nest(
+                  ':after',
+                  `
+                    ff monospace
+                    position relative
+                    t -1; ml 3; c black
+                    ${getAuthorStyle(cmt)}
+                  `
+                ),
               {
-                class: cmtClasses ? 'post-comment-special ' + cmtClasses : '',
                 href: `${API_URL}/u/${cmt.author}`
               },
               cmt.author
             ),
             sep(),
             cmt.score_hidden
-              ? m('em.score-hidden', 'Score Hidden')
-              : m(ScoreIndicator, { score: cmt.score }),
+              ? m('em' + b`c var(--score-hidden-color)`, 'Score Hidden')
+              : m(
+                  'span.score' + b`fw bold;c var(--${cmt.score >= 1 ? 'good' : 'bad'}-score-color)`,
+                  cmt.score
+                ),
             sep(),
             util.prettyTime(createdAt) || createdAt.toLocaleString(),
             editedAt
               ? [sep(), ' edited ', util.prettyTime(editedAt) || editedAt.toLocaleString()]
               : '',
             sep(),
-            m('a[target=_blank].link', { href: API_URL + cmt.permalink }, 'permalink'),
+            m('a[target=_blank]', { href: API_URL + cmt.permalink }, 'permalink'),
             sep(),
             m(
-              'span.post-comment-refresh[title=Refresh Comment Thread]',
+              'span.post-comment-refresh[title=Refresh Comment Thread]' + styles.postCommentRefresh,
               {
                 onclick: e => {
                   e.redraw = false
@@ -380,7 +409,7 @@ const PostComment = ({ attrs: { comment } }) => {
               hidden: cmt.collapsed
             },
             [
-              m('div.post-comment-text', commentHtml),
+              m('div.post-comment-text' + styles.fixBlockquotes, commentHtml),
               cmt.replies
                 ? m(
                     'div.post-comment-replies',
@@ -445,7 +474,7 @@ const PostChoices = () => {
 
 const PostInfo = {
   view: ({ attrs: { post } }) =>
-    m('div.post-info' + b.fs('150%').mb('10px'), [
+    m('div.post-info' + b`fs 150%;mb 10`, [
       m(
         'span' +
           b`
@@ -464,12 +493,12 @@ const PostInfo = {
 }
 
 const App = ({ attrs: { switchComments } }) => {
-  let posts = []
-  state.borders = BORDERS.day
+  state.posts = []
   state.loading = true
   api.getPostsForVideo(window.location.href).then(newPosts => {
     state.loading = false
-    posts = newPosts || []
+    const posts = newPosts || []
+    state.posts = posts
     if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
       // switch comments after delay to allow user to read "no posts (or comments) found" message
       console.log('didnt find any reddit posts, hiding')
@@ -480,14 +509,18 @@ const App = ({ attrs: { switchComments } }) => {
   })
   return {
     view() {
-      if (state.loading) return m('div.center', partials.loadingSpinner())
-      return m('div' + b`fs medium;pr var(--watch-sidebar-width)`, [
-        m(PostChoices, { posts }),
-        posts.length === 0 && m('div.center', "Didn't find any reddit posts for this video."),
-        state.openPost
-          ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
-          : ''
-      ])
+      if (state.loading) return m('div' + b`ta center`, partials.loadingSpinner())
+      return m(
+        'div' + b`fs medium;pr var(--watch-sidebar-width)`.$nest(' a', 'c var(--link-color)'),
+        [
+          m(PostChoices, { posts: state.posts }),
+          state.posts.length === 0 &&
+            m('div' + b`ta center`, "Didn't find any reddit posts for this video."),
+          state.openPost
+            ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
+            : ''
+        ]
+      )
     }
   }
 }
@@ -500,160 +533,6 @@ const switchCommentsButton = switchComments =>
     },
     'Switch Comments'
   )
-
-GM_addStyle(`
-/* UTIL */
-
-.hidden {
-  display: none;
-}
-
-.noscroll {
-  overflow: hidden;
-  /* width of the scroll bar */
-  padding-right: 20px;
-}
-
-.dib {
-  display: inline-block;
-}
-
-.center {
-  text-align: center;
-}
-
-.big-text {
-  font-size: large;
-}
-
-/* Post Comment Goodness Indicators  */
-
-.kinda-good {
-  color: #ffce0a;
-}
-
-.real-good {
-  color: orange;
-}
-
-.super-good {
-  color: #ff7a00;
-}
-
-.bad {
-  color: rgb(0, 181, 247);
-}
-
-.real-bad {
-  color: rgb(62, 127, 255);
-}
-
-.super-bad {
-  color:  rgb(98, 103, 241);
-}
-.post-comment {
-  padding: 0 0 0 17px;
-  border-left: 3px solid #555;
-}
-
-.post-comment-author {
-  color: #215854;
-}
-
-.post-comment-op {
-color: #1a1abd;
-}
-
-.post-comment-admin {
-  color: red;
-}
-
-.post-comment-mod {
-  color: #109610;
-}
-
-.post-comment-special:after {
-  font-family: monospace;
-  position: relative;
-  top: -1px;
-  margin-left: 3px;
-  color: black;
-}
-
-.post-comment-op:after {
-  content: '[OP]';
-}
-
-.post-comment-mod:after {
-  content: '[MOD]';
-}
-
-.post-comment-admin:after {
-  content: '[ADMIN]';
-}
-
-/* don't add bottom padding on last child since parent already has it */
-.post-comment:not(:last-child) {
-  margin-bottom: 20px;
-}
-
-.post-comment-info {
-  font-size: 90%;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.post-comment-collapse {
-  font-family: monospace;
-  cursor: pointer;
-  user-select: none;
-}
-
-.btn-load-more-comments {
-  margin-top: 5px;
-  display: inline-block;
-}
-
-.post-comment blockquote {
-  padding-left: 8px;
-  border-left: 4px solid #a2a2a2;
-  margin: 4px 0px 4px 8px;
-}
-
-.post-comment blockquote:last-child {
-  margin-bottom: 0;
-}
-
-.post-comment-refresh {
-  background: #ddd;
-  border-radius: 15px;
-  height: 16px;
-  width: 25px;
-  display: inline-block;
-  text-align: center;
-  box-sizing: border-box;
-  color: black;
-  cursor: pointer;
-  transition: transform 1.5s;
-  user-select: none;
-}
-
-.post-comment-refresh:hover {
-  transform: scale(1.5) rotate(360deg);
-}
-
-.score-hidden {
-  color: #999;
-}
-
-.score {
-  font-weight: Bold;
-}
-
-.post-comment-text a,.self-post-content a,.link {
-  color: #1b3e92;
-}
-`)
 
 const switchBtnId = 'rcoy-switch-button'
 const appId = 'rcoy'
@@ -684,6 +563,7 @@ waitForUrl(
         stop: true,
         onmatch: ytComments => {
           const container = document.createElement('div')
+          container.className = styles.root.class
           container.id = appId
           const switchBtnArea = document.createElement('div')
           switchBtnArea.id = switchBtnId
