@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name      Reddit Comments on Youtube
 // @namespace RCOY
-// @version   0.0.3
+// @version   0.0.4
 // @match     *://*.youtube.com/*
 // @grant     GM_addStyle
 // @require   https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
@@ -470,7 +470,7 @@ const App = ({ attrs: { switchComments } }) => {
   api.getPostsForVideo(window.location.href).then(newPosts => {
     state.loading = false
     posts = newPosts || []
-    if (posts.length <= 0) {
+    if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
       // switch comments after delay to allow user to read "no posts (or comments) found" message
       console.log('didnt find any reddit posts, hiding')
       setTimeout(switchComments, 2000)
