@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name      Reddit Comments on Youtube
 // @namespace RCOY
-// @version   0.0.4
+// @version   0.0.5
 // @match     *://*.youtube.com/*
 // @grant     none
 // @require   https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
@@ -437,7 +437,7 @@ const PostChoices = () => {
     }, 500)
   }
   return {
-    view: ({ attrs: { posts } }) =>
+    view: ({ attrs: { posts, reloadPosts } }) =>
       m(
         'div.post-choice-list' +
           b`
@@ -459,7 +459,7 @@ const PostChoices = () => {
             {
               title: post.title,
               onclick: () => loadPost(post),
-              class: post === state.openPost ? b`c white;bc black`.class : ''
+              class: post.id === (state.openPost || {}).id ? b`c white;bc black`.class : ''
             },
             [
               m('span' + b`fw bold`, '/r/', post.subreddit),
@@ -467,7 +467,18 @@ const PostChoices = () => {
               m('span', '\uD83D\uDCAC ', post.num_comments)
             ]
           )
-        })
+        }),
+        m(
+          'div.reload-posts' +
+            b`
+            d flex;jc center;ai center
+            border 1px solid black
+            cursor pointer
+            m 5;ml 0
+          `,
+          { onclick: reloadPosts },
+          'Reload Posts'
+        )
       )
   }
 }
@@ -493,27 +504,31 @@ const PostInfo = {
 }
 
 const App = ({ attrs: { switchComments } }) => {
-  state.posts = []
-  state.loading = true
-  api.getPostsForVideo(window.location.href).then(newPosts => {
-    state.loading = false
-    const posts = newPosts || []
-    state.posts = posts
-    if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
-      // switch comments after delay to allow user to read "no posts (or comments) found" message
-      console.log('didnt find any reddit posts, hiding')
-      setTimeout(switchComments, 2000)
-    }
-    state.openPost = posts[0]
-    m.redraw()
-  })
+  const reloadPosts = () => {
+    state.posts = []
+    state.loading = true
+    return api.getPostsForVideo(window.location.href).then(newPosts => {
+      state.loading = false
+      const posts = newPosts || []
+      state.posts = posts
+      console.log('reddit comments found ', posts)
+      if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
+        // switch comments after delay to allow user to read "no posts (or comments) found" message
+        console.log('didnt find any reddit posts, hiding')
+        setTimeout(switchComments, 2000)
+      }
+      if (!state.openPost) state.openPost = posts[0]
+      m.redraw()
+    })
+  }
+  reloadPosts()
   return {
     view() {
       if (state.loading) return m('div' + b`ta center`, partials.loadingSpinner())
       return m(
         'div' + b`fs medium;pr var(--watch-sidebar-width)`.$nest(' a', 'c var(--link-color)'),
         [
-          m(PostChoices, { posts: state.posts }),
+          m(PostChoices, { posts: state.posts, reloadPosts }),
           state.posts.length === 0 &&
             m('div' + b`ta center`, "Didn't find any reddit posts for this video."),
           state.openPost
