@@ -1,13 +1,15 @@
 // ==UserScript==
-// @name      Reddit Comments on Youtube
-// @namespace RCOY
-// @version   0.0.5
-// @match     *://*.youtube.com/*
-// @grant     none
-// @require   https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
-// @require   https://unpkg.com/mithril@1
-// @require   https://unpkg.com/bss@1
-// @require   httsp://unpkg.com/lodash@4
+// @name        Reddit Comments on Youtube
+// @description show reddit comments on youtube (and crunchyroll) videos
+// @namespace   RCOY
+// @version     0.1.0
+// @match       *://*.youtube.com/*
+// @match       *://*.crunchyroll.com/*
+// @grant       none
+// @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
+// @require     https://unpkg.com/mithril@next
+// @require     https://unpkg.com/bss
+// @require     httsp://unpkg.com/lodash@4
 // ==/UserScript==
 /* globals m b _ waitForElems waitForUrl */
 
@@ -43,13 +45,6 @@ const state = {
   borders: BORDERS.day
 }
 
-const sizes = {
-  xs: 0,
-  sm: 768,
-  md: 992,
-  lg: 1200
-}
-
 // bss
 const styles = {
   root: b`
@@ -62,7 +57,7 @@ const styles = {
     --bad-score-color #3070a9
     --score-hidden-color #999
   `,
-  fixBlockquotes: b
+  fixComment: b
     .$nest(
       ' blockquote',
       `
@@ -71,7 +66,8 @@ const styles = {
         m 4 0 4 8 
       `
     )
-    .$nest(' blockquote:last-child', 'mb 0'),
+    .$nest(' blockquote:last-child', 'mb 0')
+    .$nest('p', 'margin 0.75em 0'),
   postCommentRefresh: b`
     background #ddd
     border-radius 15
@@ -102,20 +98,7 @@ b.helper({
     white-space nowrap
     overflow hidden
     text-overflow ellipsis
-  `,
-  minWidths: (...confs) => {
-    if (confs.length % 2 !== 0) throw new Error('b.minWidths() - invalid usage')
-    let ref = b
-    for (let i = 0; i < confs.length; i += 2)
-      ref = ref.$media(`(min-width: ${confs[i]}px)`, confs[i + 1])
-    return ref
-  },
-  gridWidths: conf =>
-    b.minWidths(
-      ...Object.entries(conf)
-        .map(([k, v]) => [k in sizes ? sizes[k] : k, b.gridTemplateColumns(v)])
-        .reduce((total, cur) => total.concat(cur), [])
-    )
+  `
 })
 
 const api = {
@@ -123,34 +106,32 @@ const api = {
     const match = url.match(/v=(?<id>[^&]+)/i)
     return match ? match.groups.id : false
   },
-  getPostsForVideo(vidUrl) {
-    const id = api.getVideoIdFromUrl(vidUrl)
-    if (!id) return Promise.reject('must be a video URL')
-    return m
+  searchPosts: async (query, sort = true) => {
+    const results = await m
       .request({
         method: 'get',
         background: true,
         url: `${API_URL}/search.json`,
         data: {
-          q: `(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`
+          q: query
         }
       })
       .then(data =>
-        data.data.children
-          .map(({ data }) => {
-            return {
-              id: data.id,
-              subreddit: data.subreddit,
-              title: data.title,
-              score: data.score,
-              gilded: data.gilded,
-              permalink: data.permalink,
-              name: data.name,
-              num_comments: data.num_comments
-            }
-          })
-          .sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1))
+        data.data.children.map(({ data }) => {
+          return {
+            id: data.id,
+            subreddit: data.subreddit,
+            title: data.title,
+            score: data.score,
+            gilded: data.gilded,
+            permalink: data.permalink,
+            name: data.name,
+            num_comments: data.num_comments
+          }
+        })
       )
+    if (sort) results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1))
+    return results
   },
   getComments(post, comment) {
     return m
@@ -168,6 +149,7 @@ const api = {
 
 const util = {
   id: id => document.getElementById(id),
+  q: (sel, ctx = document) => ctx.querySelector(sel),
   htmlDecode: function(input) {
     const e = document.createElement('div')
     e.innerHTML = input
@@ -409,7 +391,7 @@ const PostComment = ({ attrs: { comment } }) => {
               hidden: cmt.collapsed
             },
             [
-              m('div.post-comment-text' + styles.fixBlockquotes, commentHtml),
+              m('div.post-comment-text' + styles.fixComment, commentHtml),
               cmt.replies
                 ? m(
                     'div.post-comment-replies',
@@ -444,7 +426,8 @@ const PostChoices = () => {
           d grid
           mb 10
           mt 10
-        `.gridWidths({ 700: '1fr', 1000: '1fr 1fr', 1600: '1fr 1fr 1fr' }),
+          gtc ${mode === 'youtube' ? '1fr 1fr 1fr' : '1fr 1fr'}
+        `,
         posts.map(post => {
           return m(
             'span.post-choice' +
@@ -474,7 +457,7 @@ const PostChoices = () => {
             d flex;jc center;ai center
             border 1px solid black
             cursor pointer
-            m 5;ml 0
+            m 5;ml 0; p 3
           `,
           { onclick: reloadPosts },
           'Reload Posts'
@@ -503,23 +486,21 @@ const PostInfo = {
     ])
 }
 
-const App = ({ attrs: { switchComments } }) => {
-  const reloadPosts = () => {
+const App = ({ attrs: { switchComments, getPosts } }) => {
+  const reloadPosts = async () => {
     state.posts = []
     state.loading = true
-    return api.getPostsForVideo(window.location.href).then(newPosts => {
-      state.loading = false
-      const posts = newPosts || []
-      state.posts = posts
-      console.log('reddit comments found ', posts)
-      if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
-        // switch comments after delay to allow user to read "no posts (or comments) found" message
-        console.log('didnt find any reddit posts, hiding')
-        setTimeout(switchComments, 2000)
-      }
-      if (!state.openPost) state.openPost = posts[0]
-      m.redraw()
-    })
+    const posts = (await getPosts()) || []
+    state.loading = false
+    state.posts = posts
+    console.log('reddit comments found ', posts)
+    if (posts.length <= 0 || posts.every(post => post.num_comments <= 0)) {
+      // switch comments after delay to allow user to read "no posts (or comments) found" message
+      console.log('didnt find any reddit posts, hiding')
+      setTimeout(switchComments, 200)
+    }
+    if (!state.openPost) state.openPost = posts[0]
+    m.redraw()
   }
   reloadPosts()
   return {
@@ -530,7 +511,7 @@ const App = ({ attrs: { switchComments } }) => {
         [
           m(PostChoices, { posts: state.posts, reloadPosts }),
           state.posts.length === 0 &&
-            m('div' + b`ta center`, "Didn't find any reddit posts for this video."),
+            m('div' + b`ta center`, "Sorry, didn't find any reddit posts..."),
           state.openPost
             ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
             : ''
@@ -540,6 +521,44 @@ const App = ({ attrs: { switchComments } }) => {
   }
 }
 
+const switchBtnId = 'rcoy-switch-button'
+const appId = 'rcoy'
+
+const mode = (() => {
+  const host = location.hostname
+  return host.includes('youtube') ? 'youtube' : host.includes('crunchyroll') ? 'crunchyroll' : null
+})()
+
+const confs = {
+  youtube: {
+    cmtSel: '#comments',
+    isMatch: () => !!api.getVideoIdFromUrl(location.href),
+    getPosts: () => {
+      const id = api.getVideoIdFromUrl(location.href)
+      if (!id) throw new Error('must be a video URL')
+      return api.searchPosts(`(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`)
+    }
+  },
+  crunchyroll: {
+    cmtSel: '.guestbook.comments',
+    isMatch: () => !!util.id('showmedia_about_media'),
+    getPosts: async () => {
+      const epNum = util
+        .q('#showmedia_about_media h4:last-child')
+        .textContent.split(',')
+        .pop()
+        .match(/[0-9]+/)[0]
+      const epRegex = new RegExp(`episode ${epNum}([^0-9]|$)`, 'i')
+      const posts = await api.searchPosts(
+        util.id('showmedia_about_media').textContent.replace(/\s+/g, ' ') + ' discussion'
+      )
+      return posts.filter(post => epRegex.test(post.title))
+    }
+  }
+}
+
+const conf = confs[mode]
+
 const switchCommentsButton = switchComments =>
   m(
     'paper-button.ytd-subscribe-button-renderer[animated][subscribed]',
@@ -548,9 +567,6 @@ const switchCommentsButton = switchComments =>
     },
     'Switch Comments'
   )
-
-const switchBtnId = 'rcoy-switch-button'
-const appId = 'rcoy'
 
 let waitObj
 waitForUrl(
@@ -570,36 +586,33 @@ waitForUrl(
         const oldSwitchBtn = util.id(switchBtnId)
         if (oldSwitchBtn) oldSwitchBtn.remove()
       }
-      // is this a video?
-      if (!api.getVideoIdFromUrl(location.href)) return
-      // mount app
+      if (!conf.isMatch()) return
+      // wait for mount area
       waitObj = waitForElems({
-        sel: '#comments',
+        sel: conf.cmtSel,
         stop: true,
-        onmatch: ytComments => {
+        onmatch: commentsElem => {
+          // hide comments
+          commentsElem.style.display = 'none'
+          // create container and place in DOM
           const container = document.createElement('div')
           container.className = styles.root.class
           container.id = appId
           const switchBtnArea = document.createElement('div')
           switchBtnArea.id = switchBtnId
-          const main = ytComments.parentElement
-          main.insertBefore(container, ytComments)
+          const main = commentsElem.parentElement
+          main.insertBefore(container, commentsElem)
           main.insertBefore(switchBtnArea, container)
+          // setup switch area and function
           let hideReddit = false
           const switchComments = () => {
             hideReddit = !hideReddit
-            ytComments.hidden = !hideReddit
-            container.hidden = hideReddit
+            commentsElem.style.display = hideReddit ? '' : 'none'
+            container.hidden = hideReddit ? 'none' : ''
           }
           m.render(switchBtnArea, switchCommentsButton(switchComments))
-          m.mount(container, { view: () => m(App, { switchComments }) })
-          // wait for comments to actually load in and update visibility
-          waitForElems({
-            sel: '#sections > #header > ytd-comments-header-renderer',
-            ctx: ytComments,
-            stop: true,
-            onmatch: () => (ytComments.hidden = !hideReddit)
-          })
+          // mount main app
+          m.mount(container, { view: () => m(App, { switchComments, getPosts: conf.getPosts }) })
         }
       })
     }, 2000)
