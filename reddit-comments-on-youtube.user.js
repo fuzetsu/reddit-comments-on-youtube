@@ -83,11 +83,7 @@ const styles = {
   postCommentRefreshContent: b`
     display inline-block
     ta center
-  `,
-  spinAnimation: b.$animate('1s linear infinite', {
-    from: 'transform rotate(0deg)',
-    to: 'transform rotate(360deg)'
-  })
+  `
 }
 
 b.helper({
@@ -105,7 +101,11 @@ b.helper({
     white-space nowrap
     overflow hidden
     text-overflow ellipsis
-  `
+  `,
+  spinAnimation: b.$animate('1s linear infinite', {
+    from: 'transform rotate(0deg)',
+    to: 'transform rotate(360deg)'
+  })
 })
 
 const api = {
@@ -187,6 +187,13 @@ const util = {
       (day_diff < 7 && day_diff + ' days ago') ||
       (day_diff < 31 && Math.ceil(day_diff / 7) + ' weeks ago')
     )
+  },
+  anim: (dom, cb, type = 'end', unbind = true) => {
+    const handler = e => {
+      if (unbind) dom.removeEventListener('animation' + type, handler)
+      cb(e)
+    }
+    dom.addEventListener('animation' + type, handler)
   }
 }
 
@@ -306,7 +313,8 @@ const LoadMoreComments = () => {
 }
 
 const PostComment = ({ attrs: { comment } }) => {
-  let isRefreshing = false;
+  let isRefreshing = false
+  let refreshIndDom
   // cache comment html for performance
   const commentHtml = m.trust(util.processRedditHtml(comment.body_html))
   const setDepth = (comment, depth) => {
@@ -317,13 +325,18 @@ const PostComment = ({ attrs: { comment } }) => {
   const sep = () => m.trust(' &#x2022; ')
   const refreshComment = cmt => {
     isRefreshing = true
-    m.redraw()
     api.getComments(state.openPost, cmt).then(([newCmt]) => {
+      if (refreshIndDom) {
+        // reset refreshing after animation ends
+        util.anim(refreshIndDom, () => {
+          isRefreshing = false
+          m.redraw()
+        }, 'iteration')
+      }
       if (!newCmt || !newCmt.data) return
       // normalize comment depth (will always start from 0 so set based on current depth)
       setDepth(newCmt.data, cmt.depth)
       _.mergeWith(cmt, newCmt.data, (o, i, key) => (key === 'collapsed' ? o : i))
-      isRefreshing = false
       m.redraw()
     })
   }
@@ -389,12 +402,16 @@ const PostComment = ({ attrs: { comment } }) => {
             m(
               'span.post-comment-refresh[title=Refresh Comment Thread]' + styles.postCommentRefresh,
               {
-                onclick: e => {
-                  e.redraw = false
-                  refreshComment(cmt)
-                }
+                onclick: () => refreshComment(cmt)
               },
-              m('span' + styles.postCommentRefreshContent + (isRefreshing ? styles.spinAnimation : ''), '⟳')
+              m(
+                'span' + styles.postCommentRefreshContent,
+                {
+                  oncreate: ({ dom }) => (refreshIndDom = dom),
+                  class: isRefreshing ? b.spinAnimation : ''
+                },
+                '⟳'
+              )
             )
           ]),
           m(
@@ -494,7 +511,11 @@ const PostInfo = {
       ' [ ',
       m('span' + b`fw bold`, '/r/', post.subreddit),
       ' ] ',
-      m('a' + b`td none`, { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' }, post.title)
+      m(
+        'a' + b`td none`,
+        { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' },
+        post.title
+      )
     ])
 }
 
