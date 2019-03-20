@@ -63,7 +63,7 @@ const styles = {
       `
         pl 8
         bl 4px solid #a2a2a2
-        m 4 0 4 8 
+        m 4 0 4 8
       `
     )
     .$nest(' blockquote:last-child', 'mb 0')
@@ -78,7 +78,6 @@ const styles = {
     box-sizing border-box
     color black
     cursor pointer
-    transition transform 1.5s
     user-select none
   `
 }
