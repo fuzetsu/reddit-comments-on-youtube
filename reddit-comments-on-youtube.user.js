@@ -482,7 +482,7 @@ const PostInfo = {
       ' [ ',
       m('span' + b`fw bold`, '/r/', post.subreddit),
       ' ] ',
-      m('a' + b`td none`, { href: API_URL + post.permalink, target: '_blank' }, post.title)
+      m('a' + b`td none`, { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' }, post.title)
     ])
 }
 
