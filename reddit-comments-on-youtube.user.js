@@ -9,7 +9,7 @@
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@next
 // @require     https://unpkg.com/bss
-// @require     httsp://unpkg.com/lodash@4
+// @require     https://unpkg.com/lodash@4
 // ==/UserScript==
 /* globals m b _ waitForElems waitForUrl */
 
@@ -79,7 +79,15 @@ const styles = {
     color black
     cursor pointer
     user-select none
-  `
+  `,
+  postCommentRefreshContent: b`
+    display inline-block
+    ta center
+  `,
+  spinAnimation: b.$animate('1s linear infinite', {
+    from: 'transform rotate(0deg)',
+    to: 'transform rotate(360deg)'
+  })
 }
 
 b.helper({
@@ -298,22 +306,27 @@ const LoadMoreComments = () => {
 }
 
 const PostComment = ({ attrs: { comment } }) => {
+  let isRefreshing = false;
   // cache comment html for performance
   const commentHtml = m.trust(util.processRedditHtml(comment.body_html))
   const setDepth = (comment, depth) => {
     if (!comment) return
     comment.depth = depth
-    if (comment.replies) comment.replies.data.children.map(c => this.setDepth(c.data, depth + 1))
+    if (comment.replies) comment.replies.data.children.map(c => setDepth(c.data, depth + 1))
   }
   const sep = () => m.trust(' &#x2022; ')
-  const refreshComment = cmt =>
+  const refreshComment = cmt => {
+    isRefreshing = true
+    m.redraw()
     api.getComments(state.openPost, cmt).then(([newCmt]) => {
       if (!newCmt || !newCmt.data) return
       // normalize comment depth (will always start from 0 so set based on current depth)
       setDepth(newCmt.data, cmt.depth)
       _.mergeWith(cmt, newCmt.data, (o, i, key) => (key === 'collapsed' ? o : i))
+      isRefreshing = false
       m.redraw()
     })
+  }
   const getAuthorStyle = cmt =>
     cmt.is_submitter
       ? b`content '[OP]'; c var(--op-color)`
@@ -381,7 +394,7 @@ const PostComment = ({ attrs: { comment } }) => {
                   refreshComment(cmt)
                 }
               },
-              '⟳'
+              m('span' + styles.postCommentRefreshContent + (isRefreshing ? styles.spinAnimation : ''), '⟳')
             )
           ]),
           m(
