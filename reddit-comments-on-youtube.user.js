@@ -80,7 +80,7 @@ const styles = {
     cursor pointer
     transition transform 1.5s
     user-select none
-  `.$nest(':hover', 'transform scale(1.5) rotate(360deg)')
+  `
 }
 
 b.helper({
