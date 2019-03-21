@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.0
+// @version     0.1.1
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
@@ -328,10 +328,14 @@ const PostComment = ({ attrs: { comment } }) => {
     api.getComments(state.openPost, cmt).then(([newCmt]) => {
       if (refreshIndDom) {
         // reset refreshing after animation ends
-        util.anim(refreshIndDom, () => {
-          isRefreshing = false
-          m.redraw()
-        }, 'iteration')
+        util.anim(
+          refreshIndDom,
+          () => {
+            isRefreshing = false
+            m.redraw()
+          },
+          'iteration'
+        )
       }
       if (!newCmt || !newCmt.data) return
       // normalize comment depth (will always start from 0 so set based on current depth)
