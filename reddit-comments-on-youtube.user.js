@@ -2,14 +2,13 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.1
+// @version     0.1.2
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
-// @require     https://unpkg.com/mithril@next
-// @require     https://unpkg.com/bss
-// @require     https://unpkg.com/lodash@4
+// @require     https://unpkg.com/mithril@2.0.0-rc.6
+// @require     https://unpkg.com/zaftig
 // ==/UserScript==
 /* globals m b _ waitForElems waitForUrl */
 
@@ -47,28 +46,26 @@ const state = {
 
 // bss
 const styles = {
-  root: b`
-    --link-color #1b3e92
-    --author-color #215854
-    --op-color #1a1abd
-    --mod-color #109610
-    --admin-color red
-    --good-score-color #ff7a00
-    --bad-score-color #3070a9
-    --score-hidden-color #999
+  root: z`
+    $link-color #1b3e92
+    $author-color #215854
+    $op-color #1a1abd
+    $mod-color #109610
+    $admin-color red
+    $good-score-color #ff7a00
+    $bad-score-color #3070a9
+    $score-hidden-color #999
   `,
-  fixComment: b
-    .$nest(
-      ' blockquote',
-      `
-        pl 8
-        bl 4px solid #a2a2a2
-        m 4 0 4 8
-      `
-    )
-    .$nest(' blockquote:last-child', 'mb 0')
-    .$nest('p', 'margin 0.75em 0'),
-  postCommentRefresh: b`
+  fixComment: z`
+    blockquote {
+      pl 8
+      bl 4px solid #a2a2a2
+      m 4 0 4 8
+      :last-child { mb 0 }
+    }
+    p { m 0.75em 0 }
+  `,
+  postCommentRefresh: z`
     background #ddd
     border-radius 15
     height 16
@@ -80,13 +77,13 @@ const styles = {
     cursor pointer
     user-select none
   `,
-  postCommentRefreshContent: b`
+  postCommentRefreshContent: z`
     display inline-block
     ta center
   `
 }
 
-b.helper({
+z.helper({
   badge: `
     br 4
     d inline-block
@@ -102,10 +99,12 @@ b.helper({
     overflow hidden
     text-overflow ellipsis
   `,
-  spinAnimation: b.$animate('1s linear infinite', {
-    from: 'transform rotate(0deg)',
-    to: 'transform rotate(360deg)'
-  })
+  spinAnimation: `
+    animation ${z.anim`
+      from { transform rotate(0deg) }
+      to { transform rotate(360deg) }
+    `} 1s linear infinite
+  `
 })
 
 const api = {
@@ -119,7 +118,7 @@ const api = {
         method: 'get',
         background: true,
         url: `${API_URL}/search.json`,
-        data: {
+        params: {
           q: query
         }
       })
@@ -146,7 +145,7 @@ const api = {
         method: 'get',
         background: true,
         url: `${API_URL}/${post.permalink}.json`,
-        data: {
+        params: {
           comment: comment && comment.id
         }
       })
@@ -209,12 +208,12 @@ const PostComments = ({ attrs: { post } }) => {
   return {
     view: () =>
       loading
-        ? m('div' + b`ta center`, partials.loadingSpinner())
+        ? m('div' + z`ta center`, partials.loadingSpinner())
         : m('div.post-comments', [
             m(
               'div.post-comments-list',
               comments.length < 1
-                ? m('div' + b`ta center`, 'No comments yet...')
+                ? m('div' + z`ta center`, 'No comments yet...')
                 : comments.map((c, idx, arr) => {
                     if (c.kind === 'more')
                       return m(LoadMoreComments, { parentArray: arr, moreComments: c.data })
@@ -229,14 +228,14 @@ const LoadMoreComments = () => {
   let loading = false
   return {
     view(vnode) {
-      if (loading) return m('div' + b`ta center`, partials.loadingSpinner())
+      if (loading) return m('div' + z`ta center`, partials.loadingSpinner())
       const args = vnode.attrs
       const mc = args.moreComments
       const count = mc.children && mc.children.length
       // dont show button if no comments to load...
       if (count <= 0) return ''
       return m(
-        'a.btn-load-more-comments[href=#]' + b`d inline-block;mt 5`,
+        'a.btn-load-more-comments[href=#]' + z`d inline-block;mt 5`,
         {
           onclick: e => {
             e.preventDefault()
@@ -245,7 +244,7 @@ const LoadMoreComments = () => {
             m.request({
               method: 'GET',
               url: API_URL + '/api/morechildren.json',
-              data: {
+              params: {
                 api_type: 'json',
                 children: childrenToLoad.join(','),
                 link_id: state.openPost.name
@@ -340,17 +339,17 @@ const PostComment = ({ attrs: { comment } }) => {
       if (!newCmt || !newCmt.data) return
       // normalize comment depth (will always start from 0 so set based on current depth)
       setDepth(newCmt.data, cmt.depth)
-      _.mergeWith(cmt, newCmt.data, (o, i, key) => (key === 'collapsed' ? o : i))
+      Object.assign(cmt, newCmt.data)
       m.redraw()
     })
   }
   const getAuthorStyle = cmt =>
     cmt.is_submitter
-      ? b`content '[OP]'; c var(--op-color)`
+      ? z`content '[OP]'; c $op-color`
       : cmt.distinguished === 'moderator'
-      ? b`content '[MOD]'; c var(--mod-color)`
+      ? z`content '[MOD]'; c $mod-color`
       : cmt.distinguished === 'admin'
-      ? b`content '[ADMIN]'; c var(--admin-color)`
+      ? z`content '[ADMIN]'; c $admin-color`
       : null
   return {
     view: ({ attrs: { comment: cmt } }) => {
@@ -359,12 +358,12 @@ const PostComment = ({ attrs: { comment } }) => {
       const borderColor = state.borders[cmt.depth % state.borders.length]
       return m(
         'div.post-comment' +
-          b`p 0 0 0 17; border-left 3px solid #555;blc ${borderColor}` +
-          b`blc ${borderColor}`.$nest(':not(:last-child)', 'mb 20'),
+          z`p 0 0 0 17; border-left 3px solid #555;blc ${borderColor}` +
+          z`blc ${borderColor}; :not(:last-child) { mb 20 }`,
         [
-          m('div.post-comment-info' + b`fs 90%;c #666;mb 5`, [
+          m('div.post-comment-info' + z`fs 90%;c #666;mb 5`, [
             m(
-              'strong.post-comment-collapse' + b`ff monospace; cursor pointer; user-select none`,
+              'strong.post-comment-collapse' + z`ff monospace; cursor pointer; user-select none`,
               {
                 onclick: () => (cmt.collapsed = !cmt.collapsed)
               },
@@ -374,15 +373,15 @@ const PostComment = ({ attrs: { comment } }) => {
             ),
             m(
               'a[target=_blank].post-comment-author' +
-                b`c var(--author-color)`.$nest(
-                  ':after',
-                  `
-                    ff monospace
-                    position relative
-                    t -1; ml 3; c black
-                    ${getAuthorStyle(cmt)}
-                  `
-                ),
+                z`
+                c $author-color
+                :after {
+                  ff monospace
+                  position relative
+                  t -1; ml 3; c black
+                  ${getAuthorStyle(cmt)}
+                }
+              `,
               {
                 href: `${API_URL}/u/${cmt.author}`
               },
@@ -390,9 +389,9 @@ const PostComment = ({ attrs: { comment } }) => {
             ),
             sep(),
             cmt.score_hidden
-              ? m('em' + b`c var(--score-hidden-color)`, 'Score Hidden')
+              ? m('em' + z`c $score-hidden-color`, 'Score Hidden')
               : m(
-                  'span.score' + b`fw bold;c var(--${cmt.score >= 1 ? 'good' : 'bad'}-score-color)`,
+                  'span.score' + z`fw bold;c $${cmt.score >= 1 ? 'good' : 'bad'}-score-color`,
                   cmt.score
                 ),
             sep(),
@@ -412,7 +411,7 @@ const PostComment = ({ attrs: { comment } }) => {
                 'span' + styles.postCommentRefreshContent,
                 {
                   oncreate: ({ dom }) => (refreshIndDom = dom),
-                  class: isRefreshing ? b.spinAnimation : ''
+                  class: isRefreshing ? z`spinAnimation` : ''
                 },
                 '⟳'
               )
@@ -455,7 +454,7 @@ const PostChoices = () => {
     view: ({ attrs: { posts, reloadPosts } }) =>
       m(
         'div.post-choice-list' +
-          b`
+          z`
           d grid
           mb 10
           mt 10
@@ -464,7 +463,7 @@ const PostChoices = () => {
         posts.map(post => {
           return m(
             'span.post-choice' +
-              b`
+              z`
               d inline-grid
               gtc auto 1fr minmax(55px, auto)
               grid-column-gap 5px
@@ -475,18 +474,18 @@ const PostChoices = () => {
             {
               title: post.title,
               onclick: () => loadPost(post),
-              class: post.id === (state.openPost || {}).id ? b`c white;bc black`.class : ''
+              class: post.id === (state.openPost || {}).id ? z`c white;bc black`.class : ''
             },
             [
-              m('span' + b`fw bold`, '/r/', post.subreddit),
-              m('span' + b.ellipsis, post.title),
+              m('span' + z`fw bold`, '/r/', post.subreddit),
+              m('span' + z`ellipsis`, post.title),
               m('span', '\uD83D\uDCAC ', post.num_comments)
             ]
           )
         }),
         m(
           'div.reload-posts' +
-            b`
+            z`
             d flex;jc center;ai center
             border 1px solid black
             cursor pointer
@@ -501,10 +500,10 @@ const PostChoices = () => {
 
 const PostInfo = {
   view: ({ attrs: { post } }) =>
-    m('div.post-info' + b`fs 150%;mb 10`, [
+    m('div.post-info' + z`fs 150%;mb 10`, [
       m(
         'span' +
-          b`
+          z`
           badge
           bc #ff6a00; c white
           fs medium
@@ -513,10 +512,10 @@ const PostInfo = {
         post.score
       ),
       ' [ ',
-      m('span' + b`fw bold`, '/r/', post.subreddit),
+      m('span' + z`fw bold`, '/r/', post.subreddit),
       ' ] ',
       m(
-        'a' + b`td none`,
+        'a' + z`td none`,
         { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' },
         post.title
       )
@@ -542,18 +541,15 @@ const App = ({ attrs: { switchComments, getPosts } }) => {
   reloadPosts()
   return {
     view() {
-      if (state.loading) return m('div' + b`ta center`, partials.loadingSpinner())
-      return m(
-        'div' + b`fs medium;pr var(--watch-sidebar-width)`.$nest(' a', 'c var(--link-color)'),
-        [
-          m(PostChoices, { posts: state.posts, reloadPosts }),
-          state.posts.length === 0 &&
-            m('div' + b`ta center`, "Sorry, didn't find any reddit posts..."),
-          state.openPost
-            ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
-            : ''
-        ]
-      )
+      if (state.loading) return m('div' + z`ta center`, partials.loadingSpinner())
+      return m('div' + z`fs medium;pr $watch-sidebar-width; a { c $link-color }`, [
+        m(PostChoices, { posts: state.posts, reloadPosts }),
+        state.posts.length === 0 &&
+          m('div' + z`ta center`, "Sorry, didn't find any reddit posts..."),
+        state.openPost
+          ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
+          : ''
+      ])
     }
   }
 }
