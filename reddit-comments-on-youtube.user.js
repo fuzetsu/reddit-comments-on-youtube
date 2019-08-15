@@ -5,17 +5,18 @@
 // @version     0.1.1
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
-// @grant       none
+// @grant       GM_xmlhttpRequest
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@next
 // @require     https://unpkg.com/bss
 // @require     https://unpkg.com/lodash@4
 // ==/UserScript==
-/* globals m b _ waitForElems waitForUrl */
+/* globals m b _ waitForElems waitForUrl, GM_xmlhttpRequest */
 
 const COMMENT_LOAD_NUM = 20
 
 const API_URL = 'https://www.reddit.com'
+const API_URL_AUTH = 'https://api.reddit.com/api'
 
 const BORDERS = {
   day: [
@@ -34,6 +35,12 @@ const BORDERS = {
   ]
 }
 
+const VOTE = {
+  up: 1,
+  down: -1,
+  remove: 0
+}
+
 const partials = {
   loadingSpinner: () => m('img[src=https://loading.io/spinners/pies/lg.pie-chart-loading-gif.gif]')
 }
@@ -42,7 +49,8 @@ const state = {
   openPost: null,
   posts: [],
   loading: false,
-  borders: BORDERS.day
+  borders: BORDERS.day,
+  userHash: null
 }
 
 // bss
@@ -114,17 +122,14 @@ const api = {
     return match ? match.groups.id : false
   },
   searchPosts: async (query, sort = true) => {
-    const results = await m
+    const results = await util
       .request({
         method: 'get',
-        background: true,
-        url: `${API_URL}/search.json`,
-        data: {
-          q: query
-        }
+        url: `${API_URL}/search.json?q=${encodeURIComponent(query)}`
       })
-      .then(data =>
-        data.data.children.map(({ data }) => {
+      .then(data => {
+        if (data.data.modhash) state.userHash = data.data.modhash
+        return data.data.children.map(({ data }) => {
           return {
             id: data.id,
             subreddit: data.subreddit,
@@ -136,25 +141,66 @@ const api = {
             num_comments: data.num_comments
           }
         })
-      )
+      })
     if (sort) results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1))
     return results
   },
-  getComments(post, comment) {
-    return m
+  getComments: (post, comment) =>
+    util
       .request({
         method: 'get',
-        background: true,
-        url: `${API_URL}/${post.permalink}.json`,
-        data: {
-          comment: comment && comment.id
-        }
+        url: `${API_URL}/${post.permalink}.json?comment=${comment && comment.id}`
       })
-      .then(data => data[1].data.children)
-  }
+      .then(data => data[1].data.children),
+  vote: (id, dir) =>
+    util.request({
+      method: 'post',
+      url: `${API_URL_AUTH}/vote`,
+      headers: {
+        Origin: API_URL,
+        'User-Agent': 'reddit-comments-on-youtube:1.2.3',
+        'X-Modhash': state.userHash,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: util.makeData({
+        uh: state.userHash,
+        id,
+        dir
+      })
+    }),
+  save: id =>
+    util.request({
+      method: 'post',
+      url: `${API_URL_AUTH}/save`,
+      headers: {
+        'X-Modhash': state.userHash,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: util.makeData({
+        uh: state.userHash,
+        id
+      })
+    })
 }
 
 const util = {
+  makeData: obj =>
+    Object.entries(obj)
+      .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+      .join('&'),
+  // Object.entries(obj).reduce((form, [k, v]) => (form.append(k, v), form), new FormData()),
+  request: conf =>
+    new Promise((res, rej) =>
+      GM_xmlhttpRequest({
+        ...conf,
+        responseType: conf.responseType || 'json',
+        onload: xhr => {
+          console.log(xhr)
+          res(xhr.response)
+        },
+        onerror: rej
+      })
+    ),
   id: id => document.getElementById(id),
   q: (sel, ctx = document) => ctx.querySelector(sel),
   htmlDecode: function(input) {
@@ -363,6 +409,17 @@ const PostComment = ({ attrs: { comment } }) => {
           b`blc ${borderColor}`.$nest(':not(:last-child)', 'mb 20'),
         [
           m('div.post-comment-info' + b`fs 90%;c #666;mb 5`, [
+            m(
+              'strong' + b`ff monospace;cursor pointer; user-select none`,
+              {
+                onclick: () => {
+                  console.log(cmt, 'saving')
+                  api.vote(cmt.name, VOTE.up)
+                  // api.save(cmt.name)
+                }
+              },
+              '[Upvote]'
+            ),
             m(
               'strong.post-comment-collapse' + b`ff monospace; cursor pointer; user-select none`,
               {
