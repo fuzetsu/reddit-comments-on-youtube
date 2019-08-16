@@ -2,15 +2,15 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.2
+// @version     0.1.3
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@2.0.0-rc.6
-// @require     https://unpkg.com/zaftig
+// @require     https://unpkg.com/zaftig@0.6.2
 // ==/UserScript==
-/* globals m b _ waitForElems waitForUrl */
+/* globals m z waitForElems waitForUrl */
 
 const COMMENT_LOAD_NUM = 20
 
@@ -44,7 +44,6 @@ const state = {
   borders: BORDERS.day
 }
 
-// bss
 const styles = {
   root: z`
     $link-color #1b3e92
@@ -156,17 +155,13 @@ const api = {
 const util = {
   id: id => document.getElementById(id),
   q: (sel, ctx = document) => ctx.querySelector(sel),
-  htmlDecode: function(input) {
+  htmlDecode: input => {
     const e = document.createElement('div')
     e.innerHTML = input
     return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue
   },
-  processRedditHtml(html) {
-    return util.htmlDecode(html).replace(/<a/gi, '<a target="_blank"')
-  },
-  pluralize: function(word, count) {
-    return count !== 1 ? word + 's' : word
-  },
+  processRedditHtml: html => util.htmlDecode(html).replace(/<a/gi, '<a target="_blank"'),
+  pluralize: (word, count) => (count !== 1 ? word + 's' : word),
   prettyTime(d) {
     // This function was copied, and slightly adapted from John Resig's website: https://johnresig.com/files/pretty.js
     const date = new Date(d)
@@ -187,7 +182,7 @@ const util = {
       (day_diff < 31 && Math.ceil(day_diff / 7) + ' weeks ago')
     )
   },
-  anim: (dom, cb, type = 'end', unbind = true) => {
+  anim(dom, cb, type = 'end', unbind = true) {
     const handler = e => {
       if (unbind) dom.removeEventListener('animation' + type, handler)
       cb(e)
@@ -214,11 +209,11 @@ const PostComments = ({ attrs: { post } }) => {
               'div.post-comments-list',
               comments.length < 1
                 ? m('div' + z`ta center`, 'No comments yet...')
-                : comments.map((c, idx, arr) => {
-                    if (c.kind === 'more')
-                      return m(LoadMoreComments, { parentArray: arr, moreComments: c.data })
-                    return m(PostComment, { comment: c.data })
-                  })
+                : comments.map(c =>
+                    c.kind === 'more'
+                      ? m(LoadMoreComments, { parentArray: comments, moreComments: c.data })
+                      : m(PostComment, { comment: c.data })
+                  )
             )
           ])
   }
@@ -353,6 +348,7 @@ const PostComment = ({ attrs: { comment } }) => {
       : null
   return {
     view: ({ attrs: { comment: cmt } }) => {
+      // create dates in view to easily handle refreshing comment (ref changes)
       const createdAt = new Date(cmt.created_utc * 1000)
       const editedAt = cmt.edited && new Date(cmt.edited * 1000)
       const borderColor = state.borders[cmt.depth % state.borders.length]
@@ -576,16 +572,17 @@ const confs = {
     cmtSel: '.guestbook.comments',
     isMatch: () => !!util.id('showmedia_about_media'),
     getPosts: async () => {
-      const epNum = util
+      const epNumMatch = util
         .q('#showmedia_about_media h4:last-child')
         .textContent.split(',')
         .pop()
-        .match(/[0-9]+/)[0]
+        .match(/[0-9]+/)
+      const epNum = epNumMatch && epNumMatch[0]
       const epRegex = new RegExp(`episode ${epNum}([^0-9]|$)`, 'i')
       const posts = await api.searchPosts(
         util.id('showmedia_about_media').textContent.replace(/\s+/g, ' ') + ' discussion'
       )
-      return posts.filter(post => epRegex.test(post.title))
+      return epNum ? posts.filter(post => epRegex.test(post.title)) : posts
     }
   }
 }
