@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.3
+// @version     0.1.4
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
@@ -108,8 +108,8 @@ z.helper({
 
 const api = {
   getVideoIdFromUrl: url => {
-    const match = url.match(/v=(?<id>[^&]+)/i)
-    return match ? match.groups.id : false
+    const match = url.match(/v=([^&]+)/i)
+    return match ? match[1] : false
   },
   searchPosts: async (query, sort = true) => {
     const results = await m
