@@ -2,13 +2,13 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.4
+// @version     0.1.5
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
-// @require     https://unpkg.com/mithril@2.0.0-rc.6
-// @require     https://unpkg.com/zaftig@0.6.2
+// @require     https://unpkg.com/mithril@2.0.4
+// @require     https://unpkg.com/zaftig@0.7.3
 // ==/UserScript==
 /* globals m z waitForElems waitForUrl */
 
@@ -474,7 +474,7 @@ const PostChoices = () => {
             },
             [
               m('span' + z`fw bold`, '/r/', post.subreddit),
-              m('span' + z`ellipsis`, post.title),
+              m('span' + z`ellipsis`, m.trust(post.title)),
               m('span', '\uD83D\uDCAC ', post.num_comments)
             ]
           )
@@ -513,7 +513,7 @@ const PostInfo = {
       m(
         'a' + z`td none`,
         { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' },
-        post.title
+        m.trust(post.title)
       )
     ])
 }
