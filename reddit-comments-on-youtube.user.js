@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.5
+// @version     0.1.6
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
@@ -63,6 +63,7 @@ const styles = {
       :last-child { mb 0 }
     }
     p { m 0.75em 0 }
+    ol,ul { pl 2.5em  }
   `,
   postCommentRefresh: z`
     background #ddd
@@ -126,7 +127,7 @@ const api = {
           return {
             id: data.id,
             subreddit: data.subreddit,
-            title: data.title,
+            title: util.decodeHTML(data.title),
             score: data.score,
             gilded: data.gilded,
             permalink: data.permalink,
@@ -155,12 +156,12 @@ const api = {
 const util = {
   id: id => document.getElementById(id),
   q: (sel, ctx = document) => ctx.querySelector(sel),
-  htmlDecode: input => {
-    const e = document.createElement('div')
+  decodeHTML: input => {
+    const e = document.createElement('textarea')
     e.innerHTML = input
-    return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue
+    return e.value
   },
-  processRedditHtml: html => util.htmlDecode(html).replace(/<a/gi, '<a target="_blank"'),
+  processRedditHTML: html => util.decodeHTML(html).replace(/<a/gi, '<a target="_blank"'),
   pluralize: (word, count) => (count !== 1 ? word + 's' : word),
   prettyTime(d) {
     // This function was copied, and slightly adapted from John Resig's website: https://johnresig.com/files/pretty.js
@@ -310,13 +311,13 @@ const PostComment = ({ attrs: { comment } }) => {
   let isRefreshing = false
   let refreshIndDom
   // cache comment html for performance
-  const commentHtml = m.trust(util.processRedditHtml(comment.body_html))
+  const commentHtml = m.trust(util.processRedditHTML(comment.body_html))
   const setDepth = (comment, depth) => {
     if (!comment) return
     comment.depth = depth
     if (comment.replies) comment.replies.data.children.map(c => setDepth(c.data, depth + 1))
   }
-  const sep = () => m.trust(' &#x2022; ')
+  const sep = ' • '
   const refreshComment = cmt => {
     isRefreshing = true
     api.getComments(state.openPost, cmt).then(([newCmt]) => {
@@ -383,21 +384,21 @@ const PostComment = ({ attrs: { comment } }) => {
               },
               cmt.author
             ),
-            sep(),
+            sep,
             cmt.score_hidden
               ? m('em' + z`c $score-hidden-color`, 'Score Hidden')
               : m(
                   'span.score' + z`fw bold;c $${cmt.score >= 1 ? 'good' : 'bad'}-score-color`,
                   cmt.score
                 ),
-            sep(),
+            sep,
             util.prettyTime(createdAt) || createdAt.toLocaleString(),
             editedAt
               ? [sep(), ' edited ', util.prettyTime(editedAt) || editedAt.toLocaleString()]
               : '',
-            sep(),
+            sep,
             m('a[target=_blank]', { href: API_URL + cmt.permalink }, 'permalink'),
-            sep(),
+            sep,
             m(
               'span.post-comment-refresh[title=Refresh Comment Thread]' + styles.postCommentRefresh,
               {
@@ -474,7 +475,7 @@ const PostChoices = () => {
             },
             [
               m('span' + z`fw bold`, '/r/', post.subreddit),
-              m('span' + z`ellipsis`, m.trust(post.title)),
+              m('span' + z`ellipsis`, post.title),
               m('span', '\uD83D\uDCAC ', post.num_comments)
             ]
           )
@@ -513,7 +514,7 @@ const PostInfo = {
       m(
         'a' + z`td none`,
         { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' },
-        m.trust(post.title)
+        post.title
       )
     ])
 }
