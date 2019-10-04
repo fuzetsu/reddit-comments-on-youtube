@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.6
+// @version     0.1.7
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @grant       none
@@ -394,7 +394,7 @@ const PostComment = ({ attrs: { comment } }) => {
             sep,
             util.prettyTime(createdAt) || createdAt.toLocaleString(),
             editedAt
-              ? [sep(), ' edited ', util.prettyTime(editedAt) || editedAt.toLocaleString()]
+              ? [sep, ' edited ', util.prettyTime(editedAt) || editedAt.toLocaleString()]
               : '',
             sep,
             m('a[target=_blank]', { href: API_URL + cmt.permalink }, 'permalink'),
