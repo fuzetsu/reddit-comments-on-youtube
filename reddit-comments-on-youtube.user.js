@@ -2,9 +2,10 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.1.7
+// @version     0.2.0
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
+// @match       *://www.9anime.ru/watch/*/*
 // @grant       none
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@2.0.4
@@ -539,14 +540,23 @@ const App = ({ attrs: { switchComments, getPosts } }) => {
   return {
     view() {
       if (state.loading) return m('div' + z`ta center`, partials.loadingSpinner())
-      return m('div' + z`fs medium;pr $watch-sidebar-width; a { c $link-color }`, [
-        m(PostChoices, { posts: state.posts, reloadPosts }),
-        state.posts.length === 0 &&
-          m('div' + z`ta center`, "Sorry, didn't find any reddit posts..."),
-        state.openPost
-          ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
-          : ''
-      ])
+      return m(
+        'div' +
+          z`
+          fs medium
+          pr $watch-sidebar-width
+          a { c $link-color }
+          color ${state.night ? 'white' : 'black'}
+        `,
+        [
+          m(PostChoices, { posts: state.posts, reloadPosts }),
+          state.posts.length === 0 &&
+            m('div' + z`ta center`, "Sorry, didn't find any reddit posts..."),
+          state.openPost
+            ? [m(PostInfo, { post: state.openPost }), m(PostComments, { post: state.openPost })]
+            : ''
+        ]
+      )
     }
   }
 }
@@ -556,8 +566,13 @@ const appId = 'rcoy'
 
 const mode = (() => {
   const host = location.hostname
-  return host.includes('youtube') ? 'youtube' : host.includes('crunchyroll') ? 'crunchyroll' : null
+  return ['youtube', 'youtube', '9anime'].find(x => host.includes(x))
 })()
+
+const filterForEp = (posts, ep) => {
+  const epRegex = new RegExp(`\\bepisode ${ep}\\b`, 'i')
+  return posts.filter(post => epRegex.test(post.title))
+}
 
 const confs = {
   youtube: {
@@ -579,16 +594,27 @@ const confs = {
         .pop()
         .match(/[0-9]+/)
       const epNum = epNumMatch && epNumMatch[0]
-      const epRegex = new RegExp(`episode ${epNum}([^0-9]|$)`, 'i')
       const posts = await api.searchPosts(
         util.id('showmedia_about_media').textContent.replace(/\s+/g, ' ') + ' discussion'
       )
-      return epNum ? posts.filter(post => epRegex.test(post.title)) : posts
+      return epNum ? filterForEp(posts, epNum) : posts
+    }
+  },
+  '9anime': {
+    night: true,
+    cmtSel: '#disqus_thread',
+    isMatch: () => !!util.id('player'),
+    getPosts: async () => {
+      const title = util.q('h2.title').dataset.jtitle
+      const ep = Number(util.q('ul.episodes a.active').textContent)
+      const posts = await api.searchPosts(`${title} episode ${ep} discussion`)
+      return filterForEp(posts, ep)
     }
   }
 }
 
 const conf = confs[mode]
+state.night = !!conf.night
 
 const switchCommentsButton = switchComments =>
   m(
@@ -602,21 +628,21 @@ const switchCommentsButton = switchComments =>
 let waitObj
 waitForUrl(
   () => true,
-  () =>
+  () => {
+    // clean up old instance
+    if (waitObj) {
+      waitObj.stop()
+      waitObj = null
+    }
+    state.openPost = null
+    const oldInstance = util.id(appId)
+    if (oldInstance) {
+      m.mount(oldInstance, null)
+      oldInstance.remove()
+      const oldSwitchBtn = util.id(switchBtnId)
+      if (oldSwitchBtn) oldSwitchBtn.remove()
+    }
     setTimeout(() => {
-      // clean up old instance
-      if (waitObj) {
-        waitObj.stop()
-        waitObj = null
-      }
-      state.openPost = null
-      const oldInstance = util.id(appId)
-      if (oldInstance) {
-        m.mount(oldInstance, null)
-        oldInstance.remove()
-        const oldSwitchBtn = util.id(switchBtnId)
-        if (oldSwitchBtn) oldSwitchBtn.remove()
-      }
       if (!conf.isMatch()) return
       // wait for mount area
       waitObj = waitForElems({
@@ -647,4 +673,5 @@ waitForUrl(
         }
       })
     }, 2000)
+  }
 )
