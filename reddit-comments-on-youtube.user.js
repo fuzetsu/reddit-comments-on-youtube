@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.1
+// @version     0.2.2
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @match       *://www.9anime.ru/*
@@ -57,6 +57,7 @@ const styles = {
     $score-hidden-color #999
   `,
   fixComment: z`
+    word-break break-word
     blockquote {
       pl 8
       bl 4px solid #a2a2a2
