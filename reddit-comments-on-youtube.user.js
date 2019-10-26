@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.2
+// @version     0.2.3
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @match       *://www.9anime.ru/*
@@ -567,7 +567,7 @@ const appId = 'rcoy'
 
 const mode = (() => {
   const host = location.hostname
-  return ['youtube', 'youtube', '9anime'].find(x => host.includes(x))
+  return ['youtube', 'crunchyroll', '9anime'].find(x => host.includes(x))
 })()
 
 const filterForEp = (posts, ep) => {
