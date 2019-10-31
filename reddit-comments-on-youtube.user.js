@@ -2,10 +2,10 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.3
+// @version     0.2.4
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
-// @match       *://www.9anime.ru/*
+// @match       *://*.9anime.ru/*
 // @grant       none
 // @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@2.0.4
