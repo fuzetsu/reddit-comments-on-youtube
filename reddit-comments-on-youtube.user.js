@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.4
+// @version     0.2.5
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @match       *://*.9anime.ru/*
@@ -626,11 +626,12 @@ const switchCommentsButton = switchComments =>
     'Switch Comments'
   )
 
-let waitObj
+let waitObj, delayId
 waitForUrl(
   () => true,
   () => {
     // clean up old instance
+    clearTimeout(delayId)
     if (waitObj) {
       waitObj.stop()
       waitObj = null
@@ -643,7 +644,7 @@ waitForUrl(
       const oldSwitchBtn = util.id(switchBtnId)
       if (oldSwitchBtn) oldSwitchBtn.remove()
     }
-    setTimeout(() => {
+    delayId = setTimeout(() => {
       if (!conf.isMatch()) return
       // wait for mount area
       waitObj = waitForElems({
