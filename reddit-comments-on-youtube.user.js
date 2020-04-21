@@ -141,8 +141,8 @@ const api = {
     if (sort) results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1))
     return results
   },
-  getComments(post, comment) {
-    return m
+  getComments: (post, comment) =>
+    m
       .request({
         method: 'get',
         background: true,
@@ -151,8 +151,32 @@ const api = {
           comment: comment && comment.id
         }
       })
-      .then(data => data[1].data.children)
-  }
+      .then(data => data[1].data.children),
+  getMoreComments: (postName, ids) =>
+    m
+      .request({
+        method: 'GET',
+        url: `${API_URL}/api/morechildren.json`,
+        data: {
+          api_type: 'json',
+          children: ids.join(','),
+          link_id: postName
+        }
+      })
+      .then(data => {
+        if (
+          !data ||
+          !data.json ||
+          !data.json.data ||
+          !data.json.data.things ||
+          data.json.data.things.length <= 0
+        ) {
+          console.log('no comments to load :(', data && data.json && data.json.errors)
+          return []
+        }
+        return data.json.data.things
+      })
+      .catch(err => console.log(err))
 }
 
 const util = {
@@ -239,31 +263,11 @@ const LoadMoreComments = () => {
             e.preventDefault()
             loading = true
             const childrenToLoad = mc.children.splice(0, COMMENT_LOAD_NUM)
-            m.request({
-              method: 'GET',
-              url: API_URL + '/api/morechildren.json',
-              params: {
-                api_type: 'json',
-                children: childrenToLoad.join(','),
-                link_id: state.openPost.name
-              }
-            }).then(
+            api.getMoreComments(state.openPost.name, childrenToLoad).then(
               data => {
                 loading = false
+                if (!data.length) return
                 console.log('more comments => ', data)
-                if (
-                  !data ||
-                  !data.json ||
-                  !data.json.data ||
-                  !data.json.data.things ||
-                  data.json.data.things.length <= 0
-                ) {
-                  console.log(
-                    'didnt get more comments to load :(',
-                    data && data.json && data.json.errors
-                  )
-                  return
-                }
                 // detach load more button
                 let loadMoreButton
                 args.parentArray.some((c, idx) => {
@@ -274,7 +278,7 @@ const LoadMoreComments = () => {
                 })
                 // add in new comments
                 const lastCommentAtDepth = {}
-                data.json.data.things.forEach(cmt => {
+                data.forEach(cmt => {
                   if (cmt.data.depth === mc.depth) {
                     args.parentArray.push(cmt)
                   } else {
