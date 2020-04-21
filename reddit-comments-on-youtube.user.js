@@ -146,7 +146,7 @@ const api = {
       .request({
         method: 'get',
         background: true,
-        url: `${API_URL}/${post.permalink}.json`,
+        url: API_URL + post.permalink + '.json',
         params: {
           comment: comment && comment.id
         }
