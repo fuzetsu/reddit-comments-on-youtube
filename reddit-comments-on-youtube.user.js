@@ -85,7 +85,7 @@ const styles = {
   postCommentRefreshContent: z`
     display inline-block
     ta center
-    line-height 16
+    line-height 16px
   `
 }
 
