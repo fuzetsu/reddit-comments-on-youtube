@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.6
+// @version     0.2.7
 // @match       *://*.youtube.com/*
 // @match       *://*.crunchyroll.com/*
 // @match       *://*.9anime.ru/*
