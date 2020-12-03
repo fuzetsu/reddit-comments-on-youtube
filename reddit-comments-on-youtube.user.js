@@ -161,7 +161,7 @@ const api = {
       .request({
         method: 'GET',
         url: `${API_URL}/api/morechildren.json`,
-        data: {
+        params: {
           api_type: 'json',
           children: ids.join(','),
           link_id: postName
