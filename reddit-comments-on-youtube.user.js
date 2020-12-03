@@ -47,7 +47,9 @@ const state = {
 
 const styles = {
   root: z`
-    $link-color #1b3e92
+    $text-primary var(--yt-spec-text-primary, black)
+    $text-secondary var(--yt-spec-text-secondary, #666)
+    $link-color var(--yt-spec-call-to-action, #1b3e92)
     $author-color #215854
     $op-color #1a1abd
     $mod-color #109610
@@ -57,6 +59,7 @@ const styles = {
     $score-hidden-color #999
   `,
   fixComment: z`
+    color $text-primary
     word-break break-word
     blockquote {
       pl 8
@@ -82,6 +85,7 @@ const styles = {
   postCommentRefreshContent: z`
     display inline-block
     ta center
+    line-height 16px
   `
 }
 
@@ -364,7 +368,7 @@ const PostComment = ({ attrs: { comment } }) => {
           z`p 0 0 0 17; border-left 3px solid #555;blc ${borderColor}` +
           z`blc ${borderColor}; :not(:last-child) { mb 20 }`,
         [
-          m('div.post-comment-info' + z`fs 90%;c #666;mb 5`, [
+          m('div.post-comment-info' + z`fs 90%;c $text-secondary;mb 5`, [
             m(
               'strong.post-comment-collapse' + z`ff monospace; cursor pointer; user-select none`,
               {
@@ -432,7 +436,10 @@ const PostComment = ({ attrs: { comment } }) => {
                     'div.post-comment-replies',
                     cmt.replies.data.children.map((c, _, arr) => {
                       if (c.kind === 'more')
-                        return m(LoadMoreComments, { parentArray: arr, moreComments: c.data })
+                        return m(LoadMoreComments, {
+                          parentArray: arr,
+                          moreComments: c.data
+                        })
                       return m(PostComment, { comment: c.data })
                     })
                   )
@@ -471,7 +478,8 @@ const PostChoices = () => {
               gtc auto 1fr minmax(55px, auto)
               grid-column-gap 5px
               m 5; ml 0; p 3
-              border 1px solid black
+              color $text-primary
+              border 1px solid $text-primary
               cursor pointer
             `,
             {
@@ -490,7 +498,8 @@ const PostChoices = () => {
           'div.reload-posts' +
             z`
             d flex;jc center;ai center
-            border 1px solid black
+            color $text-primary
+            border 1px solid $text-primary
             cursor pointer
             m 5;ml 0; p 3
           `,
@@ -503,7 +512,7 @@ const PostChoices = () => {
 
 const PostInfo = {
   view: ({ attrs: { post } }) =>
-    m('div.post-info' + z`fs 150%;mb 10`, [
+    m('div.post-info' + z`fs 150%; mb 10; color $text-primary`, [
       m(
         'span' +
           z`
@@ -515,11 +524,15 @@ const PostInfo = {
         post.score
       ),
       ' [ ',
-      m('span' + z`fw bold`, '/r/', post.subreddit),
+      m('span' + z`fw bold;`, '/r/', post.subreddit),
       ' ] ',
       m(
         'a' + z`td none`,
-        { href: API_URL + post.permalink, target: '_blank', rel: 'noopener noreferrer' },
+        {
+          href: API_URL + post.permalink,
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        },
         post.title
       )
     ])
