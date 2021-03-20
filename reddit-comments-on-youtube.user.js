@@ -8,8 +8,8 @@
 // @match       https://www14.9anime.to/watch/*
 // @grant       none
 // @require     https://cdn.statically.io/gh/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
-// @require     https://unpkg.com/mithril@2.0.4
-// @require     https://unpkg.com/zaftig@0.7.3
+// @require     https://unpkg.com/mithril@2.0.4/mithril.min.js
+// @require     https://unpkg.com/zaftig@0.10.0/dist/zaftig.es5.min.js
 // ==/UserScript==
 /* globals m z waitForElems waitForUrl */
 
