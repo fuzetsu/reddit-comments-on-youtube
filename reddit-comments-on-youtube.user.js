@@ -2,12 +2,12 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.8
-// @match       *://*.youtube.com/*
-// @match       *://*.crunchyroll.com/*
-// @match       *://*.9anime.ru/*
+// @version     0.2.9
+// @match       https://*.youtube.com/*
+// @match       https://*.crunchyroll.com/*
+// @match       https://www14.9anime.to/watch/*
 // @grant       none
-// @require     https://rawgit.com/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
+// @require     https://cdn.statically.io/gh/fuzetsu/userscripts/477063e939b9658b64d2f91878da20a7f831d98b/wait-for-elements/wait-for-elements.js
 // @require     https://unpkg.com/mithril@2.0.4
 // @require     https://unpkg.com/zaftig@0.7.3
 // ==/UserScript==
@@ -622,8 +622,13 @@ const confs = {
     night: true,
     cmtSel: '#disqus_thread',
     isMatch: () => !!util.id('player'),
+    theme: z.style`
+      $text-primary white
+      $text-secondary #eee
+      $link-color #927daf
+    `,
     getPosts: async () => {
-      const title = util.q('h2.title').dataset.jtitle
+      const title = util.q('h1.title').dataset.jtitle
       const ep = Number(util.q('ul.episodes a.active').textContent)
       const posts = await api.searchPosts(`${title} episode ${ep} discussion`)
       return filterForEp(posts, ep)
@@ -688,7 +693,10 @@ waitForUrl(
           }
           m.render(switchBtnArea, switchCommentsButton(switchComments))
           // mount main app
-          m.mount(container, { view: () => m(App, { switchComments, getPosts: conf.getPosts }) })
+          m.mount(container, {
+            view: () =>
+              m('', { style: conf.theme }, m(App, { switchComments, getPosts: conf.getPosts }))
+          })
         }
       })
     }, 2000)
