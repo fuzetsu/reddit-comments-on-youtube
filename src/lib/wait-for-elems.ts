@@ -8,7 +8,13 @@ interface Props {
   mutationConfig?: MutationObserverInit
 }
 
-export const waitForElems = ({ selector, stopWaiting = false, onmatch, container }: Props) => {
+export const waitForElems = ({
+  selector,
+  onmatch,
+  stopWaiting = false,
+  container = document.body,
+  mutationConfig
+}: Props) => {
   let lastCall = 0
   let id = -1
   const seen = new WeakSet<Element>()
@@ -34,7 +40,11 @@ export const waitForElems = ({ selector, stopWaiting = false, onmatch, container
   }
 
   const observer = new MutationObserver(check)
-  observer.observe(container || document.body, { subtree: true, attributes: true })
+  observer.observe(container, {
+    subtree: true,
+    attributes: true,
+    ...mutationConfig
+  })
 
   const stop = () => observer.disconnect()
   return { stop }
