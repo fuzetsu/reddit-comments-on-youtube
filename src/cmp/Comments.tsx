@@ -2,6 +2,6 @@ interface Props {
   comments: Comment[]
 }
 
-export const Comments = (props: Props) => {
-  return null
+export const Comments = ({ comments }: Props) => {
+  return <pre>{JSON.stringify(comments)}</pre>
 }
