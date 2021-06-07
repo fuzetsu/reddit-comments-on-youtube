@@ -51,3 +51,15 @@ export const log = <T>(first: T, ...rest: any[]) => (
   console.log(...namePart, first, ...rest), first
 )
 export const logError = (...rest: any[]) => console.log(...namePart, ...rest)
+
+export const subURI = (template: string, subs: { [key: string]: string }) =>
+  Object.entries(subs).reduce(
+    (acc, [k, v]) => acc.replace(':' + k, encodeURIComponent(v)),
+    template
+  )
+
+export const buildQuery = (params: { [key: string]: string | undefined }) => {
+  const data = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => v && data.append(k, v))
+  return data.toString()
+}

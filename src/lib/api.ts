@@ -1,5 +1,5 @@
 import { API_URL } from '../constants'
-import { decodeHTML, logError } from './util'
+import { buildQuery, decodeHTML, logError } from './util'
 
 interface PostPayload {
   data: {
@@ -30,10 +30,10 @@ interface Comment {
   id: string
 }
 
+const getJSON = (url: string) => fetch(url).then(res => res.json())
+
 export const searchPosts = async (query: string, sort = true) => {
-  const payload: PostPayload = await fetch(
-    `${API_URL}/search.json?q=${encodeURIComponent(query)}`
-  ).then(res => res.json())
+  const payload: PostPayload = await getJSON(API_URL + '/search.json' + buildQuery({ query }))
 
   const results = payload.data.children.map(({ data: post }) => ({
     ...post,
@@ -43,20 +43,20 @@ export const searchPosts = async (query: string, sort = true) => {
   return sort ? results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1)) : results
 }
 
-export const getComments = async (post: Post, parentComment: Comment) => {
-  const payload: CommentPayload = await fetch(
-    `${API_URL}${post.permalink}.json?comment=${encodeURIComponent(parentComment.id)}`
-  ).then(res => res.json())
+export const getComments = async (post: Post, parentComment?: Comment) => {
+  const payload: CommentPayload = await getJSON(
+    API_URL + post.permalink + '.json' + buildQuery({ comment: parentComment?.id })
+  )
 
   return payload[1].data.children
 }
 
 export const getMoreComments = async (postName: string, ids: string[]) => {
-  const payload: MoreCommentsPayload = await fetch(
-    `${API_URL}/api/morechildren.json?api_type=json&link_id=${encodeURIComponent(
-      postName
-    )}&children=${ids.join(',')}`
-  ).then(res => res.json())
+  const payload: MoreCommentsPayload = await getJSON(
+    API_URL +
+      '/api/morechildren.json' +
+      buildQuery({ api_type: 'json', link_id: postName, chilren: ids.join(',') })
+  )
 
   if ('errors' in payload.data.json) {
     logError('no comments to load', payload.data.json.errors)
