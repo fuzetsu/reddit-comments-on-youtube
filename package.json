@@ -1,0 +1,31 @@
+{
+  "name": "reddit-comments-on-youtube",
+  "version": "1.0.0",
+  "description": "Userscript that embeds reddit comments related to a youtube/crunchyroll video",
+  "main": "reddit-comments-on-youtube.user.js",
+  "repository": "https://github.com/fuzetsu/reddit-comments-on-youtube.git",
+  "author": "Daniel Loomer <fuzetsu@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --minify --outfile=dist/bundle.js && npm run dist",
+    "dist": "cat ./meta.js ./dist/bundle.js > reddit-comments-on-youtube.user.js",
+    "dev": "concurrently --raw --kill-others npm:watch:*",
+    "watch:build": "esbuild src/index.ts --bundle --watch --outfile=dist/bundle.js",
+    "watch:ts": "tsc --noEmit --watch",
+    "watch:dist": "chokidar \"./dist/*\" \"./meta.js\" -c \"npm run dist\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "chokidar-cli": "^2.1.0",
+    "concurrently": "^6.2.0",
+    "esbuild": "^0.12.6",
+    "eslint": "^7.28.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "preact": "^10.5.13",
+    "zaftig": "^0.10.0"
+  }
+}
