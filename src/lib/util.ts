@@ -2,9 +2,10 @@ import { SCRIPT_NAME } from '../constants'
 
 export const getById = (id: string) => document.getElementById(id)
 
-export const q = (sel: string, ctx: Element | Document = document) => ctx.querySelector(sel)
-export const qq = (sel: string, ctx: Element | Document = document) =>
-  Array.from(ctx.querySelectorAll(sel))
+export const q = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
+  ctx.querySelector<T>(sel)
+export const qq = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
+  Array.from(ctx.querySelectorAll<T>(sel))
 
 export const decodeHTML = (input: string) => {
   const e = document.createElement('textarea')
@@ -38,7 +39,12 @@ export const prettyTime = (date: string | Date) => {
   )
 }
 
-export const anim = (element: Element, callback: EventListener, type = 'end', unbind = true) => {
+export const anim = (
+  element: HTMLElement,
+  callback: EventListener,
+  type = 'end',
+  unbind = true
+) => {
   const handler: EventListener = e => {
     if (unbind) element.removeEventListener('animation' + type, handler)
     callback(e)
@@ -46,7 +52,7 @@ export const anim = (element: Element, callback: EventListener, type = 'end', un
   element.addEventListener('animation' + type, handler)
 }
 
-const namePart = [`%c${SCRIPT_NAME}:`, 'color:indigo']
+const namePart = [`%c${SCRIPT_NAME}:`, 'color:#ddd']
 export const log = <T>(first: T, ...rest: any[]) => (
   console.log(...namePart, first, ...rest), first
 )
@@ -62,4 +68,23 @@ export const buildQuery = (params: { [key: string]: string | undefined }) => {
   const data = new URLSearchParams()
   Object.entries(params).forEach(([k, v]) => v && data.append(k, v))
   return data.toString()
+}
+
+export const throttle = <T extends (...args: any) => void>(ms: number, cb: T) => {
+  let lastCall = 0
+  let id = -1
+
+  const throttled = (...args: Parameters<T>) => {
+    clearTimeout(id)
+    const now = Date.now()
+    const delta = now - lastCall
+    if (delta < ms) {
+      id = setTimeout(throttled, delta - ms + 5)
+      return
+    }
+    lastCall = now
+    cb(...(args as any))
+  }
+
+  return throttled
 }

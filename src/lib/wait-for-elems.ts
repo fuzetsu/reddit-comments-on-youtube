@@ -1,8 +1,8 @@
-import { qq } from './util'
+import { qq, throttle } from './util'
 
 interface Props {
   selector: string
-  onmatch(elem: Element): void
+  onmatch(elem: HTMLElement): void
   stopWaiting?: boolean
   container?: Element
   mutationConfig?: MutationObserverInit
@@ -15,20 +15,9 @@ export const waitForElems = ({
   container = document.body,
   mutationConfig
 }: Props) => {
-  let lastCall = 0
-  let id = -1
   const seen = new WeakSet<Element>()
 
   const check = () => {
-    clearTimeout(id)
-    const now = Date.now()
-    const delta = now - lastCall
-    if (delta > 300) {
-      id = setTimeout(check, delta + 5)
-      return
-    }
-    lastCall = now
-
     const found = qq(selector).filter(elem => !seen.has(elem))
     if (found.length > 0) {
       if (stopWaiting) stop()
@@ -39,13 +28,16 @@ export const waitForElems = ({
     }
   }
 
-  const observer = new MutationObserver(check)
-  observer.observe(container, {
-    subtree: true,
-    attributes: true,
-    ...mutationConfig
-  })
-
+  const observer = new MutationObserver(throttle(300, check))
+  const start = () =>
+    observer.observe(container, {
+      subtree: true,
+      childList: true,
+      ...mutationConfig
+    })
   const stop = () => observer.disconnect()
-  return { stop }
+
+  start()
+
+  return { start, stop }
 }
