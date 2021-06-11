@@ -21,7 +21,7 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
       {list.map(post => (
         <button
           className={styles.item}
-          style={{ borderBottomColor: post === selected ? '#777' : '' }}
+          style={{ borderBottomColor: post === selected ? 'var(--button-underline)' : '' }}
           onClick={() => onSelect(post)}
         >
           <div className={styles.numComments}>{post.num_comments}</div>
@@ -53,7 +53,6 @@ const styles = {
   toggleEmpty: buttonBase.class,
   item: buttonBase.concat(z`
     text-align left
-  
     display grid
     grid-template-columns minmax(min-content, 1fr) 2fr 7fr
     > div {
@@ -61,6 +60,7 @@ const styles = {
       overflow hidden
       text-overflow ellipsis
       white-space nowrap
+      background $button-bg
     }
   `).class,
   numComments: z`
