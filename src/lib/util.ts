@@ -18,13 +18,18 @@ export const processRedditHTML = (html: string) =>
 
 export const pluralize = (word: string, count: number) => (count !== 1 ? word + 's' : word)
 
-export const prettyTime = (date: string | Date) => {
+export const prettyTime = (date: string | Date | number, fallback?: 'date' | 'date-time') => {
   // This function was copied, and slightly adapted from John Resig's website: https://johnresig.com/files/pretty.js
   date = new Date(date)
   const diff = (Date.now() - date.getTime()) / 1000
   const day_diff = Math.floor(diff / 86400)
 
-  if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) return
+  if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) {
+    if (fallback === 'date') return date.toLocaleString()
+    if (fallback === 'date-time')
+      return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    return
+  }
 
   return (
     (day_diff == 0 &&
