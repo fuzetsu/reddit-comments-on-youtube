@@ -1,9 +1,7 @@
 import { render } from 'preact'
-import z from 'zaftig'
 import { App } from './cmp/App'
 import { SwitchComments } from './cmp/SwitchComments'
 import { confs, confNames } from './conf'
-import { Post } from './lib/api'
 import { log, logError } from './lib/util'
 import { waitForElems } from './lib/wait-for-elems'
 import { waitForUrl } from './lib/wait-for-url'
@@ -27,44 +25,30 @@ if (!mode) {
         log('but its not a match...')
         return
       }
-      log('its a match! looking for reddit posts')
+      log('its a match! looking for comments area')
 
-      let stale = false
-      let cleanup: (() => void)[] = []
+      const cleanup: (() => void)[] = []
 
-      conf.getPosts().then(posts => {
-        if (stale) {
-          log('loaded too late, url already changed...')
-          return
+      const wait = waitForElems({
+        selector: conf.commentSelector,
+        stopWaiting: true,
+        onmatch: comments => {
+          log('comments area found', comments)
+          cleanup.push(mount(conf, comments))
         }
-        if (!posts.length) {
-          log('loaded, but found no posts...', posts)
-          return
-        }
-        log('loaded, found', posts)
-
-        const wait = waitForElems({
-          selector: conf.commentSelector,
-          stopWaiting: true,
-          onmatch: comments => {
-            log('comments found', comments)
-            cleanup.push(mount(conf, posts, comments))
-          }
-        })
-
-        cleanup.push(wait.stop)
       })
+
+      cleanup.push(wait.stop)
 
       return () => {
         log('leaving page cleaning up', cleanup)
-        stale = true
         cleanup.forEach(fn => fn())
       }
     }
   })
 }
 
-const mount = (conf: Conf, posts: Post[], comments: HTMLElement) => {
+const mount = (conf: Conf, comments: HTMLElement) => {
   // hide comments
   comments.style.display = 'none'
 
@@ -87,7 +71,7 @@ const mount = (conf: Conf, posts: Post[], comments: HTMLElement) => {
   const appContainer = elem()
   main.insertBefore(appContainer, comments)
 
-  render(<App posts={posts} />, appContainer.firstElementChild || appContainer)
+  render(<App conf={conf} />, appContainer.firstElementChild || appContainer)
 
   // render switch comments
   const switchContainer = elem()

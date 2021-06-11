@@ -1,18 +1,34 @@
 import { Post } from '../lib/api'
 import { PostSelect } from './PostSelect'
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import { PostComments } from './PostComments'
+import { Conf } from '../type'
 
 interface Props {
-  posts: Post[]
+  conf: Conf
 }
 
-export const App = ({ posts }: Props) => {
-  const [post, setPost] = useState(posts[0])
+export const App = ({ conf }: Props) => {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [selected, setSelected] = useState<Post | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    setLoading(true)
+    conf.getPosts().then(posts => {
+      setLoading(false)
+      setPosts(posts)
+      setSelected(posts[0])
+    })
+  }, [])
+
+  if (loading) return <div>Loading posts...</div>
+  if (!selected) return <div>Something went wrong :(</div>
+
   return (
     <section>
-      <PostSelect posts={posts} selected={post} onSelect={setPost} />
-      <PostComments post={post} />
+      <PostSelect posts={posts} selected={selected} onSelect={setSelected} />
+      <PostComments post={selected} />
     </section>
   )
 }
