@@ -535,7 +535,7 @@ ${r4}}
       className: styles.container
     }, list.map((post) => /* @__PURE__ */ a("button", {
       className: styles.item,
-      style: { borderBottomColor: post === selected ? "#777" : "" },
+      style: { borderBottomColor: post === selected ? "var(--button-underline)" : "" },
       onClick: () => onSelect(post)
     }, /* @__PURE__ */ a("div", {
       className: styles.numComments
@@ -561,7 +561,6 @@ ${r4}}
     toggleEmpty: buttonBase.class,
     item: buttonBase.concat(zaftig_min_default`
     text-align left
-  
     display grid
     grid-template-columns minmax(min-content, 1fr) 2fr 7fr
     > div {
@@ -569,6 +568,7 @@ ${r4}}
       overflow hidden
       text-overflow ellipsis
       white-space nowrap
+      background $button-bg
     }
   `).class,
     numComments: zaftig_min_default`
@@ -592,6 +592,19 @@ ${r4}}
     const e4 = document.createElement("textarea");
     e4.innerHTML = input;
     return e4.value;
+  };
+  var prettyTime = (date, fallback) => {
+    date = new Date(date);
+    const diff = (Date.now() - date.getTime()) / 1e3;
+    const day_diff = Math.floor(diff / 86400);
+    if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31) {
+      if (fallback === "date")
+        return date.toLocaleString();
+      if (fallback === "date-time")
+        return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+      return;
+    }
+    return day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
   };
   var namePart = [`%c${SCRIPT_NAME}:`, "color:#ddd"];
   var log = (first, ...rest) => (console.log(...namePart, first, ...rest), first);
@@ -664,7 +677,7 @@ ${r4}}
     }, [post.name]);
     const update = useUpdate(things || []);
     return /* @__PURE__ */ a("section", {
-      className: zaftig_min_default`mt 10`.class
+      className: zaftig_min_default`margin-top 20;color $text-primary`.class
     }, !things ? /* @__PURE__ */ a("div", null, "Loading ", post.name, "...") : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
       key: thing.data.id,
       thing,
@@ -688,9 +701,11 @@ ${r4}}
   }
   var LoadMoreButton = ({ thing, update, post }) => {
     const [loading, setLoading] = l2(false);
-    return /* @__PURE__ */ a("button", {
+    return /* @__PURE__ */ a("div", {
+      className: styles2.comment
+    }, /* @__PURE__ */ a("button", {
       disabled: loading,
-      className: zaftig_min_default`mt 10`.class,
+      className: zaftig_min_default`padding 5 10`.class,
       onClick: async () => {
         setLoading(true);
         const results = await getMoreComments(post.name, thing.data.children);
@@ -700,7 +715,7 @@ ${r4}}
             parent.splice(currentPosition, 1, ...results);
         });
       }
-    }, loading ? "Loading" : "Load", " ", thing.data.count, " more comments");
+    }, loading ? "Loading" : "Load", " ", thing.data.count, " more comments"));
   };
   var PostComment = ({ thing, post }) => {
     const { ups, author, body_html, replies, collapsed } = thing.data;
@@ -710,26 +725,21 @@ ${r4}}
       thing.data.collapsed = !collapsed;
       redraw();
     };
-    const collapseButton = /* @__PURE__ */ a("code", {
-      role: "button",
-      "aria-label": "toggle collapse comment",
-      tabIndex: 0,
-      onKeyPress: (e4) => {
-        if (e4.key === "Enter" || e4.key === " ") {
-          e4.preventDefault();
-          toggle();
-        }
-      },
-      className: styles2.collapse,
-      onClick: toggle
-    }, "[", collapsed ? "+" : "-", "]");
     const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);
     return /* @__PURE__ */ a("div", {
       className: styles2.comment
     }, /* @__PURE__ */ a("div", {
+      className: styles2.border,
+      onClick: toggle
+    }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
       className: styles2.author,
       style: { marginBottom: collapsed ? "" : "5px" }
-    }, collapseButton, " ", author, " ", ups), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
+    }, /* @__PURE__ */ a("span", {
+      className: styles2.authorText
+    }, author), /* @__PURE__ */ a("span", {
+      className: styles2.ups
+    }, ups), /* @__PURE__ */ a("span", null, prettyTime(thing.data.created_utc * 1e3, "date-time"))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
+      className: styles2.body,
       dangerouslySetInnerHTML: { __html: html }
     }), replies && /* @__PURE__ */ a("div", {
       className: styles2.replies
@@ -738,31 +748,68 @@ ${r4}}
       thing: child,
       post,
       update
-    })))));
+    }))))));
   };
   var styles2 = {
     comment: zaftig_min_default`
-    color $text-primary
-    padding 10
-    border-left 1 solid #999
-    border-bottom 1 solid #999
-    border-right 1 solid #999
-    :first-child { border-top 1 solid #999 }
+    display grid
+    grid-template-columns auto 1fr
+    :not(:last-child) { margin-bottom 18 }
+    gap 18
   `.class,
-    author: zaftig_min_default`font-weight bold`.class,
-    replies: zaftig_min_default`margin-top 10`.class,
-    collapse: zaftig_min_default`cursor pointer;user-select none`.class
+    replies: zaftig_min_default`margin-top 18`.class,
+    border: zaftig_min_default`
+    position relative
+    padding 12
+    margin -12
+    user-select none
+    cursor pointer
+    $color $border-primary
+    :hover { $color $text-primary }
+    ::after {
+      display block
+      content ' '
+      background $color
+      height 100%
+      width 4
+    }
+  `.class,
+    body: zaftig_min_default``.class,
+    ups: zaftig_min_default`color orange`.class,
+    author: zaftig_min_default`display flex;gap 10`.class,
+    authorText: zaftig_min_default`font-weight bold`.class,
+    collapse: zaftig_min_default`
+    font-family monospace
+    font-size 90%
+    user-select none
+    cursor pointer
+    align-self center
+  `.class
   };
 
   // src/cmp/App.tsx
-  var App = ({ posts }) => {
-    const [post, setPost] = l2(posts[0]);
+  var App = ({ conf }) => {
+    const [posts, setPosts] = l2([]);
+    const [selected, setSelected] = l2(void 0);
+    const [loading, setLoading] = l2(false);
+    y2(() => {
+      setLoading(true);
+      conf.getPosts().then((posts2) => {
+        setLoading(false);
+        setPosts(posts2);
+        setSelected(posts2[0]);
+      });
+    }, []);
+    if (loading)
+      return /* @__PURE__ */ a("div", null, "Loading posts...");
+    if (!selected)
+      return /* @__PURE__ */ a("div", null, "Something went wrong :(");
     return /* @__PURE__ */ a("section", null, /* @__PURE__ */ a(PostSelect, {
       posts,
-      selected: post,
-      onSelect: setPost
+      selected,
+      onSelect: setSelected
     }), /* @__PURE__ */ a(PostComments, {
-      post
+      post: selected
     }));
   };
 
@@ -899,17 +946,21 @@ ${r4}}
     $text-secondary #666
     $link-color #1b3e92
     $button-bg #eee
+    $button-underline #777
+    $border-primary #999
   `,
     dark: zaftig_min_default`
     $text-primary #fff
     $text-secondary #ddd
     $link-color #1b3e92
     $button-bg #555
+    $button-underline #eee
+    $border-primary #ddd
   `,
     common: zaftig_min_default`
     font-size 16
     color $text-primary
-    button { color $text-primary; background $button-bg }
+    button { font-size 16; color $text-primary; background $button-bg }
     a { color $link-color }
   `
   };
@@ -930,38 +981,25 @@ ${r4}}
           log("but its not a match...");
           return;
         }
-        log("its a match! looking for reddit posts");
-        let stale = false;
-        let cleanup = [];
-        conf.getPosts().then((posts) => {
-          if (stale) {
-            log("loaded too late, url already changed...");
-            return;
+        log("its a match! looking for comments area");
+        const cleanup = [];
+        const wait = waitForElems({
+          selector: conf.commentSelector,
+          stopWaiting: true,
+          onmatch: (comments) => {
+            log("comments area found", comments);
+            cleanup.push(mount(conf, comments));
           }
-          if (!posts.length) {
-            log("loaded, but found no posts...", posts);
-            return;
-          }
-          log("loaded, found", posts);
-          const wait = waitForElems({
-            selector: conf.commentSelector,
-            stopWaiting: true,
-            onmatch: (comments) => {
-              log("comments found", comments);
-              cleanup.push(mount(conf, posts, comments));
-            }
-          });
-          cleanup.push(wait.stop);
         });
+        cleanup.push(wait.stop);
         return () => {
           log("leaving page cleaning up", cleanup);
-          stale = true;
           cleanup.forEach((fn) => fn());
         };
       }
     });
   }
-  var mount = (conf, posts, comments) => {
+  var mount = (conf, comments) => {
     comments.style.display = "none";
     const main = comments.parentElement;
     const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class;
@@ -978,7 +1016,7 @@ ${r4}}
     const appContainer = elem();
     main.insertBefore(appContainer, comments);
     N(/* @__PURE__ */ a(App, {
-      posts
+      conf
     }), appContainer.firstElementChild || appContainer);
     const switchContainer = elem();
     main.insertBefore(switchContainer, appContainer);
