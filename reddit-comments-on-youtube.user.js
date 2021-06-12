@@ -706,6 +706,9 @@ ${r4}}
   }
   var LoadMoreButton = ({ thing, update, post }) => {
     const [loading, setLoading] = l2(false);
+    const { count, children } = thing.data;
+    if (count <= 0)
+      return null;
     return /* @__PURE__ */ a("div", {
       className: styles2.comment
     }, /* @__PURE__ */ a("button", {
@@ -713,14 +716,14 @@ ${r4}}
       className: zaftig_min_default`padding 5 10;border none`.class,
       onClick: async () => {
         setLoading(true);
-        const results = await getMoreComments(post.name, thing.data.children);
+        const results = await getMoreComments(post.name, children);
         update((parent) => {
           const currentPosition = parent.indexOf(thing);
           if (currentPosition >= 0)
             parent.splice(currentPosition, 1, ...results);
         });
       }
-    }, loading ? "Loading" : "Load", " ", thing.data.count, " more comments"));
+    }, loading ? "Loading" : "Load", " ", count, " more comments"));
   };
   var PostComment = ({ thing, post }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;

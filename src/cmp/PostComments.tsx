@@ -60,6 +60,10 @@ export function PostCommentChild({ thing, ...rest }: ChildProps<CommentChild>) {
 
 export const LoadMoreButton = ({ thing, update, post }: ChildProps<LoadMore>) => {
   const [loading, setLoading] = useState(false)
+
+  const { count, children } = thing.data
+  if (count <= 0) return null
+
   return (
     <div className={styles.comment}>
       <button
@@ -67,14 +71,14 @@ export const LoadMoreButton = ({ thing, update, post }: ChildProps<LoadMore>) =>
         className={z`padding 5 10;border none`.class}
         onClick={async () => {
           setLoading(true)
-          const results = await getMoreComments(post.name, thing.data.children)
+          const results = await getMoreComments(post.name, children)
           update(parent => {
             const currentPosition = parent.indexOf(thing)
             if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
           })
         }}
       >
-        {loading ? 'Loading' : 'Load'} {thing.data.count} more comments
+        {loading ? 'Loading' : 'Load'} {count} more comments
       </button>
     </div>
   )
