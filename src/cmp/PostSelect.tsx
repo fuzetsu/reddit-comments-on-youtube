@@ -21,7 +21,7 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
       {list.map(post => (
         <button
           className={styles.item}
-          style={{ borderBottomColor: post === selected ? 'var(--button-underline)' : '' }}
+          style={{ borderBottomColor: post === selected ? 'var(--text-secondary)' : '' }}
           onClick={() => onSelect(post)}
         >
           <div className={styles.numComments}>{post.num_comments}</div>
@@ -60,14 +60,12 @@ const styles = {
       overflow hidden
       text-overflow ellipsis
       white-space nowrap
-      background $button-bg
     }
   `).class,
   numComments: z`
     && { padding 10 3 }
     font-weight bold
     text-align center
-    opacity 0.7
   `.class,
-  subreddit: z`opacity 0.9`.class
+  subreddit: z``.class
 }

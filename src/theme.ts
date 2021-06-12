@@ -6,16 +6,12 @@ export const theme = {
     $text-secondary #666
     $link-color #1b3e92
     $button-bg #eee
-    $button-underline #777
-    $border-primary #999
   `,
   dark: z`
     $text-primary #fff
     $text-secondary #ddd
     $link-color #1b3e92
     $button-bg #555
-    $button-underline #eee
-    $border-primary #ddd
   `,
   common: z`
     font-size 16
