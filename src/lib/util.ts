@@ -79,7 +79,7 @@ export const buildQuery = (params: { [key: string]: string | undefined }) => {
   return data.toString()
 }
 
-export const throttle = <T extends (...args: any) => void>(ms: number, cb: T) => {
+export const throttle = <T extends (...args: unknown[]) => void>(ms: number, cb: T) => {
   let lastCall = 0
   let id = -1
 
@@ -92,8 +92,10 @@ export const throttle = <T extends (...args: any) => void>(ms: number, cb: T) =>
       return
     }
     lastCall = now
-    cb(...(args as any))
+    cb(...args)
   }
 
   return throttled
 }
+
+export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms))
