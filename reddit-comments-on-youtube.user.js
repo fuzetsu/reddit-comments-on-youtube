@@ -81,7 +81,7 @@
         n4.__d && (o4 = (t4 = (l4 = n4).__v).__e, (r4 = l4.__P) && (u4 = [], (i4 = c({}, t4)).__v = t4.__v + 1, I(r4, t4, i4, l4.__n, r4.ownerSVGElement !== void 0, t4.__h != null ? [o4] : null, u4, o4 == null ? d(t4) : o4, t4.__h), T(u4, t4), t4.__e != o4 && _(t4)));
       });
   }
-  function m(n3, l4, u4, i4, t4, o4, e4, c4, s3, a4) {
+  function m(n3, l4, u4, i4, t4, o4, e4, c4, s4, a4) {
     var h2, p4, _2, k3, b3, m4, w2, A2 = i4 && i4.__k || f, P2 = A2.length;
     for (u4.__k = [], h2 = 0; h2 < l4.length; h2++)
       if ((k3 = u4.__k[h2] = (k3 = l4[h2]) == null || typeof k3 == "boolean" ? null : typeof k3 == "string" || typeof k3 == "number" || typeof k3 == "bigint" ? v(null, k3, null, null, k3) : Array.isArray(k3) ? v(y, { children: k3 }, null, null, null) : k3.__b > 0 ? v(k3.type, k3.props, k3.key, null, k3.__v) : k3) != null) {
@@ -95,7 +95,7 @@
             }
             _2 = null;
           }
-        I(n3, k3, _2 = _2 || r, t4, o4, e4, c4, s3, a4), b3 = k3.__e, (p4 = k3.ref) && _2.ref != p4 && (w2 || (w2 = []), _2.ref && w2.push(_2.ref, null, k3), w2.push(p4, k3.__c || b3, k3)), b3 != null ? (m4 == null && (m4 = b3), typeof k3.type == "function" && k3.__k != null && k3.__k === _2.__k ? k3.__d = s3 = g(k3, s3, n3) : s3 = x(n3, k3, _2, A2, b3, s3), a4 || u4.type !== "option" ? typeof u4.type == "function" && (u4.__d = s3) : n3.value = "") : s3 && _2.__e == s3 && s3.parentNode != n3 && (s3 = d(_2));
+        I(n3, k3, _2 = _2 || r, t4, o4, e4, c4, s4, a4), b3 = k3.__e, (p4 = k3.ref) && _2.ref != p4 && (w2 || (w2 = []), _2.ref && w2.push(_2.ref, null, k3), w2.push(p4, k3.__c || b3, k3)), b3 != null ? (m4 == null && (m4 = b3), typeof k3.type == "function" && k3.__k != null && k3.__k === _2.__k ? k3.__d = s4 = g(k3, s4, n3) : s4 = x(n3, k3, _2, A2, b3, s4), a4 || u4.type !== "option" ? typeof u4.type == "function" && (u4.__d = s4) : n3.value = "") : s4 && _2.__e == s4 && s4.parentNode != n3 && (s4 = d(_2));
       }
     for (u4.__e = m4, h2 = P2; h2--; )
       A2[h2] != null && (typeof u4.type == "function" && A2[h2].__e != null && A2[h2].__e == u4.__d && (u4.__d = d(i4, h2 + 1)), L(A2[h2], A2[h2]));
@@ -169,11 +169,11 @@
   function H(l4) {
     this.l[l4.type + true](n.event ? n.event(l4) : l4);
   }
-  function I(l4, u4, i4, t4, o4, r4, f4, e4, s3) {
+  function I(l4, u4, i4, t4, o4, r4, f4, e4, s4) {
     var a4, v3, h2, d4, _2, k3, b3, g4, w2, x3, A2, P2 = u4.type;
     if (u4.constructor !== void 0)
       return null;
-    i4.__h != null && (s3 = i4.__h, e4 = u4.__e = i4.__e, u4.__h = null, r4 = [e4]), (a4 = n.__b) && a4(u4);
+    i4.__h != null && (s4 = i4.__h, e4 = u4.__e = i4.__e, u4.__h = null, r4 = [e4]), (a4 = n.__b) && a4(u4);
     try {
       n:
         if (typeof P2 == "function") {
@@ -190,12 +190,12 @@
               v3.componentDidUpdate(d4, _2, k3);
             });
           }
-          v3.context = x3, v3.props = g4, v3.state = v3.__s, (a4 = n.__r) && a4(u4), v3.__d = false, v3.__v = u4, v3.__P = l4, a4 = v3.render(v3.props, v3.state, v3.context), v3.state = v3.__s, v3.getChildContext != null && (t4 = c(c({}, t4), v3.getChildContext())), h2 || v3.getSnapshotBeforeUpdate == null || (k3 = v3.getSnapshotBeforeUpdate(d4, _2)), A2 = a4 != null && a4.type === y && a4.key == null ? a4.props.children : a4, m(l4, Array.isArray(A2) ? A2 : [A2], u4, i4, t4, o4, r4, f4, e4, s3), v3.base = u4.__e, u4.__h = null, v3.__h.length && f4.push(v3), b3 && (v3.__E = v3.__ = null), v3.__e = false;
+          v3.context = x3, v3.props = g4, v3.state = v3.__s, (a4 = n.__r) && a4(u4), v3.__d = false, v3.__v = u4, v3.__P = l4, a4 = v3.render(v3.props, v3.state, v3.context), v3.state = v3.__s, v3.getChildContext != null && (t4 = c(c({}, t4), v3.getChildContext())), h2 || v3.getSnapshotBeforeUpdate == null || (k3 = v3.getSnapshotBeforeUpdate(d4, _2)), A2 = a4 != null && a4.type === y && a4.key == null ? a4.props.children : a4, m(l4, Array.isArray(A2) ? A2 : [A2], u4, i4, t4, o4, r4, f4, e4, s4), v3.base = u4.__e, u4.__h = null, v3.__h.length && f4.push(v3), b3 && (v3.__E = v3.__ = null), v3.__e = false;
         } else
-          r4 == null && u4.__v === i4.__v ? (u4.__k = i4.__k, u4.__e = i4.__e) : u4.__e = j(i4.__e, u4, i4, t4, o4, r4, f4, s3);
+          r4 == null && u4.__v === i4.__v ? (u4.__k = i4.__k, u4.__e = i4.__e) : u4.__e = j(i4.__e, u4, i4, t4, o4, r4, f4, s4);
       (a4 = n.diffed) && a4(u4);
     } catch (l5) {
-      u4.__v = null, (s3 || r4 != null) && (u4.__e = e4, u4.__h = !!s3, r4[r4.indexOf(e4)] = null), n.__e(l5, u4, i4);
+      u4.__v = null, (s4 || r4 != null) && (u4.__e = e4, u4.__h = !!s4, r4[r4.indexOf(e4)] = null), n.__e(l5, u4, i4);
     }
   }
   function T(l4, u4) {
@@ -320,6 +320,11 @@
     var i4 = m2(t2++, 3);
     !n.__s && k2(i4.__H, o4) && (i4.__ = r4, i4.__H = o4, u2.__H.__h.push(i4));
   }
+  function s2(n3) {
+    return o2 = 5, d2(function() {
+      return { current: n3 };
+    }, []);
+  }
   function d2(n3, u4) {
     var r4 = m2(t2++, 7);
     return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
@@ -395,8 +400,8 @@
   var n2 = (...t4) => console.error("zaftig:", ...t4);
   var o3 = (t4, r4 = {}) => (e4) => e4 in r4 ? r4[e4] : r4[e4] = t4(e4);
   var i3 = document.documentMode || /Edge\//.test(navigator.userAgent) ? "ms" : navigator.vendor ? "webkit" : "moz";
-  var s2 = (t4) => r3.call(t4, "width") ? t4 : s2(e3(t4));
-  var c3 = Object.keys(s2(document.documentElement.style)).filter((t4) => t4.indexOf("-") < 0 && t4 != "length");
+  var s3 = (t4) => r3.call(t4, "width") ? t4 : s3(e3(t4));
+  var c3 = Object.keys(s3(document.documentElement.style)).filter((t4) => t4.indexOf("-") < 0 && t4 != "length");
   var a3 = {};
   var u3 = {};
   c3.concat(["backgroundColor", "borderBottom", "borderRadius", "bottom", "boxShadow", "color", "display", "flexDirection", "float", "fontFamily", "fontSize", "height", "margin", "marginTop", "marginBottom", "opacity", "padding", "paddingBottom", "right", "textAlign", "textDecoration", "top", "whiteSpace", "width"].filter((t4) => c3.indexOf(t4) >= 0)).forEach((t4) => {
@@ -431,7 +436,7 @@ ${r4}}
     }
   };
   var y3 = (t4 = {}) => {
-    const { helpers: r4 = {}, unit: e4 = "px", id: s3 = "z" + Math.random().toString(36).slice(2) } = t4;
+    const { helpers: r4 = {}, unit: e4 = "px", id: s4 = "z" + Math.random().toString(36).slice(2) } = t4;
     let { style: c4, dot: d4 = true, debug: p4 = false } = t4, b3 = 0;
     class v3 {
       constructor(t5) {
@@ -458,7 +463,7 @@ ${r4}}
     }, w2 = (t5, r5, e5) => {
       const o4 = g3(e5 ? ((t6) => t6.replace(/(::?)([a-z-]+)(\()?/gi, (t7, r6, e6, n3) => (e6 == "placeholder" && i3 != "moz" ? e6 = "input-" + e6 : e6 == "matches" && (e6 = "any"), e6[0] == "-" || $2(n3 ? t7 + ".f)" : t7) ? t7 : `${r6}-${i3}-${e6}${n3 || ""}`)))(t5) : t5, r5);
       if (o4) {
-        c4 || (c4 = h(), c4.id = s3);
+        c4 || (c4 = h(), c4.id = s4);
         try {
           c4.sheet.insertRule(o4, c4.sheet.cssRules.length), p4 && (c4.textContent += o4);
         } catch (o5) {
@@ -502,23 +507,23 @@ ${r4}}
       o4.indexOf("$") >= 0 && (o4 = o4.replace(/\$([a-z0-9-]+)/gi, "var(--$1)")), l3(r5) && (o4 = o4.split(" ").map((t6) => isNaN(t6) ? t6 : t6 + e4).join(" "));
       const d5 = `  ${r5}: ${o4};
 `;
-      p4 && !$2(s3, d5) && n2("invalid css", d5), t5.t += d5;
+      p4 && !$2(s4, d5) && n2("invalid css", d5), t5.t += d5;
     }, _2 = o3((t5) => {
       const r5 = [{ t: "", o: [] }];
       if (!(t5 = t5 && t5.trim()))
         return r5[0];
       t5 += ";";
-      let e5 = 1, n3 = "", o4 = 0, i4 = "", s4 = "";
+      let e5 = 1, n3 = "", o4 = 0, i4 = "", s5 = "";
       for (let c5 = 0; c5 < t5.length; c5++) {
         const a4 = t5[c5];
-        a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e5 == 1 ? a4 == " " ? (s4 = n3.trim()) && (e5 = 2, n3 = "") : n3 += a4 : e5 == 2 && (i4 ? a4 == i4 && t5[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o4] = { i: k3(s4, n3.trim()) || (s4 + " " + n3).trim(), t: "", o: [] }, e5 = 1, s4 = n3 = "") : (S(r5[o4], s4, n3.trim() + i4), a4 == "}" && r5[--o4].o.push(r5.pop()), e5 = 1, s4 = n3 = i4 = "");
+        a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e5 == 1 ? a4 == " " ? (s5 = n3.trim()) && (e5 = 2, n3 = "") : n3 += a4 : e5 == 2 && (i4 ? a4 == i4 && t5[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o4] = { i: k3(s5, n3.trim()) || (s5 + " " + n3).trim(), t: "", o: [] }, e5 = 1, s5 = n3 = "") : (S(r5[o4], s5, n3.trim() + i4), a4 == "}" && r5[--o4].o.push(r5.pop()), e5 = 1, s5 = n3 = i4 = "");
       }
       return r5[0];
     }), A2 = o3((t5) => {
-      const r5 = "anim-" + s3 + "-" + (b3 += 1);
+      const r5 = "anim-" + s4 + "-" + (b3 += 1);
       return O("@keyframes " + r5, _2(t5)), r5;
     }), j3 = o3((t5) => {
-      const r5 = _2(t5), e5 = (r5.u ? r5.u + "-" : "") + s3 + "-" + (b3 += 1);
+      const r5 = _2(t5), e5 = (r5.u ? r5.u + "-" : "") + s4 + "-" + (b3 += 1);
       return O("." + e5, r5), new v3(e5 + (r5.l ? " " + r5.l : ""));
     }), B = m3(j3);
     return B.anim = m3(A2), B.concat = z2, B.getSheet = () => c4, B.global = m3((t5) => O(":root", _2(t5))), B.helper = (t5) => Object.assign(r4, t5), B.new = y3, B.setDebug = (t5) => p4 = t5, B.setDot = (t5) => d4 = t5, B.style = m3((t5) => _2(t5).t), B;
@@ -554,7 +559,7 @@ ${r4}}
   border none
   margin 0
   padding 0
-  border-bottom 4px solid $button-bg
+  border-bottom 4px solid $button-background
 `;
   var styles = {
     container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
@@ -676,8 +681,8 @@ ${r4}}
       getComments(post).then(setThings);
     }, [post.name]);
     const update = useUpdate(things || []);
-    return /* @__PURE__ */ a("section", {
-      className: zaftig_min_default`margin-top 20;color $text-primary`.class
+    return /* @__PURE__ */ a("div", {
+      className: zaftig_min_default`margin-top 15`.class
     }, !things ? /* @__PURE__ */ a("div", null, "Loading ", post.name, "...") : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
       key: thing.data.id,
       thing,
@@ -721,9 +726,12 @@ ${r4}}
     const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
     const redraw = useRedraw();
+    const ref = s2();
     const toggle = () => {
       thing.data.collapsed = !collapsed;
       redraw();
+      if (ref.current.getBoundingClientRect().top < 0)
+        ref.current.scrollIntoView();
     };
     const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);
     const createdTime = new Date(created_utc * 1e3);
@@ -735,6 +743,7 @@ ${r4}}
       className: styles2.border,
       onClick: toggle
     }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
+      ref,
       className: styles2.author,
       style: { marginBottom: collapsed ? "" : "5px" }
     }, /* @__PURE__ */ a("span", {
@@ -769,9 +778,9 @@ ${r4}}
     margin -12
     user-select none
     cursor pointer
-    $color $text-secondary
+    $color $text-subdued
 
-    :hover { $color $text-primary }
+    :hover { $color $text-normal }
     ::after {
       display block
       content ' '
@@ -782,7 +791,7 @@ ${r4}}
   `.class,
     body: zaftig_min_default``.class,
     ups: zaftig_min_default`color orange;font-weight bold`.class,
-    date: zaftig_min_default`color $text-secondary`.class,
+    date: zaftig_min_default`color $text-subdued`.class,
     author: zaftig_min_default`display flex;gap 10`.class,
     authorText: zaftig_min_default`font-weight bold`.class,
     collapse: zaftig_min_default`
@@ -833,7 +842,6 @@ ${r4}}
     border none
     padding 10
     width 100%
-    margin-bottom 10
   `.class
   };
 
@@ -866,12 +874,12 @@ ${r4}}
   var youtube = {
     commentSelector: "#comments",
     isMatch: () => Boolean(getVideoIdFromUrl(location.href)),
-    theme: zaftig_min_default`
-    $text-primary var(--yt-spec-text-primary, black)
-    $text-secondary var(--yt-spec-text-secondary, #666)
-    $link-color var(--yt-spec-call-to-action, #1b3e92)
-    $button-bg var(--yt-spec-badge-chip-background, #555)
-  `,
+    theme: {
+      background: "var(--yt-spec-general-background-a)",
+      text: { normal: "var(--yt-spec-text-primary)", subdued: "var(--yt-spec-text-secondary)" },
+      link: { color: "var(--yt-spec-call-to-action)" },
+      button: { background: "var(--yt-spec-badge-chip-background)" }
+    },
     getPosts: async () => {
       const url = location.href;
       const id = getVideoIdFromUrl(url);
@@ -948,25 +956,40 @@ ${r4}}
 
   // src/theme.ts
   var theme = {
-    light: zaftig_min_default`
-    $text-primary #444
-    $text-secondary #666
-    $link-color #1b3e92
-    $button-bg #eee
-  `,
-    dark: zaftig_min_default`
-    $text-primary #fff
-    $text-secondary #ddd
-    $link-color #1b3e92
-    $button-bg #555
-  `,
+    light: generateTheme({
+      background: "#fefefe",
+      text: { normal: "#444", subdued: "#666" },
+      link: { color: "#1b3e92" },
+      button: { background: "#eee" }
+    }),
+    dark: generateTheme({
+      background: "#333",
+      text: { normal: "#fff", subdued: "#ddd" },
+      link: { color: "#1b3e92" },
+      button: { background: "#555" }
+    }),
     common: zaftig_min_default`
+    padding 5
+    margin 5
     font-size 16
-    color $text-primary
-    button { font-size 16; color $text-primary; background $button-bg }
+    color $text-normal
+    background $background
+    button { font-size 16; color $text-normal; background $button-background }
     a { color $link-color }
   `
   };
+  function generateTheme(theme2) {
+    const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
+      const cur = [...parents, k3];
+      if (typeof v3 === "object") {
+        Object.assign(acc, getVars(v3, cur));
+      } else {
+        acc[cur.join("-")] = v3;
+      }
+      return acc;
+    }, {});
+    return zaftig_min_default(Object.entries(getVars(theme2)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
+  }
 
   // src/index.tsx
   log("started!");
@@ -1021,24 +1044,15 @@ ${r4}}
       removeSwitch();
     };
   };
+  var unmount = (elem) => {
+    N(null, elem);
+    elem.remove();
+  };
   var insertBefore = (before, conf, view) => {
-    const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class;
     const wrapper = document.createElement("div");
-    wrapper.className = className;
-    if (conf.theme) {
-      const themeLayer = document.createElement("div");
-      themeLayer.className = conf.theme.class;
-      wrapper.appendChild(themeLayer);
-    }
+    wrapper.className = theme.common.concat(conf.dark ? theme.dark : theme.light, conf.theme && generateTheme(conf.theme)).class;
     before.parentElement.insertBefore(wrapper, before);
-    const target = wrapper.firstElementChild || wrapper;
-    N(view, target);
-    return [
-      wrapper,
-      () => {
-        N(null, target);
-        target.remove();
-      }
-    ];
+    N(view, wrapper);
+    return [wrapper, () => unmount(wrapper)];
   };
 })();

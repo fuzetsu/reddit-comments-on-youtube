@@ -1,10 +1,11 @@
 import z from 'zaftig'
-import type { Post } from './lib/api'
+import { Post } from './lib/api'
+import { Theme } from './theme'
 
 export interface Conf {
   commentSelector: string
   isMatch(): boolean
   getPosts(): Promise<Post[]>
   dark?: boolean
-  theme?: ReturnType<typeof z>
+  theme?: Theme
 }

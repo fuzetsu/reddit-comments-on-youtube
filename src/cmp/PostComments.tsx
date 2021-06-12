@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'preact/hooks'
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import z from 'zaftig'
 import { getComments, Post, Comment, LoadMore, CommentChild, getMoreComments } from '../lib/api'
 import { useRedraw } from '../lib/hooks'
@@ -35,7 +35,7 @@ export const PostComments = ({ post }: Props) => {
   const update = useUpdate(things || [])
 
   return (
-    <section className={z`margin-top 20;color $text-primary`.class}>
+    <div className={z`margin-top 15`.class}>
       {!things ? (
         <div>Loading {post.name}...</div>
       ) : (
@@ -43,7 +43,7 @@ export const PostComments = ({ post }: Props) => {
           <PostCommentChild key={thing.data.id} thing={thing} post={post} update={update} />
         ))
       )}
-    </section>
+    </div>
   )
 }
 
@@ -85,9 +85,12 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const redraw = useRedraw()
+  const ref = useRef<HTMLDivElement>()
   const toggle = () => {
     thing.data.collapsed = !collapsed
     redraw()
+
+    if (ref.current.getBoundingClientRect().top < 0) ref.current.scrollIntoView()
   }
 
   const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
@@ -100,7 +103,7 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
     <div className={styles.comment}>
       <div className={styles.border} onClick={toggle} />
       <div>
-        <div className={styles.author} style={{ marginBottom: collapsed ? '' : '5px' }}>
+        <div ref={ref} className={styles.author} style={{ marginBottom: collapsed ? '' : '5px' }}>
           <span className={styles.authorText}>{author}</span>
           <span className={styles.ups}>{ups}</span>
           <span className={styles.date}>
@@ -141,9 +144,9 @@ const styles = {
     margin -12
     user-select none
     cursor pointer
-    $color $text-secondary
+    $color $text-subdued
 
-    :hover { $color $text-primary }
+    :hover { $color $text-normal }
     ::after {
       display block
       content ' '
@@ -154,7 +157,7 @@ const styles = {
   `.class,
   body: z``.class,
   ups: z`color orange;font-weight bold`.class,
-  date: z`color $text-secondary`.class,
+  date: z`color $text-subdued`.class,
   author: z`display flex;gap 10`.class,
   authorText: z`font-weight bold`.class,
   collapse: z`

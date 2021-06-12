@@ -45,7 +45,7 @@ const buttonBase = z`
   border none
   margin 0
   padding 0
-  border-bottom 4px solid $button-bg
+  border-bottom 4px solid $button-background
 `
 
 const styles = {

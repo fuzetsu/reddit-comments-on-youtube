@@ -5,7 +5,7 @@ import { confs, confNames } from './conf'
 import { log, logError } from './lib/util'
 import { waitForElems } from './lib/wait-for-elems'
 import { waitForUrl } from './lib/wait-for-url'
-import { theme } from './theme'
+import { generateTheme, theme } from './theme'
 import { Conf } from './type'
 
 log('started!')
@@ -74,24 +74,22 @@ const mount = (conf: Conf, comments: HTMLElement) => {
   }
 }
 
+const unmount = (elem: HTMLElement) => {
+  render(null, elem)
+  elem.remove()
+}
+
 const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
-  const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class
   const wrapper = document.createElement('div')
-  wrapper.className = className
-  if (conf.theme) {
-    const themeLayer = document.createElement('div')
-    themeLayer.className = conf.theme.class
-    wrapper.appendChild(themeLayer)
-  }
+
+  wrapper.className = theme.common.concat(
+    conf.dark ? theme.dark : theme.light,
+    conf.theme && generateTheme(conf.theme)
+  ).class
+
   before.parentElement!.insertBefore(wrapper, before)
 
-  const target = wrapper.firstElementChild || wrapper
-  render(view, target)
-  return [
-    wrapper,
-    () => {
-      render(null, target)
-      target.remove()
-    }
-  ] as const
+  render(view, wrapper)
+
+  return [wrapper, () => unmount(wrapper)] as const
 }

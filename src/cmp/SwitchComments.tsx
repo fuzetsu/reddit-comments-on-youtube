@@ -18,6 +18,5 @@ const styles = {
     border none
     padding 10
     width 100%
-    margin-bottom 10
   `.class
 }

@@ -1,4 +1,3 @@
-import z from 'zaftig'
 import { searchPosts } from '../lib/api'
 import { logError } from '../lib/util'
 import { Conf } from '../type'
@@ -8,12 +7,12 @@ const getVideoIdFromUrl = (url: string) => url.match(/v=([^&]+)/i)?.[1]
 export const youtube: Conf = {
   commentSelector: '#comments',
   isMatch: () => Boolean(getVideoIdFromUrl(location.href)),
-  theme: z`
-    $text-primary var(--yt-spec-text-primary, black)
-    $text-secondary var(--yt-spec-text-secondary, #666)
-    $link-color var(--yt-spec-call-to-action, #1b3e92)
-    $button-bg var(--yt-spec-badge-chip-background, #555)
-  `,
+  theme: {
+    background: 'var(--yt-spec-general-background-a)',
+    text: { normal: 'var(--yt-spec-text-primary)', subdued: 'var(--yt-spec-text-secondary)' },
+    link: { color: 'var(--yt-spec-call-to-action)' },
+    button: { background: 'var(--yt-spec-badge-chip-background)' }
+  },
   getPosts: async () => {
     const url = location.href
     const id = getVideoIdFromUrl(url)
