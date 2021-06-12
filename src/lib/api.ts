@@ -44,16 +44,16 @@ export interface Comment {
     permalink: string
     created_utc: number
     collapsed: boolean
-    replies: '' | { data: { children: (Comment | LoadMore)[] } }
+    replies: '' | { data: { children: CommentChild[] } }
   }
 }
 
 export type CommentChild = Comment | LoadMore
 
-const getJSON = (url: string) => fetch(url).then(res => res.json())
+const getJSON = <T>(url: string) => fetch(url).then(res => res.json() as Promise<T>)
 
-export const searchPosts = async (query: string, sort = true) => {
-  const payload: PostPayload = await getJSON(API_URL + '/search.json?' + buildQuery({ q: query }))
+export const searchPosts = async (query: string, sort = true): Promise<Post[]> => {
+  const payload = await getJSON<PostPayload>(API_URL + '/search.json?' + buildQuery({ q: query }))
 
   const results = payload.data.children.map(({ data: post }) => ({
     ...post,
@@ -63,16 +63,19 @@ export const searchPosts = async (query: string, sort = true) => {
   return sort ? results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1)) : results
 }
 
-export const getComments = async ({ permalink }: Post, parentComment?: Comment) => {
-  const payload: CommentPayload = await getJSON(
+export const getComments = async (
+  { permalink }: Post,
+  parentComment?: Comment
+): Promise<CommentChild[]> => {
+  const payload = await getJSON<CommentPayload>(
     API_URL + permalink + '.json?' + buildQuery({ comment: parentComment?.data.id })
   )
 
   return payload[1].data.children
 }
 
-export const getMoreComments = async (link_id: string, children: string[]) => {
-  const payload: MoreCommentsPayload = await getJSON(
+export const getMoreComments = async (link_id: string, children: string[]): Promise<Comment[]> => {
+  const payload = await getJSON<MoreCommentsPayload>(
     API_URL +
       '/api/morechildren.json?' +
       buildQuery({ api_type: 'json', link_id, children: children.join(',') })
