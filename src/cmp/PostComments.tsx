@@ -119,7 +119,16 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
         </div>
         {!collapsed && (
           <>
-            <div className={styles.body} dangerouslySetInnerHTML={{ __html: html }} />
+            <div
+              className={styles.body}
+              dangerouslySetInnerHTML={{ __html: html }}
+              onClick={e => {
+                if (e.target instanceof HTMLAnchorElement) {
+                  e.preventDefault()
+                  window.open(e.target.href)
+                }
+              }}
+            />
             {replies && (
               <div className={styles.replies}>
                 {replies.data.children.map(child => (
