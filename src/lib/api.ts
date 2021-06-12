@@ -39,7 +39,7 @@ export interface Comment {
     name: string
     author: string
     body_html: string
-    edited: boolean
+    edited: false | number
     is_submitter: boolean
     permalink: string
     created_utc: number
