@@ -26,9 +26,9 @@ export const App = ({ conf }: Props) => {
   if (!selected) return <div>Something went wrong :(</div>
 
   return (
-    <section>
+    <>
       <PostSelect posts={posts} selected={selected} onSelect={setSelected} />
       <PostComments post={selected} />
-    </section>
+    </>
   )
 }

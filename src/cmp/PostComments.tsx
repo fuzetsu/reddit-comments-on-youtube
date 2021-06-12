@@ -64,7 +64,7 @@ export const LoadMoreButton = ({ thing, update, post }: ChildProps<LoadMore>) =>
     <div className={styles.comment}>
       <button
         disabled={loading}
-        className={z`padding 5 10`.class}
+        className={z`padding 5 10;border none`.class}
         onClick={async () => {
           setLoading(true)
           const results = await getMoreComments(post.name, thing.data.children)
@@ -81,7 +81,7 @@ export const LoadMoreButton = ({ thing, update, post }: ChildProps<LoadMore>) =>
 }
 
 export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
-  const { ups, author, body_html, replies, collapsed } = thing.data
+  const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const redraw = useRedraw()
@@ -92,6 +92,10 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
 
   const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
 
+  const createdTime = new Date(created_utc * 1000)
+  const editedTime = edited && new Date(edited * 1000)
+  const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate()
+
   return (
     <div className={styles.comment}>
       <div className={styles.border} onClick={toggle} />
@@ -99,7 +103,12 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
         <div className={styles.author} style={{ marginBottom: collapsed ? '' : '5px' }}>
           <span className={styles.authorText}>{author}</span>
           <span className={styles.ups}>{ups}</span>
-          <span>{prettyTime(thing.data.created_utc * 1000, 'date-time')}</span>
+          <span className={styles.date}>
+            {prettyTime(createdTime, 'date-time')}
+            {editedTime && (
+              <> edited {prettyTime(editedTime, differentDay ? 'date-time' : 'time')}</>
+            )}
+          </span>
         </div>
         {!collapsed && (
           <>
@@ -132,7 +141,8 @@ const styles = {
     margin -12
     user-select none
     cursor pointer
-    $color $border-primary
+    $color $text-secondary
+
     :hover { $color $text-primary }
     ::after {
       display block
@@ -143,7 +153,8 @@ const styles = {
     }
   `.class,
   body: z``.class,
-  ups: z`color orange`.class,
+  ups: z`color orange;font-weight bold`.class,
+  date: z`color $text-secondary`.class,
   author: z`display flex;gap 10`.class,
   authorText: z`font-weight bold`.class,
   collapse: z`
