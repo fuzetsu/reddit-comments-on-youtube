@@ -50,7 +50,7 @@ const buttonBase = z`
 
 const styles = {
   container: z`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
-  toggleEmpty: buttonBase.class,
+  toggleEmpty: buttonBase.concat(z`padding 10`).class,
   item: buttonBase.concat(z`
     text-align left
     display grid

@@ -563,7 +563,7 @@ ${r4}}
 `;
   var styles = {
     container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
-    toggleEmpty: buttonBase.class,
+    toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`).class,
     item: buttonBase.concat(zaftig_min_default`
     text-align left
     display grid
@@ -970,7 +970,6 @@ ${r4}}
     }),
     common: zaftig_min_default`
     padding 5
-    margin 5
     font-size 16
     color $text-normal
     background $background
