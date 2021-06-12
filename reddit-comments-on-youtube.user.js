@@ -535,7 +535,7 @@ ${r4}}
       className: styles.container
     }, list.map((post) => /* @__PURE__ */ a("button", {
       className: styles.item,
-      style: { borderBottomColor: post === selected ? "var(--button-underline)" : "" },
+      style: { borderBottomColor: post === selected ? "var(--text-secondary)" : "" },
       onClick: () => onSelect(post)
     }, /* @__PURE__ */ a("div", {
       className: styles.numComments
@@ -568,16 +568,14 @@ ${r4}}
       overflow hidden
       text-overflow ellipsis
       white-space nowrap
-      background $button-bg
     }
   `).class,
     numComments: zaftig_min_default`
     && { padding 10 3 }
     font-weight bold
     text-align center
-    opacity 0.7
   `.class,
-    subreddit: zaftig_min_default`opacity 0.9`.class
+    subreddit: zaftig_min_default``.class
   };
 
   // src/constants.ts
@@ -602,6 +600,8 @@ ${r4}}
         return date.toLocaleString();
       if (fallback === "date-time")
         return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+      if (fallback === "time")
+        return date.toLocaleTimeString();
       return;
     }
     return day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
@@ -705,7 +705,7 @@ ${r4}}
       className: styles2.comment
     }, /* @__PURE__ */ a("button", {
       disabled: loading,
-      className: zaftig_min_default`padding 5 10`.class,
+      className: zaftig_min_default`padding 5 10;border none`.class,
       onClick: async () => {
         setLoading(true);
         const results = await getMoreComments(post.name, thing.data.children);
@@ -718,7 +718,7 @@ ${r4}}
     }, loading ? "Loading" : "Load", " ", thing.data.count, " more comments"));
   };
   var PostComment = ({ thing, post }) => {
-    const { ups, author, body_html, replies, collapsed } = thing.data;
+    const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
     const redraw = useRedraw();
     const toggle = () => {
@@ -726,6 +726,9 @@ ${r4}}
       redraw();
     };
     const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);
+    const createdTime = new Date(created_utc * 1e3);
+    const editedTime = edited && new Date(edited * 1e3);
+    const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate();
     return /* @__PURE__ */ a("div", {
       className: styles2.comment
     }, /* @__PURE__ */ a("div", {
@@ -738,7 +741,9 @@ ${r4}}
       className: styles2.authorText
     }, author), /* @__PURE__ */ a("span", {
       className: styles2.ups
-    }, ups), /* @__PURE__ */ a("span", null, prettyTime(thing.data.created_utc * 1e3, "date-time"))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
+    }, ups), /* @__PURE__ */ a("span", {
+      className: styles2.date
+    }, prettyTime(createdTime, "date-time"), editedTime && /* @__PURE__ */ a(y, null, " edited ", prettyTime(editedTime, differentDay ? "date-time" : "time")))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
       className: styles2.body,
       dangerouslySetInnerHTML: { __html: html }
     }), replies && /* @__PURE__ */ a("div", {
@@ -764,7 +769,8 @@ ${r4}}
     margin -12
     user-select none
     cursor pointer
-    $color $border-primary
+    $color $text-secondary
+
     :hover { $color $text-primary }
     ::after {
       display block
@@ -775,7 +781,8 @@ ${r4}}
     }
   `.class,
     body: zaftig_min_default``.class,
-    ups: zaftig_min_default`color orange`.class,
+    ups: zaftig_min_default`color orange;font-weight bold`.class,
+    date: zaftig_min_default`color $text-secondary`.class,
     author: zaftig_min_default`display flex;gap 10`.class,
     authorText: zaftig_min_default`font-weight bold`.class,
     collapse: zaftig_min_default`
@@ -804,7 +811,7 @@ ${r4}}
       return /* @__PURE__ */ a("div", null, "Loading posts...");
     if (!selected)
       return /* @__PURE__ */ a("div", null, "Something went wrong :(");
-    return /* @__PURE__ */ a("section", null, /* @__PURE__ */ a(PostSelect, {
+    return /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, {
       posts,
       selected,
       onSelect: setSelected
@@ -946,16 +953,12 @@ ${r4}}
     $text-secondary #666
     $link-color #1b3e92
     $button-bg #eee
-    $button-underline #777
-    $border-primary #999
   `,
     dark: zaftig_min_default`
     $text-primary #fff
     $text-secondary #ddd
     $link-color #1b3e92
     $button-bg #555
-    $button-underline #eee
-    $border-primary #ddd
   `,
     common: zaftig_min_default`
     font-size 16
@@ -1001,37 +1004,41 @@ ${r4}}
   }
   var mount = (conf, comments) => {
     comments.style.display = "none";
-    const main = comments.parentElement;
-    const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class;
-    const elem = () => {
-      const wrapper = document.createElement("div");
-      wrapper.className = className;
-      if (conf.theme) {
-        const themeLayer = document.createElement("div");
-        themeLayer.className = conf.theme.class;
-        wrapper.appendChild(themeLayer);
-      }
-      return wrapper;
-    };
-    const appContainer = elem();
-    main.insertBefore(appContainer, comments);
-    N(/* @__PURE__ */ a(App, {
-      conf
-    }), appContainer.firstElementChild || appContainer);
-    const switchContainer = elem();
-    main.insertBefore(switchContainer, appContainer);
     let hideReddit = false;
     const switchComments = () => {
       hideReddit = !hideReddit;
       comments.style.display = hideReddit ? "" : "none";
-      appContainer.style.display = hideReddit ? "none" : "";
+      app.style.display = hideReddit ? "none" : "";
     };
-    N(/* @__PURE__ */ a(SwitchComments, {
+    const [, removeSwitch] = insertBefore(comments, conf, /* @__PURE__ */ a(SwitchComments, {
       onSwitch: switchComments
-    }), switchContainer.firstElementChild || switchContainer);
+    }));
+    const [app, removeApp] = insertBefore(comments, conf, /* @__PURE__ */ a(App, {
+      conf
+    }));
     return () => {
-      appContainer.remove();
-      switchContainer.remove();
+      removeApp();
+      removeSwitch();
     };
+  };
+  var insertBefore = (before, conf, view) => {
+    const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class;
+    const wrapper = document.createElement("div");
+    wrapper.className = className;
+    if (conf.theme) {
+      const themeLayer = document.createElement("div");
+      themeLayer.className = conf.theme.class;
+      wrapper.appendChild(themeLayer);
+    }
+    before.parentElement.insertBefore(wrapper, before);
+    const target = wrapper.firstElementChild || wrapper;
+    N(view, target);
+    return [
+      wrapper,
+      () => {
+        N(null, target);
+        target.remove();
+      }
+    ];
   };
 })();

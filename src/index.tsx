@@ -1,4 +1,4 @@
-import { render } from 'preact'
+import { JSX, render } from 'preact'
 import { App } from './cmp/App'
 import { SwitchComments } from './cmp/SwitchComments'
 import { confs, confNames } from './conf'
@@ -52,45 +52,46 @@ const mount = (conf: Conf, comments: HTMLElement) => {
   // hide comments
   comments.style.display = 'none'
 
-  const main = comments.parentElement!
-
-  // const isNight =
-  const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class
-  const elem = () => {
-    const wrapper = document.createElement('div')
-    wrapper.className = className
-    if (conf.theme) {
-      const themeLayer = document.createElement('div')
-      themeLayer.className = conf.theme.class
-      wrapper.appendChild(themeLayer)
-    }
-    return wrapper
-  }
-
-  // render app
-  const appContainer = elem()
-  main.insertBefore(appContainer, comments)
-
-  render(<App conf={conf} />, appContainer.firstElementChild || appContainer)
-
   // render switch comments
-  const switchContainer = elem()
-  main.insertBefore(switchContainer, appContainer)
-
   let hideReddit = false
   const switchComments = () => {
     hideReddit = !hideReddit
     comments.style.display = hideReddit ? '' : 'none'
-    appContainer.style.display = hideReddit ? 'none' : ''
+    app.style.display = hideReddit ? 'none' : ''
   }
-  render(
-    <SwitchComments onSwitch={switchComments} />,
-    switchContainer.firstElementChild || switchContainer
+
+  const [, removeSwitch] = insertBefore(
+    comments,
+    conf,
+    <SwitchComments onSwitch={switchComments} />
   )
+  const [app, removeApp] = insertBefore(comments, conf, <App conf={conf} />)
 
   // cleanup
   return () => {
-    appContainer.remove()
-    switchContainer.remove()
+    removeApp()
+    removeSwitch()
   }
+}
+
+const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
+  const className = theme.common.concat(conf.dark ? theme.dark : theme.light).class
+  const wrapper = document.createElement('div')
+  wrapper.className = className
+  if (conf.theme) {
+    const themeLayer = document.createElement('div')
+    themeLayer.className = conf.theme.class
+    wrapper.appendChild(themeLayer)
+  }
+  before.parentElement!.insertBefore(wrapper, before)
+
+  const target = wrapper.firstElementChild || wrapper
+  render(view, target)
+  return [
+    wrapper,
+    () => {
+      render(null, target)
+      target.remove()
+    }
+  ] as const
 }
