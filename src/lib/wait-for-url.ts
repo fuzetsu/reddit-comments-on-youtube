@@ -1,7 +1,7 @@
 type Cleanup = void | (() => void)
 
 interface Props {
-  onmatch(url: string): Cleanup | void
+  onmatch(url: string): Cleanup
   stopWaiting?: boolean
   matcher?: 'any' | RegExp | ((url: string) => boolean)
 }
