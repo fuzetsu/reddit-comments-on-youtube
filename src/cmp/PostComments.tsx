@@ -159,7 +159,14 @@ const styles = {
       width 4
     }
   `.class,
-  body: z``.class,
+  body: z`
+    blockquote {
+      border-left 3 solid $text-subdued
+      padding 5 10
+      margin 10 0
+      color $text-subdued
+    }
+  `.class,
   ups: z`color orange;font-weight bold`.class,
   date: z`color $text-subdued`.class,
   author: z`display flex;gap 10`.class,
