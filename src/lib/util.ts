@@ -18,7 +18,10 @@ export const processRedditHTML = (html: string) =>
 
 export const pluralize = (word: string, count: number) => (count !== 1 ? word + 's' : word)
 
-export const prettyTime = (date: string | Date | number, fallback?: 'date' | 'date-time') => {
+export const prettyTime = (
+  date: string | Date | number,
+  fallback?: 'date' | 'date-time' | 'time'
+) => {
   // This function was copied, and slightly adapted from John Resig's website: https://johnresig.com/files/pretty.js
   date = new Date(date)
   const diff = (Date.now() - date.getTime()) / 1000
@@ -28,6 +31,7 @@ export const prettyTime = (date: string | Date | number, fallback?: 'date' | 'da
     if (fallback === 'date') return date.toLocaleString()
     if (fallback === 'date-time')
       return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+    if (fallback === 'time') return date.toLocaleTimeString()
     return
   }
 
