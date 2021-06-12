@@ -271,6 +271,25 @@
     var t4, o4, e4;
     n.__ && n.__(l4, u4), o4 = (t4 = typeof i4 == "function") ? null : i4 && i4.__k || u4.__k, e4 = [], I(u4, l4 = (!t4 && i4 || u4).__k = a(y, null, [l4]), o4 || r, r, u4.ownerSVGElement !== void 0, !t4 && i4 ? [i4] : o4 ? null : u4.firstChild ? f.slice.call(u4.childNodes) : null, e4, !t4 && i4 ? i4 : o4 ? o4.__e : u4.firstChild, t4), T(e4, l4);
   }
+  function q(n3, l4) {
+    var u4 = { __c: l4 = "__cC" + o++, __: n3, Consumer: function(n4, l5) {
+      return n4.children(l5);
+    }, Provider: function(n4) {
+      var u5, i4;
+      return this.getChildContext || (u5 = [], (i4 = {})[l4] = this, this.getChildContext = function() {
+        return i4;
+      }, this.shouldComponentUpdate = function(n5) {
+        this.props.value !== n5.value && u5.some(k);
+      }, this.sub = function(n5) {
+        u5.push(n5);
+        var l5 = n5.componentWillUnmount;
+        n5.componentWillUnmount = function() {
+          u5.splice(u5.indexOf(n5), 1), l5 && l5.call(n5);
+        };
+      }), n4.children;
+    } };
+    return u4.Provider.__ = u4.Consumer.contextType = u4;
+  }
   n = { __e: function(n3, l4) {
     for (var u4, i4, t4; l4 = l4.__; )
       if ((u4 = l4.__c) && !u4.__)
@@ -328,6 +347,10 @@
   function d2(n3, u4) {
     var r4 = m2(t2++, 7);
     return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
+  }
+  function F(n3) {
+    var r4 = u2.context[n3.__c], o4 = m2(t2++, 9);
+    return o4.__c = n3, r4 ? (o4.__ == null && (o4.__ = true, r4.sub(u2)), r4.props.value) : n3.__;
   }
   function x2() {
     i2.forEach(function(t4) {
@@ -589,7 +612,7 @@ ${r4}}
 
   // src/lib/util.ts
   var getById = (id) => document.getElementById(id);
-  var q = (sel, ctx = document) => ctx.querySelector(sel);
+  var q2 = (sel, ctx = document) => ctx.querySelector(sel);
   var qq = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
   var decodeHTML = (input) => {
     const e4 = document.createElement("textarea");
@@ -635,6 +658,7 @@ ${r4}}
     };
     return throttled;
   };
+  var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
   // src/lib/api.ts
   var getJSON = (url) => fetch(url).then((res) => res.json());
@@ -674,21 +698,23 @@ ${r4}}
     };
     return update;
   };
-  var PostComments = ({ post }) => {
+  var CommentCtx = q({});
+  var PostComments = ({ post, conf }) => {
     const [things, setThings] = l2(null);
     y2(() => {
       setThings(null);
       getComments(post).then(setThings);
     }, [post.name]);
     const update = useUpdate(things || []);
-    return /* @__PURE__ */ a("div", {
+    return /* @__PURE__ */ a(CommentCtx.Provider, {
+      value: { post, conf }
+    }, /* @__PURE__ */ a("div", {
       className: zaftig_min_default`margin-top 15`.class
     }, !things ? /* @__PURE__ */ a("div", null, "Loading ", post.name, "...") : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
       key: thing.data.id,
       thing,
-      post,
       update
-    })));
+    }))));
   };
   function PostCommentChild({ thing, ...rest }) {
     switch (thing.kind) {
@@ -704,37 +730,51 @@ ${r4}}
         throw new Error("unknown child type");
     }
   }
-  var LoadMoreButton = ({ thing, update, post }) => {
+  var LoadMoreButton = ({ thing, update }) => {
     const [loading, setLoading] = l2(false);
+    const [failed, setFailed] = l2(false);
+    const { post } = F(CommentCtx);
     const { count, children } = thing.data;
     if (count <= 0)
       return null;
+    const label = failed ? "Can't find those dang comments" : `${loading ? "Loading" : "Load"} ${count} more comments`;
     return /* @__PURE__ */ a("div", {
       className: styles2.comment
     }, /* @__PURE__ */ a("button", {
-      disabled: loading,
+      disabled: loading || failed,
       className: zaftig_min_default`padding 5 10;border none`.class,
       onClick: async () => {
         setLoading(true);
         const results = await getMoreComments(post.name, children);
+        setLoading(false);
+        if (results.length <= 0) {
+          setFailed(true);
+          await sleep(1200);
+        }
         update((parent) => {
           const currentPosition = parent.indexOf(thing);
           if (currentPosition >= 0)
             parent.splice(currentPosition, 1, ...results);
         });
       }
-    }, loading ? "Loading" : "Load", " ", count, " more comments"));
+    }, label));
   };
-  var PostComment = ({ thing, post }) => {
+  var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
+    const { conf } = F(CommentCtx);
     const redraw = useRedraw();
     const ref = s2();
     const toggle = () => {
       thing.data.collapsed = !collapsed;
       redraw();
-      if (ref.current.getBoundingClientRect().top < 0)
+      if (ref.current.getBoundingClientRect().top < 0) {
         ref.current.scrollIntoView();
+        if (conf.scrollOffset) {
+          const offset = typeof conf.scrollOffset === "function" ? conf.scrollOffset() : conf.scrollOffset;
+          window.scrollBy(0, -offset);
+        }
+      }
     };
     const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);
     const createdTime = new Date(created_utc * 1e3);
@@ -748,7 +788,7 @@ ${r4}}
     }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
       ref,
       className: styles2.author,
-      style: { marginBottom: collapsed ? "" : "5px" }
+      style: { marginBottom: collapsed ? "" : "10px" }
     }, /* @__PURE__ */ a("span", {
       className: styles2.authorText
     }, author), /* @__PURE__ */ a("span", {
@@ -757,13 +797,18 @@ ${r4}}
       className: styles2.date
     }, prettyTime(createdTime, "date-time"), editedTime && /* @__PURE__ */ a(y, null, " edited ", prettyTime(editedTime, differentDay ? "date-time" : "time")))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
       className: styles2.body,
-      dangerouslySetInnerHTML: { __html: html }
+      dangerouslySetInnerHTML: { __html: html },
+      onClick: (e4) => {
+        if (e4.target instanceof HTMLAnchorElement) {
+          e4.preventDefault();
+          window.open(e4.target.href);
+        }
+      }
     }), replies && /* @__PURE__ */ a("div", {
       className: styles2.replies
     }, replies.data.children.map((child) => /* @__PURE__ */ a(PostCommentChild, {
       key: child.data.id,
       thing: child,
-      post,
       update
     }))))));
   };
@@ -792,7 +837,14 @@ ${r4}}
       width 4
     }
   `.class,
-    body: zaftig_min_default``.class,
+    body: zaftig_min_default`
+    blockquote {
+      border-left 3 solid $text-subdued
+      padding 5 10
+      margin 10 0
+      color $text-subdued
+    }
+  `.class,
     ups: zaftig_min_default`color orange;font-weight bold`.class,
     date: zaftig_min_default`color $text-subdued`.class,
     author: zaftig_min_default`display flex;gap 10`.class,
@@ -828,6 +880,7 @@ ${r4}}
       selected,
       onSelect: setSelected
     }), /* @__PURE__ */ a(PostComments, {
+      conf,
       post: selected
     }));
   };
@@ -863,7 +916,7 @@ ${r4}}
         logError("unable to find anime name");
         return [];
       }
-      const epNum = (_f = (_e = (_d = (_c = q("#showmedia_about_media h4:last-child")) == null ? void 0 : _c.textContent) == null ? void 0 : _d.split(",").pop()) == null ? void 0 : _e.match(/[0-9]+/)) == null ? void 0 : _f[0];
+      const epNum = (_f = (_e = (_d = (_c = q2("#showmedia_about_media h4:last-child")) == null ? void 0 : _c.textContent) == null ? void 0 : _d.split(",").pop()) == null ? void 0 : _e.match(/[0-9]+/)) == null ? void 0 : _f[0];
       const posts = await searchPosts(animeName + " discussion");
       return epNum ? filterForEp(posts, epNum) : posts;
     }
@@ -876,6 +929,10 @@ ${r4}}
   };
   var youtube = {
     commentSelector: "#comments",
+    scrollOffset: () => {
+      var _a;
+      return ((_a = q2(".ytd-masthead")) == null ? void 0 : _a.clientHeight) || 60;
+    },
     isMatch: () => Boolean(getVideoIdFromUrl(location.href)),
     theme: {
       background: "var(--yt-spec-general-background-a)",

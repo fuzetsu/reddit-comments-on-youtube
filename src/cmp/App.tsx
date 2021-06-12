@@ -28,7 +28,7 @@ export const App = ({ conf }: Props) => {
   return (
     <>
       <PostSelect posts={posts} selected={selected} onSelect={setSelected} />
-      <PostComments post={selected} />
+      <PostComments conf={conf} post={selected} />
     </>
   )
 }

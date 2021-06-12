@@ -1,11 +1,12 @@
 import { searchPosts } from '../lib/api'
-import { logError } from '../lib/util'
+import { logError, q } from '../lib/util'
 import { Conf } from '../type'
 
 const getVideoIdFromUrl = (url: string) => url.match(/v=([^&]+)/i)?.[1]
 
 export const youtube: Conf = {
   commentSelector: '#comments',
+  scrollOffset: () => q('.ytd-masthead')?.clientHeight || 60,
   isMatch: () => Boolean(getVideoIdFromUrl(location.href)),
   theme: {
     background: 'var(--yt-spec-general-background-a)',

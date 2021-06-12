@@ -1,18 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
+import { createContext } from 'preact'
+import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import z from 'zaftig'
 import { getComments, Post, Comment, LoadMore, CommentChild, getMoreComments } from '../lib/api'
 import { useRedraw } from '../lib/hooks'
-import { decodeHTML, prettyTime } from '../lib/util'
+import { decodeHTML, prettyTime, sleep } from '../lib/util'
+import { Conf } from '../type'
 
 interface Props {
   post: Post
+  conf: Conf
 }
 interface UpdateFn {
   (fn: (parent: CommentChild[]) => void): void
 }
 interface ChildProps<T extends CommentChild> {
   thing: T
-  post: Post
   update: UpdateFn
 }
 
@@ -25,7 +27,9 @@ const useUpdate = (parent: CommentChild[]) => {
   return update
 }
 
-export const PostComments = ({ post }: Props) => {
+const CommentCtx = createContext({} as Props)
+
+export const PostComments = ({ post, conf }: Props) => {
   const [things, setThings] = useState<CommentChild[] | null>(null)
   useEffect(() => {
     setThings(null)
@@ -35,15 +39,17 @@ export const PostComments = ({ post }: Props) => {
   const update = useUpdate(things || [])
 
   return (
-    <div className={z`margin-top 15`.class}>
-      {!things ? (
-        <div>Loading {post.name}...</div>
-      ) : (
-        things.map(thing => (
-          <PostCommentChild key={thing.data.id} thing={thing} post={post} update={update} />
-        ))
-      )}
-    </div>
+    <CommentCtx.Provider value={{ post, conf }}>
+      <div className={z`margin-top 15`.class}>
+        {!things ? (
+          <div>Loading {post.name}...</div>
+        ) : (
+          things.map(thing => (
+            <PostCommentChild key={thing.data.id} thing={thing} update={update} />
+          ))
+        )}
+      </div>
+    </CommentCtx.Provider>
   )
 }
 
@@ -58,35 +64,49 @@ export function PostCommentChild({ thing, ...rest }: ChildProps<CommentChild>) {
   }
 }
 
-export const LoadMoreButton = ({ thing, update, post }: ChildProps<LoadMore>) => {
+export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
   const [loading, setLoading] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  const { post } = useContext(CommentCtx)
 
   const { count, children } = thing.data
   if (count <= 0) return null
 
+  const label = failed
+    ? "Can't find those dang comments"
+    : `${loading ? 'Loading' : 'Load'} ${count} more comments`
+
   return (
     <div className={styles.comment}>
       <button
-        disabled={loading}
+        disabled={loading || failed}
         className={z`padding 5 10;border none`.class}
         onClick={async () => {
           setLoading(true)
           const results = await getMoreComments(post.name, children)
+          setLoading(false)
+          if (results.length <= 0) {
+            setFailed(true)
+            await sleep(1200)
+          }
           update(parent => {
             const currentPosition = parent.indexOf(thing)
             if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
           })
         }}
       >
-        {loading ? 'Loading' : 'Load'} {count} more comments
+        {label}
       </button>
     </div>
   )
 }
 
-export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
+export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
+
+  const { conf } = useContext(CommentCtx)
 
   const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>()
@@ -94,7 +114,14 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
     thing.data.collapsed = !collapsed
     redraw()
 
-    if (ref.current.getBoundingClientRect().top < 0) ref.current.scrollIntoView()
+    if (ref.current.getBoundingClientRect().top < 0) {
+      ref.current.scrollIntoView()
+      if (conf.scrollOffset) {
+        const offset =
+          typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
+        window.scrollBy(0, -offset)
+      }
+    }
   }
 
   const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
@@ -107,7 +134,7 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
     <div className={styles.comment}>
       <div className={styles.border} onClick={toggle} />
       <div>
-        <div ref={ref} className={styles.author} style={{ marginBottom: collapsed ? '' : '5px' }}>
+        <div ref={ref} className={styles.author} style={{ marginBottom: collapsed ? '' : '10px' }}>
           <span className={styles.authorText}>{author}</span>
           <span className={styles.ups}>{ups}</span>
           <span className={styles.date}>
@@ -132,7 +159,7 @@ export const PostComment = ({ thing, post }: ChildProps<Comment>) => {
             {replies && (
               <div className={styles.replies}>
                 {replies.data.children.map(child => (
-                  <PostCommentChild key={child.data.id} thing={child} post={post} update={update} />
+                  <PostCommentChild key={child.data.id} thing={child} update={update} />
                 ))}
               </div>
             )}
