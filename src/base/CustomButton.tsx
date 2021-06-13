@@ -9,7 +9,7 @@ type Props<Tag extends TagName> = { tag: Tag; children: JSX.Element } & JSX.HTML
 >
 
 export function CustomButton<Tag extends TagName>({ tag, children, ...props }: Props<Tag>) {
-  const handleKeyPress: JSX.KeyboardEventHandler<GetElem<Tag>> = e => {
+  const onKeyPress: JSX.KeyboardEventHandler<GetElem<Tag>> = e => {
     if ((e.key === ' ' || e.key === 'Enter') && props.onClick) {
       e.preventDefault()
       props.onClick.call(e.currentTarget, e as never)
@@ -17,7 +17,7 @@ export function CustomButton<Tag extends TagName>({ tag, children, ...props }: P
   }
   return h(
     tag,
-    { role: 'button', tabIndex: 0, handleKeyPress, ...props } as Record<string, unknown>,
+    { role: 'button', tabIndex: 0, onKeyPress, ...props } as Record<string, unknown>,
     children
   )
 }

@@ -688,7 +688,7 @@ ${r4}}
     return redraw;
   };
 
-  // src/cmp/PostComments.tsx
+  // src/cmp/PostComments/hooks.ts
   var useUpdate = (parent) => {
     const redraw = useRedraw();
     const update = (fn) => {
@@ -698,48 +698,18 @@ ${r4}}
     return update;
   };
   var CommentCtx = q({});
-  var PostComments = ({ post, conf: conf2 }) => {
-    const [things, setThings] = l2(null);
-    y2(() => {
-      setThings(null);
-      getComments(post).then(setThings);
-    }, [post.name]);
-    const update = useUpdate(things || []);
-    return /* @__PURE__ */ a(CommentCtx.Provider, {
-      value: { post, conf: conf2 }
-    }, /* @__PURE__ */ a("div", {
-      className: zaftig_min_default`margin-top 15`.class
-    }, !things ? /* @__PURE__ */ a("div", null, "Loading ", post.name, "...") : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
-      key: thing.data.id,
-      thing,
-      update
-    }))));
-  };
-  function PostCommentChild({ thing, ...rest }) {
-    switch (thing.kind) {
-      case "more":
-        return /* @__PURE__ */ a(LoadMoreButton, {
-          ...{ thing, ...rest }
-        });
-      case "t1":
-        return /* @__PURE__ */ a(PostComment, {
-          ...{ thing, ...rest }
-        });
-      default:
-        throw new Error("unknown child type");
-    }
-  }
+  var useCommentCtx = () => F(CommentCtx);
+
+  // src/cmp/PostComments/cmp/LoadMoreButton.tsx
   var LoadMoreButton = ({ thing, update }) => {
     const [loading, setLoading] = l2(false);
     const [failed, setFailed] = l2(false);
-    const { post } = F(CommentCtx);
+    const { post } = useCommentCtx();
     const { count, children } = thing.data;
     if (count <= 0)
       return null;
     const label = failed ? "Can't find those dang comments" : `${loading ? "Loading" : "Load"} ${count} more comments`;
-    return /* @__PURE__ */ a("div", {
-      className: styles2.comment
-    }, /* @__PURE__ */ a("button", {
+    return /* @__PURE__ */ a("button", {
       disabled: loading || failed,
       className: zaftig_min_default`padding 5 10;border none`.class,
       onClick: async () => {
@@ -756,12 +726,14 @@ ${r4}}
             parent.splice(currentPosition, 1, ...results);
         });
       }
-    }, label));
+    }, label);
   };
+
+  // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
-    const { conf: conf2 } = F(CommentCtx);
+    const { conf: conf2 } = useCommentCtx();
     const redraw = useRedraw();
     const ref = s2();
     const toggle = () => {
@@ -847,15 +819,52 @@ ${r4}}
     ups: zaftig_min_default`color orange;font-weight bold`.class,
     date: zaftig_min_default`color $text-subdued`.class,
     author: zaftig_min_default`display flex;gap 10`.class,
-    authorText: zaftig_min_default`font-weight bold`.class,
-    collapse: zaftig_min_default`
-    font-family monospace
-    font-size 90%
-    user-select none
-    cursor pointer
-    align-self center
-  `.class
+    authorText: zaftig_min_default`font-weight bold`.class
   };
+
+  // src/cmp/PostComments/cmp/PostCommentChild.tsx
+  function PostCommentChild({ thing, ...rest }) {
+    switch (thing.kind) {
+      case "more":
+        return /* @__PURE__ */ a(LoadMoreButton, {
+          ...{ thing, ...rest }
+        });
+      case "t1":
+        return /* @__PURE__ */ a(PostComment, {
+          ...{ thing, ...rest }
+        });
+      default:
+        throw new Error("unknown child type");
+    }
+  }
+
+  // src/cmp/PostComments/PostComments.tsx
+  var PostComments = ({ post, conf: conf2 }) => {
+    const [things, setThings] = l2(null);
+    y2(() => {
+      setThings(null);
+      getComments(post).then(setThings);
+    }, [post]);
+    const update = useUpdate(things || []);
+    if (!things)
+      return /* @__PURE__ */ a("div", {
+        className: container
+      }, 'Loading comments for "', post.title, '"\u2026');
+    if (things.length <= 0)
+      return /* @__PURE__ */ a("div", {
+        className: container
+      }, "No comments yet.");
+    return /* @__PURE__ */ a(CommentCtx.Provider, {
+      value: { post, conf: conf2 }
+    }, /* @__PURE__ */ a("div", {
+      className: container
+    }, things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
+      key: thing.data.id,
+      thing,
+      update
+    }))));
+  };
+  var container = zaftig_min_default`margin-top 15`.class;
 
   // src/cmp/App.tsx
   var App = ({ conf: conf2, switchComments }) => {
@@ -972,7 +981,7 @@ ${r4}}
     selector,
     onmatch,
     stopWaiting = false,
-    container = document.body,
+    container: container2 = document.body,
     mutationConfig
   }) => {
     const seen = new WeakSet();
@@ -988,7 +997,7 @@ ${r4}}
       }
     };
     const observer = new MutationObserver(throttle(300, check));
-    const start = () => observer.observe(container, {
+    const start = () => observer.observe(container2, {
       subtree: true,
       childList: true,
       ...mutationConfig

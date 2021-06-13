@@ -1,112 +1,17 @@
-import { createContext } from 'preact'
-import { useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks'
+import { useMemo, useRef } from 'preact/hooks'
 import z from 'zaftig'
-import { getComments, Post, Comment, LoadMore, CommentChild, getMoreComments } from '../lib/api'
-import { useRedraw } from '../lib/hooks'
-import { decodeHTML, prettyTime, sleep } from '../lib/util'
-import { Conf } from '../type'
-
-interface Props {
-  post: Post
-  conf: Conf
-}
-interface UpdateFn {
-  (fn: (parent: CommentChild[]) => void): void
-}
-interface ChildProps<T extends CommentChild> {
-  thing: T
-  update: UpdateFn
-}
-
-const useUpdate = (parent: CommentChild[]) => {
-  const redraw = useRedraw()
-  const update: UpdateFn = fn => {
-    fn(parent)
-    redraw()
-  }
-  return update
-}
-
-const CommentCtx = createContext({} as Props)
-
-export const PostComments = ({ post, conf }: Props) => {
-  const [things, setThings] = useState<CommentChild[] | null>(null)
-  useEffect(() => {
-    setThings(null)
-    getComments(post).then(setThings)
-  }, [post.name])
-
-  const update = useUpdate(things || [])
-
-  return (
-    <CommentCtx.Provider value={{ post, conf }}>
-      <div className={z`margin-top 15`.class}>
-        {!things ? (
-          <div>Loading {post.name}...</div>
-        ) : (
-          things.map(thing => (
-            <PostCommentChild key={thing.data.id} thing={thing} update={update} />
-          ))
-        )}
-      </div>
-    </CommentCtx.Provider>
-  )
-}
-
-export function PostCommentChild({ thing, ...rest }: ChildProps<CommentChild>) {
-  switch (thing.kind) {
-    case 'more':
-      return <LoadMoreButton {...{ thing, ...rest }} />
-    case 't1':
-      return <PostComment {...{ thing, ...rest }} />
-    default:
-      throw new Error('unknown child type')
-  }
-}
-
-export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
-  const [loading, setLoading] = useState(false)
-  const [failed, setFailed] = useState(false)
-
-  const { post } = useContext(CommentCtx)
-
-  const { count, children } = thing.data
-  if (count <= 0) return null
-
-  const label = failed
-    ? "Can't find those dang comments"
-    : `${loading ? 'Loading' : 'Load'} ${count} more comments`
-
-  return (
-    <div className={styles.comment}>
-      <button
-        disabled={loading || failed}
-        className={z`padding 5 10;border none`.class}
-        onClick={async () => {
-          setLoading(true)
-          const results = await getMoreComments(post.name, children)
-          setLoading(false)
-          if (results.length <= 0) {
-            setFailed(true)
-            await sleep(1200)
-          }
-          update(parent => {
-            const currentPosition = parent.indexOf(thing)
-            if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
-          })
-        }}
-      >
-        {label}
-      </button>
-    </div>
-  )
-}
+import { Comment } from '../../../lib/api'
+import { useRedraw } from '../../../lib/hooks'
+import { decodeHTML, prettyTime } from '../../../lib/util'
+import { useCommentCtx, useUpdate } from '../hooks'
+import { ChildProps } from '../types'
+import { PostCommentChild } from './PostCommentChild'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
-  const { conf } = useContext(CommentCtx)
+  const { conf } = useCommentCtx()
 
   const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>()
@@ -206,12 +111,5 @@ const styles = {
   ups: z`color orange;font-weight bold`.class,
   date: z`color $text-subdued`.class,
   author: z`display flex;gap 10`.class,
-  authorText: z`font-weight bold`.class,
-  collapse: z`
-    font-family monospace
-    font-size 90%
-    user-select none
-    cursor pointer
-    align-self center
-  `.class
+  authorText: z`font-weight bold`.class
 }
