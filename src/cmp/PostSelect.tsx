@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
+import { Icon } from '../base/Icon'
 import { Post } from '../lib/api'
 
 interface Props {
@@ -24,10 +25,10 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
           style={{ borderBottomColor: post === selected ? 'var(--text-secondary)' : '' }}
           onClick={() => onSelect(post)}
         >
-          <div className={styles.numComments}>{post.num_comments}</div>
-          <div title={post.subreddit} className={styles.subreddit}>
-            /r/{post.subreddit}
+          <div className={styles.numComments}>
+            <Icon name="message-circle" /> {post.num_comments}
           </div>
+          <div title={post.subreddit}>/r/{post.subreddit}</div>
           <div title={post.title}>{post.title}</div>
         </button>
       ))}
@@ -62,10 +63,5 @@ const styles = {
       white-space nowrap
     }
   `).class,
-  numComments: z`
-    && { padding 10 3 }
-    font-weight bold
-    text-align center
-  `.class,
-  subreddit: z``.class
+  numComments: z`font-weight bold`.class
 }

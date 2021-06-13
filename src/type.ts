@@ -1,3 +1,4 @@
+import z from 'zaftig'
 import { Post } from './lib/api'
 import { Theme } from './theme'
 
@@ -9,3 +10,5 @@ export interface Conf {
   theme?: Theme
   scrollOffset?: number | (() => number)
 }
+
+export type ZaftigStyle = ReturnType<typeof z>

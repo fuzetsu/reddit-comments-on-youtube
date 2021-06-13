@@ -552,59 +552,6 @@ ${r4}}
   };
   var zaftig_min_default = y3();
 
-  // src/cmp/PostSelect.tsx
-  var PostSelect = ({ posts, selected, onSelect }) => {
-    const [showEmpty, setShowEmpty] = l2(false);
-    const postsWithComments = posts.filter((post) => post.num_comments > 0);
-    const emptyCount = posts.length - postsWithComments.length;
-    const list = showEmpty ? posts : postsWithComments;
-    return /* @__PURE__ */ a("div", {
-      className: styles.container
-    }, list.map((post) => /* @__PURE__ */ a("button", {
-      className: styles.item,
-      style: { borderBottomColor: post === selected ? "var(--text-secondary)" : "" },
-      onClick: () => onSelect(post)
-    }, /* @__PURE__ */ a("div", {
-      className: styles.numComments
-    }, post.num_comments), /* @__PURE__ */ a("div", {
-      title: post.subreddit,
-      className: styles.subreddit
-    }, "/r/", post.subreddit), /* @__PURE__ */ a("div", {
-      title: post.title
-    }, post.title))), emptyCount > 0 && /* @__PURE__ */ a("button", {
-      className: styles.toggleEmpty,
-      onClick: () => setShowEmpty(!showEmpty)
-    }, showEmpty ? "Hide" : `Show`, " ", emptyCount, " posts without comments"));
-  };
-  var buttonBase = zaftig_min_default`
-  cursor pointer
-  border none
-  margin 0
-  padding 0
-  border-bottom 4px solid $button-background
-`;
-  var styles = {
-    container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
-    toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`).class,
-    item: buttonBase.concat(zaftig_min_default`
-    text-align left
-    display grid
-    grid-template-columns minmax(min-content, 1fr) 2fr 7fr
-    > div {
-      padding 10
-      overflow hidden
-      text-overflow ellipsis
-      white-space nowrap
-    }
-  `).class,
-    numComments: zaftig_min_default`
-    && { padding 10 3 }
-    font-weight bold
-    text-align center
-  `.class,
-    subreddit: zaftig_min_default``.class
-  };
-
   // src/constants.ts
   var SCRIPT_NAME = "RCOY";
   var API_URL = "https://www.reddit.com";
@@ -636,6 +583,7 @@ ${r4}}
   var namePart = [`%c${SCRIPT_NAME}:`, "color:#ddd"];
   var log = (first, ...rest) => (console.log(...namePart, first, ...rest), first);
   var logError = (...rest) => console.log(...namePart, ...rest);
+  var subURI = (template, subs) => Object.entries(subs).reduce((acc, [k3, v3]) => acc.replace(":" + k3, encodeURIComponent(v3)), template);
   var buildQuery = (params) => {
     const data = new URLSearchParams();
     Object.entries(params).forEach(([k3, v3]) => v3 && data.append(k3, v3));
@@ -658,6 +606,74 @@ ${r4}}
     return throttled;
   };
   var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+  // src/base/Icon.tsx
+  var API = "https://icongr.am/feather";
+  var Icon = ({
+    name,
+    className,
+    onClick,
+    size = 18,
+    spin = false,
+    color = "currentColor"
+  }) => {
+    const cls = zaftig_min_default`vertical-align sub`.concat(spin && "spin", className).class;
+    const src = API + subURI("/:name.svg?size=:size&color=:color", { name, color, size: String(size) });
+    return /* @__PURE__ */ a("img", {
+      className: cls,
+      src,
+      onClick
+    });
+  };
+
+  // src/cmp/PostSelect.tsx
+  var PostSelect = ({ posts, selected, onSelect }) => {
+    const [showEmpty, setShowEmpty] = l2(false);
+    const postsWithComments = posts.filter((post) => post.num_comments > 0);
+    const emptyCount = posts.length - postsWithComments.length;
+    const list = showEmpty ? posts : postsWithComments;
+    return /* @__PURE__ */ a("div", {
+      className: styles.container
+    }, list.map((post) => /* @__PURE__ */ a("button", {
+      className: styles.item,
+      style: { borderBottomColor: post === selected ? "var(--text-secondary)" : "" },
+      onClick: () => onSelect(post)
+    }, /* @__PURE__ */ a("div", {
+      className: styles.numComments
+    }, /* @__PURE__ */ a(Icon, {
+      name: "message-circle"
+    }), " ", post.num_comments), /* @__PURE__ */ a("div", {
+      title: post.subreddit
+    }, "/r/", post.subreddit), /* @__PURE__ */ a("div", {
+      title: post.title
+    }, post.title))), emptyCount > 0 && /* @__PURE__ */ a("button", {
+      className: styles.toggleEmpty,
+      onClick: () => setShowEmpty(!showEmpty)
+    }, showEmpty ? "Hide" : `Show`, " ", emptyCount, " posts without comments"));
+  };
+  var buttonBase = zaftig_min_default`
+  cursor pointer
+  border none
+  margin 0
+  padding 0
+  border-bottom 4px solid $button-background
+`;
+  var styles = {
+    container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
+    toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`).class,
+    item: buttonBase.concat(zaftig_min_default`
+    text-align left
+    display grid
+    grid-template-columns minmax(min-content, 1fr) 2fr 7fr
+    > div {
+      padding 10
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+    }
+  `).class,
+    numComments: zaftig_min_default`font-weight bold`.class
+  };
 
   // src/lib/api.ts
   var getJSON = (url) => fetch(url).then((res) => res.json());
@@ -709,7 +725,9 @@ ${r4}}
     if (count <= 0)
       return null;
     const label = failed ? "Can't find those dang comments" : `${loading ? "Loading" : "Load"} ${count} more comments`;
-    return /* @__PURE__ */ a("button", {
+    return /* @__PURE__ */ a("div", {
+      className: zaftig_min_default`:not(:last-child) { margin-bottom 18 }`.class
+    }, /* @__PURE__ */ a("button", {
       disabled: loading || failed,
       className: zaftig_min_default`padding 5 10;border none`.class,
       onClick: async () => {
@@ -726,12 +744,12 @@ ${r4}}
             parent.splice(currentPosition, 1, ...results);
         });
       }
-    }, label);
+    }, label));
   };
 
   // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
-    const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
+    const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
     const { conf: conf2 } = useCommentCtx();
     const redraw = useRedraw();
@@ -758,21 +776,26 @@ ${r4}}
       onClick: toggle
     }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
       ref,
-      className: styles2.author,
+      className: styles2.commentInfo,
       style: { marginBottom: collapsed ? "" : "10px" }
-    }, /* @__PURE__ */ a("span", {
-      className: styles2.authorText
+    }, /* @__PURE__ */ a("a", {
+      className: styles2.author,
+      target: "_blank",
+      href: API_URL + subURI("/u/:author", { author })
     }, author), /* @__PURE__ */ a("span", {
       className: styles2.ups
-    }, ups), /* @__PURE__ */ a("span", {
-      className: styles2.date
+    }, ups), /* @__PURE__ */ a("a", {
+      className: styles2.date,
+      target: "_blank",
+      href: API_URL + permalink
     }, prettyTime(createdTime, "date-time"), editedTime && /* @__PURE__ */ a(y, null, " edited ", prettyTime(editedTime, differentDay ? "date-time" : "time")))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
       className: styles2.body,
       dangerouslySetInnerHTML: { __html: html },
       onClick: (e4) => {
         if (e4.target instanceof HTMLAnchorElement) {
           e4.preventDefault();
-          window.open(e4.target.href);
+          const url = e4.target.href;
+          window.open(url.startsWith("/") ? API_URL + url : url);
         }
       }
     }), replies && /* @__PURE__ */ a("div", {
@@ -815,11 +838,18 @@ ${r4}}
       margin 10 0
       color $text-subdued
     }
+    p:not(:last-child) { margin-bottom 18 }
+    table {
+      th { ta left }
+      tr { border-top 1 solid $text-secondary }
+      th, td { padding 10 5 }
+    }
+    ul, ol { margin 18 0; padding-left 30 }
   `.class,
-    ups: zaftig_min_default`color orange;font-weight bold`.class,
-    date: zaftig_min_default`color $text-subdued`.class,
-    author: zaftig_min_default`display flex;gap 10`.class,
-    authorText: zaftig_min_default`font-weight bold`.class
+    ups: zaftig_min_default`color $ups;font-weight bold`.class,
+    date: zaftig_min_default`&& { color $text-subdued }`.class,
+    commentInfo: zaftig_min_default`display flex;gap 10`.class,
+    author: zaftig_min_default`font-weight bold;&& { color $text-primary }`.class
   };
 
   // src/cmp/PostComments/cmp/PostCommentChild.tsx
@@ -951,7 +981,8 @@ ${r4}}
       background: "var(--yt-spec-general-background-a)",
       text: { normal: "var(--yt-spec-text-primary)", subdued: "var(--yt-spec-text-secondary)" },
       link: { color: "var(--yt-spec-call-to-action)" },
-      button: { background: "var(--yt-spec-badge-chip-background)" }
+      button: { background: "var(--yt-spec-badge-chip-background)" },
+      ups: "var(--paper-orange-800)"
     },
     getPosts: async () => {
       const url = location.href;
@@ -1038,13 +1069,15 @@ ${r4}}
       background: "#fefefe",
       text: { normal: "#444", subdued: "#666" },
       link: { color: "#1b3e92" },
-      button: { background: "#eee" }
+      button: { background: "#eee" },
+      ups: "#ff8300"
     }),
     dark: generateTheme({
       background: "#333",
       text: { normal: "#fff", subdued: "#ddd" },
       link: { color: "#1b3e92" },
-      button: { background: "#555" }
+      button: { background: "#555" },
+      ups: "orange"
     }),
     common: zaftig_min_default`
     padding 5
@@ -1052,17 +1085,20 @@ ${r4}}
     color $text-normal
     background $background
     button { font-size 16; color $text-normal; background $button-background }
-    a { color $link-color }
+    a { 
+      color $link-color
+      text-decoration none
+      :hover { text-decoration underline }
+    }
   `
   };
   function generateTheme(theme2) {
     const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
       const cur = [...parents, k3];
-      if (typeof v3 === "object") {
+      if (typeof v3 === "object")
         Object.assign(acc, getVars(v3, cur));
-      } else {
+      else
         acc[cur.join("-")] = v3;
-      }
       return acc;
     }, {});
     return zaftig_min_default(Object.entries(getVars(theme2)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));

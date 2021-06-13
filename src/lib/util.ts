@@ -62,10 +62,10 @@ export const anim = (
 }
 
 const namePart = [`%c${SCRIPT_NAME}:`, 'color:#ddd']
-export const log = <T>(first: T, ...rest: any[]) => (
+export const log = <T>(first: T, ...rest: unknown[]) => (
   console.log(...namePart, first, ...rest), first
 )
-export const logError = (...rest: any[]) => console.log(...namePart, ...rest)
+export const logError = (...rest: unknown[]) => console.log(...namePart, ...rest)
 
 export const subURI = (template: string, subs: { [key: string]: string }) =>
   Object.entries(subs).reduce(

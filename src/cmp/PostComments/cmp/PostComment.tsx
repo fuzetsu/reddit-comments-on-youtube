@@ -1,14 +1,15 @@
 import { useMemo, useRef } from 'preact/hooks'
 import z from 'zaftig'
+import { API_URL } from '../../../constants'
 import { Comment } from '../../../lib/api'
 import { useRedraw } from '../../../lib/hooks'
-import { decodeHTML, prettyTime } from '../../../lib/util'
+import { decodeHTML, prettyTime, subURI } from '../../../lib/util'
 import { useCommentCtx, useUpdate } from '../hooks'
 import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
-  const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data
+  const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const { conf } = useCommentCtx()
@@ -39,15 +40,25 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     <div className={styles.comment}>
       <div className={styles.border} onClick={toggle} />
       <div>
-        <div ref={ref} className={styles.author} style={{ marginBottom: collapsed ? '' : '10px' }}>
-          <span className={styles.authorText}>{author}</span>
+        <div
+          ref={ref}
+          className={styles.commentInfo}
+          style={{ marginBottom: collapsed ? '' : '10px' }}
+        >
+          <a
+            className={styles.author}
+            target="_blank"
+            href={API_URL + subURI('/u/:author', { author })}
+          >
+            {author}
+          </a>
           <span className={styles.ups}>{ups}</span>
-          <span className={styles.date}>
+          <a className={styles.date} target="_blank" href={API_URL + permalink}>
             {prettyTime(createdTime, 'date-time')}
             {editedTime && (
               <> edited {prettyTime(editedTime, differentDay ? 'date-time' : 'time')}</>
             )}
-          </span>
+          </a>
         </div>
         {!collapsed && (
           <>
@@ -57,7 +68,8 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
               onClick={e => {
                 if (e.target instanceof HTMLAnchorElement) {
                   e.preventDefault()
-                  window.open(e.target.href)
+                  const url = e.target.href
+                  window.open(url.startsWith('/') ? API_URL + url : url)
                 }
               }}
             />
@@ -107,9 +119,16 @@ const styles = {
       margin 10 0
       color $text-subdued
     }
+    p:not(:last-child) { margin-bottom 18 }
+    table {
+      th { ta left }
+      tr { border-top 1 solid $text-secondary }
+      th, td { padding 10 5 }
+    }
+    ul, ol { margin 18 0; padding-left 30 }
   `.class,
-  ups: z`color orange;font-weight bold`.class,
-  date: z`color $text-subdued`.class,
-  author: z`display flex;gap 10`.class,
-  authorText: z`font-weight bold`.class
+  ups: z`color $ups;font-weight bold`.class,
+  date: z`&& { color $text-subdued }`.class,
+  commentInfo: z`display flex;gap 10`.class,
+  author: z`font-weight bold;&& { color $text-primary }`.class
 }
