@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks'
 import z from 'zaftig'
 import { Icon } from '../base/Icon'
 import { Post } from '../lib/api'
+import { reduceCount } from '../lib/util'
 
 interface Props {
   posts: Post[]
@@ -26,7 +27,7 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
           onClick={() => onSelect(post)}
         >
           <div className={styles.numComments}>
-            <Icon name="message-circle" /> {post.num_comments}
+            <Icon name="message-circle" /> {reduceCount(post.num_comments)}
           </div>
           <div title={post.subreddit}>/r/{post.subreddit}</div>
           <div title={post.title}>{post.title}</div>
@@ -55,9 +56,9 @@ const styles = {
   item: buttonBase.concat(z`
     text-align left
     display grid
-    grid-template-columns minmax(min-content, 1fr) 2fr 7fr
+    grid-template-columns minmax(min-content, 65px) 2fr 6fr
     > div {
-      padding 10
+      padding 10 5
       overflow hidden
       text-overflow ellipsis
       white-space nowrap

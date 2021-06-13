@@ -3,7 +3,7 @@ import z from 'zaftig'
 import { API_URL } from '../../../constants'
 import { Comment } from '../../../lib/api'
 import { useRedraw } from '../../../lib/hooks'
-import { decodeHTML, prettyTime, subURI } from '../../../lib/util'
+import { decodeHTML, prettyTime, reduceCount, subURI } from '../../../lib/util'
 import { useCommentCtx, useUpdate } from '../hooks'
 import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
@@ -52,7 +52,7 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
           >
             {author}
           </a>
-          <span className={styles.ups}>{ups}</span>
+          <span className={styles.ups}>{reduceCount(ups)}</span>
           <a className={styles.date} target="_blank" href={API_URL + permalink}>
             {prettyTime(createdTime, 'date-time')}
             {editedTime && (

@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.0
+// @version     1.0.1
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @grant       none
@@ -606,6 +606,17 @@ ${r4}}
     return throttled;
   };
   var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+  var reduceCount = (count, digits = 1) => {
+    let indicator, divisor;
+    if (count > 999999) {
+      indicator = "M";
+      divisor = 1e6;
+    } else if (count > 999) {
+      indicator = "k";
+      divisor = 1e3;
+    }
+    return divisor ? (count / divisor).toFixed(digits) + indicator : count;
+  };
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -642,7 +653,7 @@ ${r4}}
       className: styles.numComments
     }, /* @__PURE__ */ a(Icon, {
       name: "message-circle"
-    }), " ", post.num_comments), /* @__PURE__ */ a("div", {
+    }), " ", reduceCount(post.num_comments)), /* @__PURE__ */ a("div", {
       title: post.subreddit
     }, "/r/", post.subreddit), /* @__PURE__ */ a("div", {
       title: post.title
@@ -664,9 +675,9 @@ ${r4}}
     item: buttonBase.concat(zaftig_min_default`
     text-align left
     display grid
-    grid-template-columns minmax(min-content, 1fr) 2fr 7fr
+    grid-template-columns minmax(min-content, 65px) 2fr 6fr
     > div {
-      padding 10
+      padding 10 5
       overflow hidden
       text-overflow ellipsis
       white-space nowrap
@@ -784,7 +795,7 @@ ${r4}}
       href: API_URL + subURI("/u/:author", { author })
     }, author), /* @__PURE__ */ a("span", {
       className: styles2.ups
-    }, ups), /* @__PURE__ */ a("a", {
+    }, reduceCount(ups)), /* @__PURE__ */ a("a", {
       className: styles2.date,
       target: "_blank",
       href: API_URL + permalink

@@ -99,3 +99,18 @@ export const throttle = <T extends (...args: unknown[]) => void>(ms: number, cb:
 }
 
 export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms))
+
+export const reduceCount = (count: number, digits = 1) => {
+  let indicator, divisor
+
+  if (count > 999999) {
+    indicator = 'M'
+    divisor = 1000000
+  } else if (count > 999) {
+    indicator = 'k'
+    divisor = 1000
+  }
+
+  // Do not reduce if we are below 1000
+  return divisor ? (count / divisor).toFixed(digits) + indicator : count
+}
