@@ -768,12 +768,11 @@ ${r4}}
     const toggle = () => {
       thing.data.collapsed = !collapsed;
       redraw();
-      if (ref.current.getBoundingClientRect().top < 0) {
+      const offset = typeof conf2.scrollOffset === "function" ? conf2.scrollOffset() : conf2.scrollOffset;
+      if (ref.current.getBoundingClientRect().top < (offset != null ? offset : 0)) {
         ref.current.scrollIntoView();
-        if (conf2.scrollOffset) {
-          const offset = typeof conf2.scrollOffset === "function" ? conf2.scrollOffset() : conf2.scrollOffset;
+        if (offset)
           window.scrollBy(0, -offset);
-        }
       }
     };
     const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);

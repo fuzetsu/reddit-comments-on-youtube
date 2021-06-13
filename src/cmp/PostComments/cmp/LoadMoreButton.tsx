@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getMoreComments, LoadMore } from '../../../lib/api'
-import { sleep } from '../../../lib/util'
+import { getMoreComments, LoadMore } from 'lib/api'
+import { sleep } from 'lib/util'
 import { useCommentCtx } from '../hooks'
 import { ChildProps } from '../types'
 

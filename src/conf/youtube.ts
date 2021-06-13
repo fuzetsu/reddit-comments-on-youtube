@@ -1,6 +1,6 @@
-import { searchPosts } from '../lib/api'
-import { logError, q } from '../lib/util'
-import { Conf } from '../type'
+import { searchPosts } from 'lib/api'
+import { logError, q } from 'lib/util'
+import { Conf } from 'types'
 
 const getVideoIdFromUrl = (url: string) => url.match(/v=([^&]+)/i)?.[1]
 

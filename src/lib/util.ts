@@ -1,4 +1,4 @@
-import { SCRIPT_NAME } from '../constants'
+import { SCRIPT_NAME } from 'constants'
 
 export const getById = (id: string) => document.getElementById(id)
 

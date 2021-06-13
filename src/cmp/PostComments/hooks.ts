@@ -1,7 +1,7 @@
 import { createContext } from 'preact'
 import { useContext } from 'preact/hooks'
-import { CommentChild } from '../../lib/api'
-import { useRedraw } from '../../lib/hooks'
+import { CommentChild } from 'lib/api'
+import { useRedraw } from 'lib/hooks'
 import { Props, UpdateFn } from './types'
 
 export const useUpdate = (parent: CommentChild[]) => {

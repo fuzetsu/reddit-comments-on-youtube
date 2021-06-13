@@ -1,12 +1,12 @@
 import { JSX, render } from 'preact'
-import { App } from './cmp/App'
-import { SwitchComments } from './cmp/SwitchComments'
-import { getConf } from './conf'
-import { log, logError } from './lib/util'
-import { waitForElems } from './lib/wait-for-elems'
-import { waitForUrl } from './lib/wait-for-url'
-import { generateTheme, theme } from './theme'
-import { Conf } from './type'
+import { App } from 'cmp/App'
+import { SwitchComments } from 'cmp/SwitchComments'
+import { getConf } from 'conf'
+import { log, logError } from 'lib/util'
+import { waitForElems } from 'lib/wait-for-elems'
+import { waitForUrl } from 'lib/wait-for-url'
+import { generateTheme, theme } from 'theme'
+import { Conf } from 'types'
 
 log('started!')
 

@@ -1,6 +1,6 @@
-import { Post, searchPosts } from '../lib/api'
-import { getById, logError, q } from '../lib/util'
-import { Conf } from '../type'
+import { Post, searchPosts } from 'lib/api'
+import { getById, logError, q } from 'lib/util'
+import { Conf } from 'types'
 
 const filterForEp = (posts: Post[], episode: string) => {
   const epRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')

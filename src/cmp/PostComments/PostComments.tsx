@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getComments, CommentChild } from '../../lib/api'
+import { getComments, CommentChild } from 'lib/api'
 import { PostCommentChild } from './cmp/PostCommentChild'
 import { CommentCtx, useUpdate } from './hooks'
 import { Props } from './types'

@@ -1,5 +1,5 @@
-import { CommentChild, Post } from '../../lib/api'
-import { Conf } from '../../type'
+import { CommentChild, Post } from 'lib/api'
+import { Conf } from 'types'
 
 export interface UpdateFn {
   (fn: (parent: CommentChild[]) => void): void

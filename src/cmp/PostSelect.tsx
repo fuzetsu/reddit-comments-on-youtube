@@ -1,8 +1,8 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
-import { Icon } from '../base/Icon'
-import { Post } from '../lib/api'
-import { reduceCount } from '../lib/util'
+import { Icon } from 'base/Icon'
+import { Post } from 'lib/api'
+import { reduceCount } from 'lib/util'
 
 interface Props {
   posts: Post[]

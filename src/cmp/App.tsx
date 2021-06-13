@@ -1,9 +1,9 @@
-import { Post } from '../lib/api'
+import { Post } from 'lib/api'
 import { PostSelect } from './PostSelect'
 import { useEffect, useState } from 'preact/hooks'
 import { PostComments } from './PostComments'
-import { Conf } from '../type'
-import { sleep } from '../lib/util'
+import { Conf } from 'types'
+import { sleep } from 'lib/util'
 
 interface Props {
   conf: Conf

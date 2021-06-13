@@ -1,6 +1,6 @@
 import z from 'zaftig'
 import { subURI } from '../lib/util'
-import { ZaftigStyle } from '../type'
+import { ZaftigStyle } from '../types'
 
 const API = 'https://icongr.am/feather'
 
