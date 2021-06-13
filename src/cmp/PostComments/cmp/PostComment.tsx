@@ -97,8 +97,8 @@ const styles = {
   replies: z`margin-top 18`.class,
   border: z`
     position relative
-    padding 12
-    margin -12
+    padding 9
+    margin -9
     user-select none
     cursor pointer
     $color $text-subdued

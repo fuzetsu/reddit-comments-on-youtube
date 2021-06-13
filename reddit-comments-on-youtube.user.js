@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.1
+// @version     1.0.2
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @grant       none
@@ -827,8 +827,8 @@ ${r4}}
     replies: zaftig_min_default`margin-top 18`.class,
     border: zaftig_min_default`
     position relative
-    padding 12
-    margin -12
+    padding 9
+    margin -9
     user-select none
     cursor pointer
     $color $text-subdued
