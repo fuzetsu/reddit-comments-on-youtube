@@ -1,7 +1,7 @@
 import { JSX, render } from 'preact'
 import { App } from './cmp/App'
 import { SwitchComments } from './cmp/SwitchComments'
-import { confs, confNames } from './conf'
+import { getConf } from './conf'
 import { log, logError } from './lib/util'
 import { waitForElems } from './lib/wait-for-elems'
 import { waitForUrl } from './lib/wait-for-url'
@@ -10,19 +10,17 @@ import { Conf } from './type'
 
 log('started!')
 
-const host = location.hostname
-const mode = confNames.find(name => host.includes(name))
+const conf = getConf()
 
-if (!mode) {
-  logError('encountered unknown host', host)
+if (!conf) {
+  logError('encountered unknown host', location.hostname)
 } else {
-  const conf = confs[mode]
   waitForUrl({
     matcher: 'any',
     onmatch: url => {
       log('url changed', url)
       if (!conf.isMatch()) {
-        log('but its not a match...')
+        log("but it's not a match...")
         return
       }
       log('its a match! looking for comments area')
@@ -57,15 +55,15 @@ const mount = (conf: Conf, comments: HTMLElement) => {
   const switchComments = () => {
     hideReddit = !hideReddit
     comments.style.display = hideReddit ? '' : 'none'
-    app.style.display = hideReddit ? 'none' : ''
+    appWrapper.style.display = hideReddit ? 'none' : ''
   }
 
-  const [, removeSwitch] = insertBefore(
+  const [removeSwitch] = insertBefore(comments, conf, <SwitchComments onSwitch={switchComments} />)
+  const [removeApp, appWrapper] = insertBefore(
     comments,
     conf,
-    <SwitchComments onSwitch={switchComments} />
+    <App conf={conf} switchComments={switchComments} />
   )
-  const [app, removeApp] = insertBefore(comments, conf, <App conf={conf} />)
 
   // cleanup
   return () => {
@@ -91,5 +89,5 @@ const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
 
   render(view, wrapper)
 
-  return [wrapper, () => unmount(wrapper)] as const
+  return [() => unmount(wrapper), wrapper] as const
 }

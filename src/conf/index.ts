@@ -1,9 +1,15 @@
 import { crunchyroll } from './crunchyroll'
 import { youtube } from './youtube'
 
-export const confs = {
+const confs = {
   crunchyroll,
   youtube
 } as const
 
-export const confNames = Object.keys(confs) as (keyof typeof confs)[]
+const confNames = Object.keys(confs) as (keyof typeof confs)[]
+
+export const getConf = () => {
+  const host = location.hostname
+  const mode = confNames.find(name => host.includes(name))
+  return mode ? confs[mode] : null
+}

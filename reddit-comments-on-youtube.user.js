@@ -2,10 +2,9 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     0.2.9
+// @version     1.0.0
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
-// @match       https://www14.9anime.to/watch/*
 // @grant       none
 // ==/UserScript==
 (() => {
@@ -699,7 +698,7 @@ ${r4}}
     return update;
   };
   var CommentCtx = q({});
-  var PostComments = ({ post, conf }) => {
+  var PostComments = ({ post, conf: conf2 }) => {
     const [things, setThings] = l2(null);
     y2(() => {
       setThings(null);
@@ -707,7 +706,7 @@ ${r4}}
     }, [post.name]);
     const update = useUpdate(things || []);
     return /* @__PURE__ */ a(CommentCtx.Provider, {
-      value: { post, conf }
+      value: { post, conf: conf2 }
     }, /* @__PURE__ */ a("div", {
       className: zaftig_min_default`margin-top 15`.class
     }, !things ? /* @__PURE__ */ a("div", null, "Loading ", post.name, "...") : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
@@ -762,7 +761,7 @@ ${r4}}
   var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited } = thing.data;
     const html = d2(() => decodeHTML(body_html), [body_html]);
-    const { conf } = F(CommentCtx);
+    const { conf: conf2 } = F(CommentCtx);
     const redraw = useRedraw();
     const ref = s2();
     const toggle = () => {
@@ -770,8 +769,8 @@ ${r4}}
       redraw();
       if (ref.current.getBoundingClientRect().top < 0) {
         ref.current.scrollIntoView();
-        if (conf.scrollOffset) {
-          const offset = typeof conf.scrollOffset === "function" ? conf.scrollOffset() : conf.scrollOffset;
+        if (conf2.scrollOffset) {
+          const offset = typeof conf2.scrollOffset === "function" ? conf2.scrollOffset() : conf2.scrollOffset;
           window.scrollBy(0, -offset);
         }
       }
@@ -859,20 +858,25 @@ ${r4}}
   };
 
   // src/cmp/App.tsx
-  var App = ({ conf }) => {
+  var App = ({ conf: conf2, switchComments }) => {
     const [posts, setPosts] = l2([]);
     const [selected, setSelected] = l2(void 0);
     const [loading, setLoading] = l2(false);
     y2(() => {
       setLoading(true);
-      conf.getPosts().then((posts2) => {
+      conf2.getPosts().then((posts2) => {
         setLoading(false);
         setPosts(posts2);
-        setSelected(posts2[0]);
+        if (posts2[0])
+          setSelected(posts2[0]);
+        else
+          sleep(1500).then(switchComments);
       });
     }, []);
     if (loading)
-      return /* @__PURE__ */ a("div", null, "Loading posts...");
+      return /* @__PURE__ */ a("div", null, "Loading posts\u2026");
+    if (posts.length <= 0)
+      return /* @__PURE__ */ a("div", null, "No posts found\u2026");
     if (!selected)
       return /* @__PURE__ */ a("div", null, "Something went wrong :(");
     return /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, {
@@ -880,7 +884,7 @@ ${r4}}
       selected,
       onSelect: setSelected
     }), /* @__PURE__ */ a(PostComments, {
-      conf,
+      conf: conf2,
       post: selected
     }));
   };
@@ -957,6 +961,11 @@ ${r4}}
     youtube
   };
   var confNames = Object.keys(confs);
+  var getConf = () => {
+    const host = location.hostname;
+    const mode = confNames.find((name) => host.includes(name));
+    return mode ? confs[mode] : null;
+  };
 
   // src/lib/wait-for-elems.ts
   var waitForElems = ({
@@ -1052,18 +1061,16 @@ ${r4}}
 
   // src/index.tsx
   log("started!");
-  var host = location.hostname;
-  var mode = confNames.find((name) => host.includes(name));
-  if (!mode) {
-    logError("encountered unknown host", host);
+  var conf = getConf();
+  if (!conf) {
+    logError("encountered unknown host", location.hostname);
   } else {
-    const conf = confs[mode];
     waitForUrl({
       matcher: "any",
       onmatch: (url) => {
         log("url changed", url);
         if (!conf.isMatch()) {
-          log("but its not a match...");
+          log("but it's not a match...");
           return;
         }
         log("its a match! looking for comments area");
@@ -1084,19 +1091,20 @@ ${r4}}
       }
     });
   }
-  var mount = (conf, comments) => {
+  var mount = (conf2, comments) => {
     comments.style.display = "none";
     let hideReddit = false;
     const switchComments = () => {
       hideReddit = !hideReddit;
       comments.style.display = hideReddit ? "" : "none";
-      app.style.display = hideReddit ? "none" : "";
+      appWrapper.style.display = hideReddit ? "none" : "";
     };
-    const [, removeSwitch] = insertBefore(comments, conf, /* @__PURE__ */ a(SwitchComments, {
+    const [removeSwitch] = insertBefore(comments, conf2, /* @__PURE__ */ a(SwitchComments, {
       onSwitch: switchComments
     }));
-    const [app, removeApp] = insertBefore(comments, conf, /* @__PURE__ */ a(App, {
-      conf
+    const [removeApp, appWrapper] = insertBefore(comments, conf2, /* @__PURE__ */ a(App, {
+      conf: conf2,
+      switchComments
     }));
     return () => {
       removeApp();
@@ -1107,11 +1115,11 @@ ${r4}}
     N(null, elem);
     elem.remove();
   };
-  var insertBefore = (before, conf, view) => {
+  var insertBefore = (before, conf2, view) => {
     const wrapper = document.createElement("div");
-    wrapper.className = theme.common.concat(conf.dark ? theme.dark : theme.light, conf.theme && generateTheme(conf.theme)).class;
+    wrapper.className = theme.common.concat(conf2.dark ? theme.dark : theme.light, conf2.theme && generateTheme(conf2.theme)).class;
     before.parentElement.insertBefore(wrapper, before);
     N(view, wrapper);
-    return [wrapper, () => unmount(wrapper)];
+    return [() => unmount(wrapper), wrapper];
   };
 })();
