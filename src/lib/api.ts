@@ -35,6 +35,7 @@ export interface Comment {
   kind: 't1'
   data: {
     id: string
+    parent_id: string
     ups: number
     name: string
     author: string
@@ -86,5 +87,15 @@ export const getMoreComments = async (link_id: string, children: string[]): Prom
     return []
   }
 
-  return payload.json.data.things
+  const flatComments = payload.json.data.things
+  const nestedComments = flatComments.reduce<Comment[]>((acc, cmt) => {
+    const parent = flatComments.find(x => x.data.name === cmt.data.parent_id)
+    if (parent) {
+      if (parent.data.replies) parent.data.replies.data.children.push(cmt)
+      else parent.data.replies = { data: { children: [cmt] } }
+    } else acc.push(cmt)
+    return acc
+  }, [])
+
+  return nestedComments
 }
