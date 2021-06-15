@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.2
+// @version     1.0.3
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @grant       none
@@ -617,6 +617,7 @@ ${r4}}
     }
     return divisor ? (count / divisor).toFixed(digits) + indicator : count;
   };
+  var getCSSVar = (varName, context) => getComputedStyle(context).getPropertyValue("--" + varName).trim();
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -626,13 +627,27 @@ ${r4}}
     onClick,
     size = 18,
     spin = false,
-    color = "currentColor"
+    themeColor = "text-normal"
   }) => {
+    const ref = s2();
+    const [color, setColor] = l2("currentColor");
+    y2(() => {
+      const update = () => {
+        let newColor = getCSSVar(themeColor, ref.current).slice(1);
+        if (newColor.length === 3)
+          newColor += newColor;
+        setColor(newColor);
+      };
+      update();
+      const id = setInterval(update, 5e3);
+      return () => clearInterval(id);
+    }, [themeColor]);
     const cls = zaftig_min_default`vertical-align sub`.concat(spin && "spin", className).class;
-    const src = API + subURI("/:name.svg?size=:size&color=:color", { name, color, size: String(size) });
+    const path = subURI("/:name.svg?size=:size&color=:color", { name, color, size: String(size) });
     return /* @__PURE__ */ a("img", {
+      ref,
       className: cls,
-      src,
+      src: API + path,
       onClick
     });
   };
@@ -706,7 +721,19 @@ ${r4}}
       logError("no comments to load", payload.json.errors);
       return [];
     }
-    return payload.json.data.things;
+    const flatComments = payload.json.data.things;
+    const nestedComments = flatComments.reduce((acc, cmt) => {
+      const parent = flatComments.find((x3) => x3.data.name === cmt.data.parent_id);
+      if (parent) {
+        if (parent.data.replies)
+          parent.data.replies.data.children.push(cmt);
+        else
+          parent.data.replies = { data: { children: [cmt] } };
+      } else
+        acc.push(cmt);
+      return acc;
+    }, []);
+    return nestedComments;
   };
 
   // src/lib/hooks.ts
