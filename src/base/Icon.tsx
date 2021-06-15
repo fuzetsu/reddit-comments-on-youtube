@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from 'preact/hooks'
 import z from 'zaftig'
-import { subURI } from '../lib/util'
+import { getCSSVar, subURI } from '../lib/util'
 import { ZaftigStyle } from '../types'
 
 const API = 'https://icongr.am/feather'
@@ -10,7 +11,7 @@ interface Props {
   className?: string | ZaftigStyle
   size?: number
   spin?: boolean
-  color?: string
+  themeColor?: string
 }
 
 export const Icon = ({
@@ -19,11 +20,23 @@ export const Icon = ({
   onClick,
   size = 18,
   spin = false,
-  color = 'currentColor'
+  themeColor = 'text-normal'
 }: Props) => {
-  const cls = z`vertical-align sub`.concat(spin && 'spin', className).class
-  const src =
-    API + subURI('/:name.svg?size=:size&color=:color', { name, color, size: String(size) })
+  const ref = useRef<HTMLImageElement>()
+  const [color, setColor] = useState('currentColor')
+  useEffect(() => {
+    const update = () => {
+      let newColor = getCSSVar(themeColor, ref.current).slice(1)
+      if (newColor.length === 3) newColor += newColor
+      setColor(newColor)
+    }
+    update()
+    const id = setInterval(update, 5000)
+    return () => clearInterval(id)
+  }, [themeColor])
 
-  return <img className={cls} src={src} onClick={onClick} />
+  const cls = z`vertical-align sub`.concat(spin && 'spin', className).class
+  const path = subURI('/:name.svg?size=:size&color=:color', { name, color, size: String(size) })
+
+  return <img ref={ref} className={cls} src={API + path} onClick={onClick} />
 }

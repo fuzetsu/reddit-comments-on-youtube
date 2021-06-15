@@ -114,3 +114,8 @@ export const reduceCount = (count: number, digits = 1) => {
   // Do not reduce if we are below 1000
   return divisor ? (count / divisor).toFixed(digits) + indicator : count
 }
+
+export const getCSSVar = (varName: string, context: HTMLElement) =>
+  getComputedStyle(context)
+    .getPropertyValue('--' + varName)
+    .trim()
