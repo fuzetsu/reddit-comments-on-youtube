@@ -15,7 +15,7 @@ export interface Theme {
   }
 }
 
-export const theme = {
+export const themes = {
   light: generateTheme({
     background: '#fefefe',
     text: { normal: '#444', subdued: '#666' },

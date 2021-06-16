@@ -6,17 +6,15 @@ interface Props {
 
 export const SwitchComments = ({ onSwitch }: Props) => {
   return (
-    <button className={styles.button} onClick={onSwitch}>
+    <button className={buttonStyle} onClick={onSwitch}>
       Switch comments
     </button>
   )
 }
 
-const styles = {
-  button: z`
-    cursor pointer
-    border none
-    padding 10
-    width 100%
-  `.class
-}
+const buttonStyle = z`
+  cursor pointer
+  border none
+  padding 10
+  width 100%
+`.class

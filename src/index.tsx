@@ -5,7 +5,7 @@ import { getConf } from 'conf'
 import { log, logError } from 'lib/util'
 import { waitForElems } from 'lib/wait-for-elems'
 import { waitForUrl } from 'lib/wait-for-url'
-import { generateTheme, theme } from 'theme'
+import { generateTheme, themes } from 'theme'
 import { Conf } from 'types'
 
 log('started!')
@@ -80,11 +80,13 @@ const unmount = (elem: HTMLElement) => {
 const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
   const wrapper = document.createElement('div')
 
-  wrapper.className = theme.common.concat(
-    conf.dark ? theme.dark : theme.light,
+  wrapper.className = themes.common.concat(
+    conf.dark ? themes.dark : themes.light,
     conf.theme && generateTheme(conf.theme)
   ).class
 
+  // if parentElement is actually null, then just crash m8
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   before.parentElement!.insertBefore(wrapper, before)
 
   render(view, wrapper)

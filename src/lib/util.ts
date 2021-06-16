@@ -1,4 +1,5 @@
 import { SCRIPT_NAME } from 'constants'
+import { ZaftigStyle } from 'types'
 
 export const getById = (id: string) => document.getElementById(id)
 
@@ -119,3 +120,10 @@ export const getCSSVar = (varName: string, context: HTMLElement) =>
   getComputedStyle(context)
     .getPropertyValue('--' + varName)
     .trim()
+
+export const createStyles = <T extends { [key: string]: ZaftigStyle }>(spec: T) => {
+  return Object.entries(spec).reduce<{ [key in keyof T]: string }>((acc, [name, style]) => {
+    acc[name as keyof T] = style.class
+    return acc
+  }, {} as never)
+}

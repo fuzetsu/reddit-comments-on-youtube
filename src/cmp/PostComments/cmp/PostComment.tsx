@@ -3,7 +3,7 @@ import { useMemo, useRef } from 'preact/hooks'
 import { API_URL } from 'constants'
 import { Comment } from 'lib/api'
 import { useRedraw } from 'lib/hooks'
-import { decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
+import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
 import { useCommentCtx, useUpdate } from '../hooks'
 import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
@@ -84,14 +84,14 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
   )
 }
 
-const styles = {
+const styles = createStyles({
   comment: z`
     display grid
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
-  `.class,
-  replies: z`margin-top 18`.class,
+  `,
+  replies: z`margin-top 18`,
   border: z`
     position relative
     padding 9
@@ -108,7 +108,7 @@ const styles = {
       height 100%
       width 4
     }
-  `.class,
+  `,
   body: z`
     blockquote {
       border-left 3 solid $text-subdued
@@ -123,9 +123,9 @@ const styles = {
       th, td { padding 10 5 }
     }
     ul, ol { margin 18 0; padding-left 30 }
-  `.class,
-  ups: z`color $ups;font-weight bold`.class,
-  date: z`&& { color $text-subdued }`.class,
-  commentInfo: z`display flex;gap 10`.class,
-  author: z`font-weight bold;&& { color $text-primary }`.class
-}
+  `,
+  ups: z`color $ups;font-weight bold`,
+  date: z`&& { color $text-subdued }`,
+  commentInfo: z`display flex;gap 10`,
+  author: z`font-weight bold;&& { color $text-primary }`
+})

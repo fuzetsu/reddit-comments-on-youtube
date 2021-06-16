@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks'
 import z from 'zaftig'
 import { Icon } from 'base/Icon'
 import { Post } from 'lib/api'
-import { reduceCount } from 'lib/util'
+import { createStyles, reduceCount } from 'lib/util'
 
 interface Props {
   posts: Post[]
@@ -50,9 +50,9 @@ const buttonBase = z`
   border-bottom 4px solid $button-background
 `
 
-const styles = {
-  container: z`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
-  toggleEmpty: buttonBase.concat(z`padding 10`).class,
+const styles = createStyles({
+  container: z`display grid;grid-template-columns 1fr 1fr;gap 4`,
+  toggleEmpty: buttonBase.concat(z`padding 10`),
   item: buttonBase.concat(z`
     text-align left
     display grid
@@ -63,6 +63,6 @@ const styles = {
       text-overflow ellipsis
       white-space nowrap
     }
-  `).class,
-  numComments: z`font-weight bold`.class
-}
+  `),
+  numComments: z`font-weight bold`
+})
