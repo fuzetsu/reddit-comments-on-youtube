@@ -1,0 +1,61 @@
+{
+  "name": "reddit-comments-on-youtube",
+  "version": "1.0.5",
+  "description": "Userscript that embeds reddit comments related to a youtube/crunchyroll video",
+  "main": "reddit-comments-on-youtube.user.js",
+  "repository": "https://github.com/fuzetsu/reddit-comments-on-youtube.git",
+  "author": "Daniel Loomer <fuzetsu@users.noreply.github.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --inject:./shims/preact.ts --jsx-factory=h --jsx-fragment=Fragment --outfile=dist/bundle.js && npm run dist",
+    "dist": "cat ./meta.js ./dist/bundle.js > reddit-comments-on-youtube.user.js",
+    "dev": "concurrently --raw --kill-others npm:watch:*",
+    "lint": "eslint src/**",
+    "watch:lint": "chokidar \"./dist/*\" -c \"eslint src/**\"",
+    "watch:build": "esbuild src/index.tsx --bundle --inject:./shims/preact.ts --jsx-factory=h --jsx-fragment=Fragment --watch --outfile=dist/bundle.js",
+    "watch:ts": "tsc --watch --preserveWatchOutput",
+    "watch:dist": "chokidar \"./dist/*\" \"./meta.js\" -c \"npm run dist\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "chokidar-cli": "^2.1.0",
+    "concurrently": "^6.2.0",
+    "esbuild": "^0.12.6",
+    "eslint": "^7.28.0",
+    "typescript": "^4.3.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "browser": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "rules": {
+      "@typescript-eslint/explicit-module-boundary-types": "off"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "useTabs": false,
+    "tabWidth": 2,
+    "semi": false,
+    "arrowParens": "avoid",
+    "trailingComma": "none"
+  },
+  "dependencies": {
+    "mergerino": "^0.4.0",
+    "preact": "^10.5.13",
+    "staterino": "^2.0.0",
+    "zaftig": "^0.10.0"
+  }
+}
