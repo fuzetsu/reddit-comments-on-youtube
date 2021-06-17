@@ -16,7 +16,10 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
   const postsWithComments = posts.filter(post => post.num_comments > 0)
   const emptyCount = posts.length - postsWithComments.length
 
-  const list = showEmpty ? posts : postsWithComments
+  let list = showEmpty ? posts : postsWithComments
+
+  // always show selected post
+  if (!list.includes(selected)) list = [...list, selected]
 
   return (
     <div className={styles.container}>
@@ -33,7 +36,7 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
           <div title={post.title}>{post.title}</div>
         </button>
       ))}
-      {emptyCount > 0 && (
+      {emptyCount > 0 && list.length > 1 && (
         <button className={styles.toggleEmpty} onClick={() => setShowEmpty(!showEmpty)}>
           {showEmpty ? 'Hide' : `Show`} {emptyCount} posts without comments
         </button>
