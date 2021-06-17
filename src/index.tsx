@@ -56,6 +56,16 @@ const mount = (conf: Conf, comments: HTMLElement) => {
     hideReddit = !hideReddit
     comments.style.display = hideReddit ? '' : 'none'
     appWrapper.style.display = hideReddit ? 'none' : ''
+
+    // if comments assume they haven't loaded, and trigger a slight scroll to prod them into doing so
+    if (hideReddit) {
+      requestAnimationFrame(() => {
+        if (comments.clientHeight < 100) {
+          window.scrollBy(0, 1)
+          window.scrollBy(0, -1)
+        }
+      })
+    }
   }
 
   const [removeSwitch] = insertBefore(comments, conf, <SwitchComments onSwitch={switchComments} />)
