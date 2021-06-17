@@ -7,13 +7,14 @@ import { sleep } from 'lib/util'
 
 interface Props {
   conf: Conf
-  switchComments(): void
+  onNoContent(): void
 }
 
-export const App = ({ conf, switchComments }: Props) => {
+export const App = ({ conf, onNoContent }: Props) => {
   const [posts, setPosts] = useState<Post[]>([])
   const [selected, setSelected] = useState<Post | undefined>(undefined)
   const [loading, setLoading] = useState(false)
+  const [first, setFirst] = useState(true)
 
   useEffect(() => {
     setLoading(true)
@@ -21,7 +22,7 @@ export const App = ({ conf, switchComments }: Props) => {
       setLoading(false)
       setPosts(posts)
       if (posts[0]) setSelected(posts[0])
-      else sleep(1500).then(switchComments)
+      else sleep(1500).then(onNoContent)
     })
   }, [])
 
@@ -29,10 +30,17 @@ export const App = ({ conf, switchComments }: Props) => {
   if (posts.length <= 0) return <div>No posts found…</div>
   if (!selected) return <div>Something went wrong :(</div>
 
+  const handleFirst = (arr: unknown[]) => {
+    if (first) {
+      setFirst(false)
+      if (arr.length <= 0) onNoContent()
+    }
+  }
+
   return (
     <>
       <PostSelect posts={posts} selected={selected} onSelect={setSelected} />
-      <PostComments conf={conf} post={selected} />
+      <PostComments conf={conf} post={selected} onLoad={handleFirst} />
     </>
   )
 }

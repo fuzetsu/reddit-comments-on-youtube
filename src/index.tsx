@@ -62,7 +62,7 @@ const mount = (conf: Conf, comments: HTMLElement) => {
   const [removeApp, appWrapper] = insertBefore(
     comments,
     conf,
-    <App conf={conf} switchComments={switchComments} />
+    <App conf={conf} onNoContent={() => !hideReddit && switchComments()} />
   )
 
   // cleanup

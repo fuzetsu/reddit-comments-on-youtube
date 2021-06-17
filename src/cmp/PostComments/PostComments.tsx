@@ -1,15 +1,27 @@
 import { useEffect, useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getComments, CommentChild } from 'lib/api'
+import { getComments, CommentChild, Post } from 'lib/api'
 import { PostCommentChild } from './cmp/PostCommentChild'
 import { CommentCtx, useUpdate } from './hooks'
-import { Props } from './types'
+import { Conf } from 'types'
 
-export const PostComments = ({ post, conf }: Props) => {
+interface Props {
+  post: Post
+  conf: Conf
+  onLoad?(comments: CommentChild[]): void
+}
+
+export const PostComments = ({ post, conf, onLoad }: Props) => {
   const [things, setThings] = useState<CommentChild[] | null>(null)
   useEffect(() => {
     setThings(null)
-    getComments(post).then(setThings)
+    const handle = (things: CommentChild[]) => {
+      setThings(things)
+      onLoad?.(things)
+    }
+    getComments(post)
+      .then(handle)
+      .catch(() => handle([]))
   }, [post])
 
   const update = useUpdate(things || [])

@@ -1,5 +1,4 @@
-import { CommentChild, Post } from 'lib/api'
-import { Conf } from 'types'
+import { CommentChild } from 'lib/api'
 
 export interface UpdateFn {
   (fn: (parent: CommentChild[]) => void): void
@@ -8,9 +7,4 @@ export interface UpdateFn {
 export interface ChildProps<T extends CommentChild> {
   thing: T
   update: UpdateFn
-}
-
-export interface Props {
-  post: Post
-  conf: Conf
 }
