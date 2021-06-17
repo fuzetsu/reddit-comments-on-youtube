@@ -1,16 +1,12 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
 import { Icon } from 'base/Icon'
-import { Post } from 'lib/api'
 import { createStyles, reduceCount } from 'lib/util'
+import { useStore } from 'state'
+import { setActivePost } from 'state/actions'
 
-interface Props {
-  posts: Post[]
-  selected: Post
-  onSelect(selected: Post): void
-}
-
-export const PostSelect = ({ posts, selected, onSelect }: Props) => {
+export const PostSelect = () => {
+  const [posts, activePost] = useStore([s => s.posts, s => s.activePost])
   const [showEmpty, setShowEmpty] = useState(false)
 
   const postsWithComments = posts.filter(post => post.num_comments > 0)
@@ -19,15 +15,16 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
   let list = showEmpty ? posts : postsWithComments
 
   // always show selected post
-  if (!list.includes(selected)) list = [...list, selected]
+  if (activePost && !list.includes(activePost)) list = [...list, activePost]
 
   return (
     <div className={styles.container}>
       {list.map(post => (
         <button
+          key={post.name}
           className={styles.item}
-          style={{ borderBottomColor: post === selected ? 'var(--text-secondary)' : '' }}
-          onClick={() => onSelect(post)}
+          style={{ borderBottomColor: post === activePost ? 'var(--text-secondary)' : '' }}
+          onClick={() => setActivePost(post)}
         >
           <div className={styles.numComments}>
             <Icon name="message-circle" /> {reduceCount(post.num_comments)}
@@ -36,7 +33,7 @@ export const PostSelect = ({ posts, selected, onSelect }: Props) => {
           <div title={post.title}>{post.title}</div>
         </button>
       ))}
-      {emptyCount > 0 && list.length > 1 && (
+      {emptyCount > 0 && posts.length > 1 && (
         <button className={styles.toggleEmpty} onClick={() => setShowEmpty(!showEmpty)}>
           {showEmpty ? 'Hide' : `Show`} {emptyCount} posts without comments
         </button>

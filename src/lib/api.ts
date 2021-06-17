@@ -61,7 +61,7 @@ export const searchPosts = async (query: string, sort = true): Promise<Post[]> =
     title: decodeHTML(post.title)
   }))
 
-  return sort ? results.sort((a, b) => (a.num_comments > b.num_comments ? -1 : 1)) : results
+  return sort ? results.sort((a, b) => b.num_comments - a.num_comments) : results
 }
 
 export const getComments = async (

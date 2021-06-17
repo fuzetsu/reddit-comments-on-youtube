@@ -4,15 +4,16 @@ import { API_URL } from 'constants'
 import { Comment } from 'lib/api'
 import { useRedraw } from 'lib/hooks'
 import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
-import { useCommentCtx, useUpdate } from '../hooks'
+import { useUpdate } from '../hooks'
 import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
+import { useStore } from 'state'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
-  const { conf } = useCommentCtx()
+  const conf = useStore(s => s.conf)
 
   const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>()

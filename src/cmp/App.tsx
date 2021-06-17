@@ -1,9 +1,10 @@
-import { Post } from 'lib/api'
 import { PostSelect } from './PostSelect'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 import { PostComments } from './PostComments'
 import { Conf } from 'types'
-import { sleep } from 'lib/util'
+import { useStore } from 'state'
+import { init } from 'state/actions'
+import { subscribe } from 'state/state'
 
 interface Props {
   conf: Conf
@@ -11,36 +12,22 @@ interface Props {
 }
 
 export const App = ({ conf, onNoContent }: Props) => {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [selected, setSelected] = useState<Post | undefined>(undefined)
-  const [loading, setLoading] = useState(false)
-  const [first, setFirst] = useState(true)
+  const [postsLoading, noPosts] = useStore([s => s.postsLoading, s => s.posts.length <= 0])
 
   useEffect(() => {
-    setLoading(true)
-    conf.getPosts().then(posts => {
-      setLoading(false)
-      setPosts(posts)
-      if (posts[0]) setSelected(posts[0])
-      else sleep(1500).then(onNoContent)
+    init(conf)
+    return subscribe([s => s.noContent], noContent => {
+      if (noContent) onNoContent()
     })
   }, [])
 
-  if (loading) return <div>Loading posts…</div>
-  if (posts.length <= 0) return <div>No posts found…</div>
-  if (!selected) return <div>Something went wrong :(</div>
-
-  const handleFirst = (arr: unknown[]) => {
-    if (first) {
-      setFirst(false)
-      if (arr.length <= 0) onNoContent()
-    }
-  }
+  if (postsLoading) return <div>Loading posts…</div>
+  if (noPosts) return <div>No posts found…</div>
 
   return (
     <>
-      <PostSelect posts={posts} selected={selected} onSelect={setSelected} />
-      <PostComments conf={conf} post={selected} onLoad={handleFirst} />
+      <PostSelect />
+      <PostComments />
     </>
   )
 }
