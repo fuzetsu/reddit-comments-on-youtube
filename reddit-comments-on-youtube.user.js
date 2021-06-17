@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.3
+// @version     1.0.4
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @grant       none
@@ -618,6 +618,12 @@ ${r4}}
     return divisor ? (count / divisor).toFixed(digits) + indicator : count;
   };
   var getCSSVar = (varName, context) => getComputedStyle(context).getPropertyValue("--" + varName).trim();
+  var createStyles = (spec) => {
+    return Object.entries(spec).reduce((acc, [name, style]) => {
+      acc[name] = style.class;
+      return acc;
+    }, {});
+  };
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -657,7 +663,9 @@ ${r4}}
     const [showEmpty, setShowEmpty] = l2(false);
     const postsWithComments = posts.filter((post) => post.num_comments > 0);
     const emptyCount = posts.length - postsWithComments.length;
-    const list = showEmpty ? posts : postsWithComments;
+    let list = showEmpty ? posts : postsWithComments;
+    if (!list.includes(selected))
+      list = [...list, selected];
     return /* @__PURE__ */ a("div", {
       className: styles.container
     }, list.map((post) => /* @__PURE__ */ a("button", {
@@ -672,7 +680,7 @@ ${r4}}
       title: post.subreddit
     }, "/r/", post.subreddit), /* @__PURE__ */ a("div", {
       title: post.title
-    }, post.title))), emptyCount > 0 && /* @__PURE__ */ a("button", {
+    }, post.title))), emptyCount > 0 && list.length > 1 && /* @__PURE__ */ a("button", {
       className: styles.toggleEmpty,
       onClick: () => setShowEmpty(!showEmpty)
     }, showEmpty ? "Hide" : `Show`, " ", emptyCount, " posts without comments"));
@@ -684,9 +692,9 @@ ${r4}}
   padding 0
   border-bottom 4px solid $button-background
 `;
-  var styles = {
-    container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`.class,
-    toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`).class,
+  var styles = createStyles({
+    container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`,
+    toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`),
     item: buttonBase.concat(zaftig_min_default`
     text-align left
     display grid
@@ -697,9 +705,9 @@ ${r4}}
       text-overflow ellipsis
       white-space nowrap
     }
-  `).class,
-    numComments: zaftig_min_default`font-weight bold`.class
-  };
+  `),
+    numComments: zaftig_min_default`font-weight bold`
+  });
 
   // src/lib/api.ts
   var getJSON = (url) => fetch(url).then((res) => res.json());
@@ -843,14 +851,14 @@ ${r4}}
       update
     }))))));
   };
-  var styles2 = {
+  var styles2 = createStyles({
     comment: zaftig_min_default`
     display grid
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
-  `.class,
-    replies: zaftig_min_default`margin-top 18`.class,
+  `,
+    replies: zaftig_min_default`margin-top 18`,
     border: zaftig_min_default`
     position relative
     padding 9
@@ -867,7 +875,7 @@ ${r4}}
       height 100%
       width 4
     }
-  `.class,
+  `,
     body: zaftig_min_default`
     blockquote {
       border-left 3 solid $text-subdued
@@ -882,12 +890,12 @@ ${r4}}
       th, td { padding 10 5 }
     }
     ul, ol { margin 18 0; padding-left 30 }
-  `.class,
-    ups: zaftig_min_default`color $ups;font-weight bold`.class,
-    date: zaftig_min_default`&& { color $text-subdued }`.class,
-    commentInfo: zaftig_min_default`display flex;gap 10`.class,
-    author: zaftig_min_default`font-weight bold;&& { color $text-primary }`.class
-  };
+  `,
+    ups: zaftig_min_default`color $ups;font-weight bold`,
+    date: zaftig_min_default`&& { color $text-subdued }`,
+    commentInfo: zaftig_min_default`display flex;gap 10`,
+    author: zaftig_min_default`font-weight bold;&& { color $text-primary }`
+  });
 
   // src/cmp/PostComments/cmp/PostCommentChild.tsx
   function PostCommentChild({ thing, ...rest }) {
@@ -906,11 +914,15 @@ ${r4}}
   }
 
   // src/cmp/PostComments/PostComments.tsx
-  var PostComments = ({ post, conf: conf2 }) => {
+  var PostComments = ({ post, conf: conf2, onLoad }) => {
     const [things, setThings] = l2(null);
     y2(() => {
       setThings(null);
-      getComments(post).then(setThings);
+      const handle = (things2) => {
+        setThings(things2);
+        onLoad == null ? void 0 : onLoad(things2);
+      };
+      getComments(post).then(handle).catch(() => handle([]));
     }, [post]);
     const update = useUpdate(things || []);
     if (!things)
@@ -934,10 +946,11 @@ ${r4}}
   var container = zaftig_min_default`margin-top 15`.class;
 
   // src/cmp/App.tsx
-  var App = ({ conf: conf2, switchComments }) => {
+  var App = ({ conf: conf2, onNoContent }) => {
     const [posts, setPosts] = l2([]);
     const [selected, setSelected] = l2(void 0);
     const [loading, setLoading] = l2(false);
+    const [first, setFirst] = l2(true);
     y2(() => {
       setLoading(true);
       conf2.getPosts().then((posts2) => {
@@ -946,7 +959,7 @@ ${r4}}
         if (posts2[0])
           setSelected(posts2[0]);
         else
-          sleep(1500).then(switchComments);
+          sleep(1500).then(onNoContent);
       });
     }, []);
     if (loading)
@@ -955,31 +968,37 @@ ${r4}}
       return /* @__PURE__ */ a("div", null, "No posts found\u2026");
     if (!selected)
       return /* @__PURE__ */ a("div", null, "Something went wrong :(");
+    const handleFirst = (arr) => {
+      if (first) {
+        setFirst(false);
+        if (arr.length <= 0)
+          onNoContent();
+      }
+    };
     return /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, {
       posts,
       selected,
       onSelect: setSelected
     }), /* @__PURE__ */ a(PostComments, {
       conf: conf2,
-      post: selected
+      post: selected,
+      onLoad: handleFirst
     }));
   };
 
   // src/cmp/SwitchComments.tsx
   var SwitchComments = ({ onSwitch }) => {
     return /* @__PURE__ */ a("button", {
-      className: styles3.button,
+      className: buttonStyle,
       onClick: onSwitch
     }, "Switch comments");
   };
-  var styles3 = {
-    button: zaftig_min_default`
-    cursor pointer
-    border none
-    padding 10
-    width 100%
-  `.class
-  };
+  var buttonStyle = zaftig_min_default`
+  cursor pointer
+  border none
+  padding 10
+  width 100%
+`.class;
 
   // src/conf/crunchyroll.ts
   var filterForEp = (posts, episode) => {
@@ -1101,7 +1120,7 @@ ${r4}}
   };
 
   // src/theme.ts
-  var theme = {
+  var themes = {
     light: generateTheme({
       background: "#fefefe",
       text: { normal: "#444", subdued: "#666" },
@@ -1129,7 +1148,7 @@ ${r4}}
     }
   `
   };
-  function generateTheme(theme2) {
+  function generateTheme(theme) {
     const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
       const cur = [...parents, k3];
       if (typeof v3 === "object")
@@ -1138,7 +1157,7 @@ ${r4}}
         acc[cur.join("-")] = v3;
       return acc;
     }, {});
-    return zaftig_min_default(Object.entries(getVars(theme2)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
+    return zaftig_min_default(Object.entries(getVars(theme)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
   }
 
   // src/index.tsx
@@ -1186,7 +1205,7 @@ ${r4}}
     }));
     const [removeApp, appWrapper] = insertBefore(comments, conf2, /* @__PURE__ */ a(App, {
       conf: conf2,
-      switchComments
+      onNoContent: () => !hideReddit && switchComments()
     }));
     return () => {
       removeApp();
@@ -1199,7 +1218,7 @@ ${r4}}
   };
   var insertBefore = (before, conf2, view) => {
     const wrapper = document.createElement("div");
-    wrapper.className = theme.common.concat(conf2.dark ? theme.dark : theme.light, conf2.theme && generateTheme(conf2.theme)).class;
+    wrapper.className = themes.common.concat(conf2.dark ? themes.dark : themes.light, conf2.theme && generateTheme(conf2.theme)).class;
     before.parentElement.insertBefore(wrapper, before);
     N(view, wrapper);
     return [() => unmount(wrapper), wrapper];
