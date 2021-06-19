@@ -24,17 +24,19 @@ export const themes = {
     ups: '#ff8300'
   }),
   dark: generateTheme({
-    background: '#333',
-    text: { normal: '#fff', subdued: '#ddd' },
-    link: { color: '#1b3e92' },
-    button: { background: '#555' },
+    background: '#191919',
+    text: { normal: '#fff', subdued: '#b2b2b2' },
+    link: { color: '#6e96b7' },
+    button: { background: '#303030' },
     ups: 'orange'
   }),
   common: z`
-    padding 5
     font-size 16
     color $text-normal
     background $background
+    padding 5
+    text-align left
+
     button { font-size 16; color $text-normal; background $button-background }
     a { 
       color $link-color

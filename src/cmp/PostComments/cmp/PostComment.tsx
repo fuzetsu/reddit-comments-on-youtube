@@ -117,6 +117,7 @@ const styles = createStyles({
       margin 10 0
       color $text-subdued
     }
+    p { margin 0;padding 0 }
     p:not(:last-child) { margin-bottom 18 }
     table {
       th { ta left }

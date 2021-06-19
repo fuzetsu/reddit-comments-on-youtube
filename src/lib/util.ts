@@ -1,5 +1,6 @@
 import { SCRIPT_NAME } from 'constants'
 import { ZaftigStyle } from 'types'
+import { Post } from './api'
 
 export const getById = (id: string) => document.getElementById(id)
 
@@ -89,12 +90,13 @@ export const throttle = <T extends (...args: unknown[]) => void>(ms: number, cb:
     const now = Date.now()
     const delta = now - lastCall
     if (delta < ms) {
-      id = setTimeout(throttled, delta - ms + 5)
+      id = setTimeout(throttled, ms - delta)
       return
     }
     lastCall = now
     cb(...args)
   }
+  throttled.stop = () => clearTimeout(id)
 
   return throttled
 }
@@ -126,4 +128,9 @@ export const createStyles = <T extends { [key: string]: ZaftigStyle }>(spec: T) 
     acc[name as keyof T] = style.class
     return acc
   }, {} as never)
+}
+
+export const filterForEp = (posts: Post[], episode: string) => {
+  const epRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')
+  return posts.filter(post => epRegex.test(post.title))
 }

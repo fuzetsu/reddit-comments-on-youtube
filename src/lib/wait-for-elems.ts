@@ -28,14 +28,20 @@ export const waitForElems = ({
     }
   }
 
-  const observer = new MutationObserver(throttle(300, check))
-  const start = () =>
+  const throttledCheck = throttle(300, check)
+  const observer = new MutationObserver(throttledCheck)
+  const start = () => {
+    check()
     observer.observe(container, {
       subtree: true,
       childList: true,
       ...mutationConfig
     })
-  const stop = () => observer.disconnect()
+  }
+  const stop = () => {
+    throttledCheck.stop()
+    observer.disconnect()
+  }
 
   start()
 

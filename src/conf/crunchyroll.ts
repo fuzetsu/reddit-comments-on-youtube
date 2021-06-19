@@ -1,11 +1,6 @@
-import { Post, searchPosts } from 'lib/api'
-import { getById, logError, q } from 'lib/util'
+import { searchPosts } from 'lib/api'
+import { filterForEp, getById, logError, q } from 'lib/util'
 import { Conf } from 'types'
-
-const filterForEp = (posts: Post[], episode: string) => {
-  const epRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')
-  return posts.filter(post => epRegex.test(post.title))
-}
 
 export const crunchyroll: Conf = {
   commentSelector: '.guestbook.comments',

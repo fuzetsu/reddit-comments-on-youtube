@@ -5,5 +5,6 @@
 // @version     1.0.5
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
+// @match       https://animixplay.to/*
 // @grant       none
 // ==/UserScript==

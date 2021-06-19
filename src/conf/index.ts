@@ -1,9 +1,11 @@
 import { crunchyroll } from './crunchyroll'
 import { youtube } from './youtube'
+import { animixplay } from './animixplay'
 
 const confs = {
   crunchyroll,
-  youtube
+  youtube,
+  animixplay
 } as const
 
 const confNames = Object.keys(confs) as (keyof typeof confs)[]
