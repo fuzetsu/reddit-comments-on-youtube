@@ -10,7 +10,7 @@ type Props<Tag extends TagName> = { tag: Tag; children: JSX.Element } & JSX.HTML
 
 export function CustomButton<Tag extends TagName>({ tag, children, ...props }: Props<Tag>) {
   const onKeyPress: JSX.KeyboardEventHandler<GetElem<Tag>> = e => {
-    if ((e.key === ' ' || e.key === 'Enter') && props.onClick) {
+    if (props.onClick && (e.key === ' ' || e.key === 'Enter')) {
       e.preventDefault()
       props.onClick.call(e.currentTarget, e as never)
     }
