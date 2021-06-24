@@ -12,6 +12,6 @@ const confNames = Object.keys(confs) as (keyof typeof confs)[]
 
 export const getConf = () => {
   const host = location.hostname
-  const mode = confNames.find(name => host.includes(name))
-  return mode ? confs[mode] : null
+  const confName = confNames.find(name => host.includes(name))
+  return confName ? { conf: confs[confName], confName } : {}
 }

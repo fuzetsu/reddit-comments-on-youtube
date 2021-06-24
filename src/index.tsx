@@ -1,6 +1,5 @@
-import { JSX, render } from 'preact'
+import { render } from 'preact'
 import { App } from 'cmp/App'
-import { SwitchComments } from 'cmp/SwitchComments'
 import { getConf } from 'conf'
 import { log, logError } from 'lib/util'
 import { waitForElems } from 'lib/wait-for-elems'
@@ -10,7 +9,7 @@ import { Conf } from 'types'
 
 log('started!')
 
-const conf = getConf()
+const { conf, confName } = getConf()
 
 if (!conf) {
   logError('encountered unknown host', location.hostname)
@@ -32,62 +31,24 @@ if (!conf) {
         stopWaiting: true,
         onmatch: comments => {
           log('comments area found', comments)
-          cleanup.push(mount(conf, comments))
+          cleanup.push(mountApp(conf, comments))
         }
       })
 
       cleanup.push(wait.stop)
 
       return () => {
-        log('leaving page cleaning up', cleanup)
+        log('leaving page cleaning up')
         cleanup.forEach(fn => fn())
       }
     }
   })
 }
 
-const mount = (conf: Conf, comments: HTMLElement) => {
-  // hide comments
+const mountApp = (conf: Conf, comments: HTMLElement) => {
+  // start with native comments hidden
   comments.style.display = 'none'
 
-  // render switch comments
-  let hideReddit = false
-  const switchComments = () => {
-    hideReddit = !hideReddit
-    comments.style.display = hideReddit ? '' : 'none'
-    appWrapper.style.display = hideReddit ? 'none' : ''
-
-    // if comments assume they haven't loaded, and trigger a slight scroll to prod them into doing so
-    if (hideReddit) {
-      requestAnimationFrame(() => {
-        if (comments.clientHeight < 100) {
-          window.scrollBy(0, 1)
-          window.scrollBy(0, -1)
-        }
-      })
-    }
-  }
-
-  const [removeSwitch] = insertBefore(comments, conf, <SwitchComments onSwitch={switchComments} />)
-  const [removeApp, appWrapper] = insertBefore(
-    comments,
-    conf,
-    <App conf={conf} onNoContent={() => !hideReddit && switchComments()} />
-  )
-
-  // cleanup
-  return () => {
-    removeApp()
-    removeSwitch()
-  }
-}
-
-const unmount = (elem: HTMLElement) => {
-  render(null, elem)
-  elem.remove()
-}
-
-const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
   const wrapper = document.createElement('div')
 
   wrapper.className = themes.common.concat(
@@ -97,9 +58,28 @@ const insertBefore = (before: HTMLElement, conf: Conf, view: JSX.Element) => {
 
   // if parentElement is actually null, then just crash m8
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  before.parentElement!.insertBefore(wrapper, before)
+  comments.parentElement!.insertBefore(wrapper, comments)
 
-  render(view, wrapper)
+  render(
+    <App
+      conf={conf}
+      setNativeCommentsVisible={visible => {
+        comments.style.display = visible ? '' : 'none'
+        if (visible && confName === 'youtube') {
+          // if comments container is short assume it hasn't loaded
+          // trigger a slight scroll to prod it into doing so
+          if (comments.clientHeight < 100) {
+            window.scrollBy(0, 1)
+            window.scrollBy(0, -1)
+          }
+        }
+      }}
+    />,
+    wrapper
+  )
 
-  return [() => unmount(wrapper), wrapper] as const
+  return () => {
+    render(null, wrapper)
+    wrapper.remove()
+  }
 }
