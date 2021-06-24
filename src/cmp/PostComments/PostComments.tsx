@@ -1,4 +1,3 @@
-import z from 'zaftig'
 import { PostCommentChild } from './cmp/PostCommentChild'
 import { useUpdate } from './hooks'
 import { useStore } from 'state'
@@ -11,10 +10,12 @@ export const PostComments = () => {
   ])
   const update = useUpdate(things || [])
 
+  if (!activePost) return null
+
   return (
-    <div className={container}>
+    <div>
       {loading
-        ? `Loading comments for ${activePost?.title ?? '???'}…`
+        ? `Loading comments for ${activePost.title}…`
         : things.length <= 0
         ? 'No comments yet.'
         : things.map(thing => (
@@ -23,5 +24,3 @@ export const PostComments = () => {
     </div>
   )
 }
-
-const container = z`margin-top 15`.class
