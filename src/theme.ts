@@ -34,7 +34,6 @@ export const themes = {
     font-size 16
     color $text-normal
     background $background
-    padding 5
     text-align left
 
     button { font-size 16; color $text-normal; background $button-background }
