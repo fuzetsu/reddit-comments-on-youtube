@@ -2,9 +2,10 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.5
+// @version     1.0.6
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
+// @match       https://animixplay.to/*
 // @grant       none
 // ==/UserScript==
 (() => {
@@ -289,156 +290,48 @@
     this.__v && (this.__e = true, n3 && this.__h.push(n3), k(this));
   }, p.prototype.render = y, u = [], i = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, b.__r = 0, o = 0;
 
-  // node_modules/preact/hooks/dist/hooks.module.js
-  var t2;
-  var u2;
-  var r2;
-  var o2 = 0;
-  var i2 = [];
-  var c2 = n.__b;
-  var f2 = n.__r;
-  var e2 = n.diffed;
-  var a2 = n.__c;
-  var v2 = n.unmount;
-  function m2(t6, r4) {
-    n.__h && n.__h(u2, t6, o2 || r4), o2 = 0;
-    var i4 = u2.__H || (u2.__H = { __: [], __h: [] });
-    return t6 >= i4.__.length && i4.__.push({}), i4.__[t6];
-  }
-  function l2(n3) {
-    return o2 = 1, p2(w, n3);
-  }
-  function p2(n3, r4, o5) {
-    var i4 = m2(t2++, 2);
-    return i4.t = n3, i4.__c || (i4.__ = [o5 ? o5(r4) : w(void 0, r4), function(n4) {
-      var t6 = i4.t(i4.__[0], n4);
-      i4.__[0] !== t6 && (i4.__ = [t6, i4.__[1]], i4.__c.setState({}));
-    }], i4.__c = u2), i4.__;
-  }
-  function y2(r4, o5) {
-    var i4 = m2(t2++, 3);
-    !n.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u2.__H.__h.push(i4));
-  }
-  function h(r4, o5) {
-    var i4 = m2(t2++, 4);
-    !n.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u2.__h.push(i4));
-  }
-  function s2(n3) {
-    return o2 = 5, d2(function() {
-      return { current: n3 };
-    }, []);
-  }
-  function d2(n3, u4) {
-    var r4 = m2(t2++, 7);
-    return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
-  }
-  function x2() {
-    i2.forEach(function(t6) {
-      if (t6.__P)
-        try {
-          t6.__H.__h.forEach(g2), t6.__H.__h.forEach(j2), t6.__H.__h = [];
-        } catch (u4) {
-          t6.__H.__h = [], n.__e(u4, t6.__v);
-        }
-    }), i2 = [];
-  }
-  n.__b = function(n3) {
-    u2 = null, c2 && c2(n3);
-  }, n.__r = function(n3) {
-    f2 && f2(n3), t2 = 0;
-    var r4 = (u2 = n3.__c).__H;
-    r4 && (r4.__h.forEach(g2), r4.__h.forEach(j2), r4.__h = []);
-  }, n.diffed = function(t6) {
-    e2 && e2(t6);
-    var o5 = t6.__c;
-    o5 && o5.__H && o5.__H.__h.length && (i2.push(o5) !== 1 && r2 === n.requestAnimationFrame || ((r2 = n.requestAnimationFrame) || function(n3) {
-      var t7, u4 = function() {
-        clearTimeout(r4), b2 && cancelAnimationFrame(t7), setTimeout(n3);
-      }, r4 = setTimeout(u4, 100);
-      b2 && (t7 = requestAnimationFrame(u4));
-    })(x2)), u2 = void 0;
-  }, n.__c = function(t6, u4) {
-    u4.some(function(t7) {
-      try {
-        t7.__h.forEach(g2), t7.__h = t7.__h.filter(function(n3) {
-          return !n3.__ || j2(n3);
-        });
-      } catch (r4) {
-        u4.some(function(n3) {
-          n3.__h && (n3.__h = []);
-        }), u4 = [], n.__e(r4, t7.__v);
-      }
-    }), a2 && a2(t6, u4);
-  }, n.unmount = function(t6) {
-    v2 && v2(t6);
-    var u4 = t6.__c;
-    if (u4 && u4.__H)
-      try {
-        u4.__H.__.forEach(g2);
-      } catch (t7) {
-        n.__e(t7, u4.__v);
-      }
-  };
-  var b2 = typeof requestAnimationFrame == "function";
-  function g2(n3) {
-    var t6 = u2;
-    typeof n3.__c == "function" && n3.__c(), u2 = t6;
-  }
-  function j2(n3) {
-    var t6 = u2;
-    n3.__c = n3.__(), u2 = t6;
-  }
-  function k2(n3, t6) {
-    return !n3 || n3.length !== t6.length || t6.some(function(t7, u4) {
-      return t7 !== n3[u4];
-    });
-  }
-  function w(n3, t6) {
-    return typeof t6 == "function" ? t6(n3) : t6;
-  }
-
   // node_modules/zaftig/dist/zaftig.min.js
-  var { isArray: t3 } = Array;
-  var { hasOwnProperty: r3, getPrototypeOf: e3 } = Object;
+  var { isArray: t2 } = Array;
+  var { hasOwnProperty: r2, getPrototypeOf: e2 } = Object;
   var n2 = (...t6) => console.error("zaftig:", ...t6);
-  var o3 = (t6, r4 = {}) => (e6) => e6 in r4 ? r4[e6] : r4[e6] = t6(e6);
-  var i3 = document.documentMode || /Edge\//.test(navigator.userAgent) ? "ms" : navigator.vendor ? "webkit" : "moz";
-  var s3 = (t6) => r3.call(t6, "width") ? t6 : s3(e3(t6));
-  var c3 = Object.keys(s3(document.documentElement.style)).filter((t6) => t6.indexOf("-") < 0 && t6 != "length");
-  var a3 = {};
-  var u3 = {};
-  c3.concat(["backgroundColor", "borderBottom", "borderRadius", "bottom", "boxShadow", "color", "display", "flexDirection", "float", "fontFamily", "fontSize", "height", "margin", "marginTop", "marginBottom", "opacity", "padding", "paddingBottom", "right", "textAlign", "textDecoration", "top", "whiteSpace", "width"].filter((t6) => c3.indexOf(t6) >= 0)).forEach((t6) => {
+  var o2 = (t6, r4 = {}) => (e6) => e6 in r4 ? r4[e6] : r4[e6] = t6(e6);
+  var i2 = document.documentMode || /Edge\//.test(navigator.userAgent) ? "ms" : navigator.vendor ? "webkit" : "moz";
+  var s2 = (t6) => r2.call(t6, "width") ? t6 : s2(e2(t6));
+  var c2 = Object.keys(s2(document.documentElement.style)).filter((t6) => t6.indexOf("-") < 0 && t6 != "length");
+  var a2 = {};
+  var u2 = {};
+  c2.concat(["backgroundColor", "borderBottom", "borderRadius", "bottom", "boxShadow", "color", "display", "flexDirection", "float", "fontFamily", "fontSize", "height", "margin", "marginTop", "marginBottom", "opacity", "padding", "paddingBottom", "right", "textAlign", "textDecoration", "top", "whiteSpace", "width"].filter((t6) => c2.indexOf(t6) >= 0)).forEach((t6) => {
     let r4 = t6.replace(/[A-Z]/g, (t7) => "-" + t7.toLowerCase());
     let e6 = (n3 = t6)[0] + n3.slice(1).replace(/[a-z]/g, "").toLowerCase();
     var n3;
-    t6.toLowerCase().indexOf(i3) == 0 ? (e6 = e6.slice(1), r4 = r4[0] == "-" ? r4 : "-" + r4, u3[e6] || (u3[e6] = r4)) : u3[e6] = r4, a3[r4] = true;
+    t6.toLowerCase().indexOf(i2) == 0 ? (e6 = e6.slice(1), r4 = r4[0] == "-" ? r4 : "-" + r4, u2[e6] || (u2[e6] = r4)) : u2[e6] = r4, a2[r4] = true;
   });
-  var d3 = document.createElement("div");
-  var l3 = o3((t6) => ["0", "0 0"].some((r4) => (d3.style.cssText = `${t6}: ${r4};`, d3.style.cssText.slice(-3) == "px;")), { flex: false, border: true, "border-left": true, "border-right": true, "border-top": true, "border-bottom": true });
-  var f3 = /\s*,\s*/;
-  var g3 = (t6, r4) => t6 && r4 ? `
+  var d2 = document.createElement("div");
+  var l2 = o2((t6) => ["0", "0 0"].some((r4) => (d2.style.cssText = `${t6}: ${r4};`, d2.style.cssText.slice(-3) == "px;")), { flex: false, border: true, "border-left": true, "border-right": true, "border-top": true, "border-bottom": true });
+  var f2 = /\s*,\s*/;
+  var g2 = (t6, r4) => t6 && r4 ? `
 ${t6} {
 ${r4}}
 ` : "";
-  var m3 = (r4) => function(e6, ...o5) {
+  var m2 = (r4) => function(e6, ...o5) {
     try {
-      return t3(e6) ? r4.call(this, ((t6, r5) => t6.reduce((t7, e7, n3) => t7 + e7 + (r5[n3] == null ? "" : String(r5[n3])), ""))(e6, o5)) : r4.call(this, e6);
+      return t2(e6) ? r4.call(this, ((t6, r5) => t6.reduce((t7, e7, n3) => t7 + e7 + (r5[n3] == null ? "" : String(r5[n3])), ""))(e6, o5)) : r4.call(this, e6);
     } catch (t6) {
       return n2("error `", e6, "`", o5, "\n", t6), "";
     }
   };
-  var h2 = () => document.head.appendChild(document.createElement("style"));
-  var p3;
+  var h = () => document.head.appendChild(document.createElement("style"));
+  var p2;
   var $2 = (t6, r4 = "") => {
     try {
-      p3 && p3.sheet || (p3 = h2()), p3.sheet.insertRule(`${t6}{${r4}}`, 0);
-      const e6 = r4 && p3.sheet.cssRules[0].cssText.replace(/\s/g, "");
-      return p3.sheet.deleteRule(0), !e6 || e6.length > t6.length + 2;
+      p2 && p2.sheet || (p2 = h()), p2.sheet.insertRule(`${t6}{${r4}}`, 0);
+      const e6 = r4 && p2.sheet.cssRules[0].cssText.replace(/\s/g, "");
+      return p2.sheet.deleteRule(0), !e6 || e6.length > t6.length + 2;
     } catch (t7) {
       return false;
     }
   };
-  var y3 = (t6 = {}) => {
+  var y2 = (t6 = {}) => {
     const { helpers: r4 = {}, unit: e6 = "px", id: s4 = "z" + Math.random().toString(36).slice(2) } = t6;
     let { style: c4, dot: d4 = true, debug: p4 = false } = t6, b3 = 0;
     class v3 {
@@ -464,9 +357,9 @@ ${r4}}
         t8 && (typeof t8 == "string" ? r5.push(t8) : t8.className && r5.push(t8.className));
       }), new v3(r5.join(" "));
     }, w2 = (t7, r5, e7) => {
-      const o5 = g3(e7 ? ((t8) => t8.replace(/(::?)([a-z-]+)(\()?/gi, (t9, r6, e8, n3) => (e8 == "placeholder" && i3 != "moz" ? e8 = "input-" + e8 : e8 == "matches" && (e8 = "any"), e8[0] == "-" || $2(n3 ? t9 + ".f)" : t9) ? t9 : `${r6}-${i3}-${e8}${n3 || ""}`)))(t7) : t7, r5);
+      const o5 = g2(e7 ? ((t8) => t8.replace(/(::?)([a-z-]+)(\()?/gi, (t9, r6, e8, n3) => (e8 == "placeholder" && i2 != "moz" ? e8 = "input-" + e8 : e8 == "matches" && (e8 = "any"), e8[0] == "-" || $2(n3 ? t9 + ".f)" : t9) ? t9 : `${r6}-${i2}-${e8}${n3 || ""}`)))(t7) : t7, r5);
       if (o5) {
-        c4 || (c4 = h2(), c4.id = s4);
+        c4 || (c4 = h(), c4.id = s4);
         try {
           c4.sheet.insertRule(o5, c4.sheet.cssRules.length), p4 && (c4.textContent += o5);
         } catch (o6) {
@@ -478,9 +371,9 @@ ${r4}}
         return p4 && n2("missing selector", r5);
       if (/^@(media|keyframes|supports)/.test(t7))
         return ((t8, r6, e8, n3) => {
-          r6.t = g3(e8 == "" ? ":root" : e8, r6.t), r6.o.forEach((t9) => O(t9.i, t9, e8, r6)), n3 ? n3.t += g3(t8, x3(r6.t)) : w2(t8, x3(r6.t));
+          r6.t = g2(e8 == "" ? ":root" : e8, r6.t), r6.o.forEach((t9) => O(t9.i, t9, e8, r6)), n3 ? n3.t += g2(t8, x3(r6.t)) : w2(t8, x3(r6.t));
         })(t7, r5, e7, o5);
-      !e7 || o5 && ((t8) => t8 && t8.indexOf("@keyframes") == 0)(o5.i) || (t7 = ((t8, r6) => r6.split(f3).reduce((r7, e8) => r7.concat(t8.split(f3).map((t9) => t9.indexOf("&") >= 0 ? t9.replace(/&/g, e8) : e8 + (t9[0] == ":" || t9[0] == "[" ? "" : " ") + t9)), []).join(",\n"))(t7, e7)), o5 ? o5.t += g3(t7, r5.t) : w2(t7, r5.t);
+      !e7 || o5 && ((t8) => t8 && t8.indexOf("@keyframes") == 0)(o5.i) || (t7 = ((t8, r6) => r6.split(f2).reduce((r7, e8) => r7.concat(t8.split(f2).map((t9) => t9.indexOf("&") >= 0 ? t9.replace(/&/g, e8) : e8 + (t9[0] == ":" || t9[0] == "[" ? "" : " ") + t9)), []).join(",\n"))(t7, e7)), o5 ? o5.t += g2(t7, r5.t) : w2(t7, r5.t);
       const i4 = t7 == ":root" ? "" : t7;
       r5.o.forEach((t8) => O(t8.i, t8, i4, o5));
     }, k3 = (t7, e7) => {
@@ -503,15 +396,15 @@ ${r4}}
       }
       if (!o5)
         return p4 && n2("no value for", r5);
-      if (r5 = u3[r5] || r5, !a3[r5]) {
-        const t8 = `-${i3}-${r5}`;
-        a3[t8] && (r5 = t8);
+      if (r5 = u2[r5] || r5, !a2[r5]) {
+        const t8 = `-${i2}-${r5}`;
+        a2[t8] && (r5 = t8);
       }
-      o5.indexOf("$") >= 0 && (o5 = o5.replace(/\$([a-z0-9-]+)/gi, "var(--$1)")), l3(r5) && (o5 = o5.split(" ").map((t8) => isNaN(t8) ? t8 : t8 + e6).join(" "));
+      o5.indexOf("$") >= 0 && (o5 = o5.replace(/\$([a-z0-9-]+)/gi, "var(--$1)")), l2(r5) && (o5 = o5.split(" ").map((t8) => isNaN(t8) ? t8 : t8 + e6).join(" "));
       const d5 = `  ${r5}: ${o5};
 `;
       p4 && !$2(s4, d5) && n2("invalid css", d5), t7.t += d5;
-    }, _2 = o3((t7) => {
+    }, _2 = o2((t7) => {
       const r5 = [{ t: "", o: [] }];
       if (!(t7 = t7 && t7.trim()))
         return r5[0];
@@ -522,16 +415,124 @@ ${r4}}
         a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e7 == 1 ? a4 == " " ? (s5 = n3.trim()) && (e7 = 2, n3 = "") : n3 += a4 : e7 == 2 && (i4 ? a4 == i4 && t7[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o5] = { i: k3(s5, n3.trim()) || (s5 + " " + n3).trim(), t: "", o: [] }, e7 = 1, s5 = n3 = "") : (S(r5[o5], s5, n3.trim() + i4), a4 == "}" && r5[--o5].o.push(r5.pop()), e7 = 1, s5 = n3 = i4 = "");
       }
       return r5[0];
-    }), A2 = o3((t7) => {
+    }), A2 = o2((t7) => {
       const r5 = "anim-" + s4 + "-" + (b3 += 1);
       return O("@keyframes " + r5, _2(t7)), r5;
-    }), j3 = o3((t7) => {
+    }), j3 = o2((t7) => {
       const r5 = _2(t7), e7 = (r5.u ? r5.u + "-" : "") + s4 + "-" + (b3 += 1);
       return O("." + e7, r5), new v3(e7 + (r5.l ? " " + r5.l : ""));
-    }), B = m3(j3);
-    return B.anim = m3(A2), B.concat = z2, B.getSheet = () => c4, B.global = m3((t7) => O(":root", _2(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y3, B.setDebug = (t7) => p4 = t7, B.setDot = (t7) => d4 = t7, B.style = m3((t7) => _2(t7).t), B;
+    }), B = m2(j3);
+    return B.anim = m2(A2), B.concat = z2, B.getSheet = () => c4, B.global = m2((t7) => O(":root", _2(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y2, B.setDebug = (t7) => p4 = t7, B.setDot = (t7) => d4 = t7, B.style = m2((t7) => _2(t7).t), B;
   };
-  var zaftig_min_default = y3();
+  var zaftig_min_default = y2();
+
+  // node_modules/preact/hooks/dist/hooks.module.js
+  var t3;
+  var u3;
+  var r3;
+  var o3 = 0;
+  var i3 = [];
+  var c3 = n.__b;
+  var f3 = n.__r;
+  var e3 = n.diffed;
+  var a3 = n.__c;
+  var v2 = n.unmount;
+  function m3(t6, r4) {
+    n.__h && n.__h(u3, t6, o3 || r4), o3 = 0;
+    var i4 = u3.__H || (u3.__H = { __: [], __h: [] });
+    return t6 >= i4.__.length && i4.__.push({}), i4.__[t6];
+  }
+  function l3(n3) {
+    return o3 = 1, p3(w, n3);
+  }
+  function p3(n3, r4, o5) {
+    var i4 = m3(t3++, 2);
+    return i4.t = n3, i4.__c || (i4.__ = [o5 ? o5(r4) : w(void 0, r4), function(n4) {
+      var t6 = i4.t(i4.__[0], n4);
+      i4.__[0] !== t6 && (i4.__ = [t6, i4.__[1]], i4.__c.setState({}));
+    }], i4.__c = u3), i4.__;
+  }
+  function y3(r4, o5) {
+    var i4 = m3(t3++, 3);
+    !n.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u3.__H.__h.push(i4));
+  }
+  function h2(r4, o5) {
+    var i4 = m3(t3++, 4);
+    !n.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u3.__h.push(i4));
+  }
+  function s3(n3) {
+    return o3 = 5, d3(function() {
+      return { current: n3 };
+    }, []);
+  }
+  function d3(n3, u4) {
+    var r4 = m3(t3++, 7);
+    return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
+  }
+  function x2() {
+    i3.forEach(function(t6) {
+      if (t6.__P)
+        try {
+          t6.__H.__h.forEach(g3), t6.__H.__h.forEach(j2), t6.__H.__h = [];
+        } catch (u4) {
+          t6.__H.__h = [], n.__e(u4, t6.__v);
+        }
+    }), i3 = [];
+  }
+  n.__b = function(n3) {
+    u3 = null, c3 && c3(n3);
+  }, n.__r = function(n3) {
+    f3 && f3(n3), t3 = 0;
+    var r4 = (u3 = n3.__c).__H;
+    r4 && (r4.__h.forEach(g3), r4.__h.forEach(j2), r4.__h = []);
+  }, n.diffed = function(t6) {
+    e3 && e3(t6);
+    var o5 = t6.__c;
+    o5 && o5.__H && o5.__H.__h.length && (i3.push(o5) !== 1 && r3 === n.requestAnimationFrame || ((r3 = n.requestAnimationFrame) || function(n3) {
+      var t7, u4 = function() {
+        clearTimeout(r4), b2 && cancelAnimationFrame(t7), setTimeout(n3);
+      }, r4 = setTimeout(u4, 100);
+      b2 && (t7 = requestAnimationFrame(u4));
+    })(x2)), u3 = void 0;
+  }, n.__c = function(t6, u4) {
+    u4.some(function(t7) {
+      try {
+        t7.__h.forEach(g3), t7.__h = t7.__h.filter(function(n3) {
+          return !n3.__ || j2(n3);
+        });
+      } catch (r4) {
+        u4.some(function(n3) {
+          n3.__h && (n3.__h = []);
+        }), u4 = [], n.__e(r4, t7.__v);
+      }
+    }), a3 && a3(t6, u4);
+  }, n.unmount = function(t6) {
+    v2 && v2(t6);
+    var u4 = t6.__c;
+    if (u4 && u4.__H)
+      try {
+        u4.__H.__.forEach(g3);
+      } catch (t7) {
+        n.__e(t7, u4.__v);
+      }
+  };
+  var b2 = typeof requestAnimationFrame == "function";
+  function g3(n3) {
+    var t6 = u3;
+    typeof n3.__c == "function" && n3.__c(), u3 = t6;
+  }
+  function j2(n3) {
+    var t6 = u3;
+    n3.__c = n3.__(), u3 = t6;
+  }
+  function k2(n3, t6) {
+    return !n3 || n3.length !== t6.length || t6.some(function(t7, u4) {
+      return t7 !== n3[u4];
+    });
+  }
+  function w(n3, t6) {
+    return typeof t6 == "function" ? t6(n3) : t6;
+  }
 
   // src/constants.ts
   var SCRIPT_NAME = "RCOY";
@@ -562,8 +563,12 @@ ${r4}}
     return day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
   };
   var namePart = [`%c${SCRIPT_NAME}:`, "color:#ddd"];
-  var log = (first, ...rest) => (console.log(...namePart, first, ...rest), first);
-  var logError = (...rest) => console.log(...namePart, ...rest);
+  var makeLog = (type) => (first, ...rest) => {
+    console[type](...namePart, first, ...rest);
+    return first;
+  };
+  var log = makeLog("log");
+  var logError = makeLog("error");
   var subURI = (template, subs) => Object.entries(subs).reduce((acc, [k3, v3]) => acc.replace(":" + k3, encodeURIComponent(v3)), template);
   var buildQuery = (params) => {
     const data = new URLSearchParams();
@@ -578,12 +583,13 @@ ${r4}}
       const now = Date.now();
       const delta = now - lastCall;
       if (delta < ms) {
-        id = setTimeout(throttled, delta - ms + 5);
+        id = setTimeout(throttled, ms - delta);
         return;
       }
       lastCall = now;
       cb(...args);
     };
+    throttled.stop = () => clearTimeout(id);
     return throttled;
   };
   var sleep = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -605,6 +611,10 @@ ${r4}}
       return acc;
     }, {});
   };
+  var filterForEp = (posts, episode) => {
+    const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
+    return posts.filter((post) => epRegex.test(post.title));
+  };
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -616,9 +626,9 @@ ${r4}}
     spin = false,
     themeColor = "text-normal"
   }) => {
-    const ref = s2();
-    const [color, setColor] = l2("currentColor");
-    y2(() => {
+    const ref = s3();
+    const [color, setColor] = l3("currentColor");
+    y3(() => {
       const update = () => {
         let newColor = getCSSVar(themeColor, ref.current).slice(1);
         if (newColor.length === 3)
@@ -642,7 +652,9 @@ ${r4}}
   // src/lib/api.ts
   var getJSON = (url) => fetch(url).then((res) => res.json());
   var searchPosts = async (query, sort = true) => {
-    const payload = await getJSON(API_URL + "/search.json?" + buildQuery({ q: query }));
+    const payload = await getJSON(API_URL + "/search.json?" + buildQuery({ q: query })).catch((error) => logError(null, "api.getPosts() error", error));
+    if (!payload)
+      return [];
     const results = payload.data.children.map(({ data: post }) => ({
       ...post,
       title: decodeHTML(post.title)
@@ -650,15 +662,15 @@ ${r4}}
     return sort ? results.sort((a4, b3) => b3.num_comments - a4.num_comments) : results;
   };
   var getComments = async ({ permalink }, parentComment) => {
-    const payload = await getJSON(API_URL + permalink + ".json?" + buildQuery({ comment: parentComment == null ? void 0 : parentComment.data.id }));
+    const payload = await getJSON(API_URL + permalink + ".json?" + buildQuery({ comment: parentComment == null ? void 0 : parentComment.data.id })).catch((error) => logError(null, "api.getComments() error", error));
+    if (!payload)
+      return [];
     return payload[1].data.children;
   };
   var getMoreComments = async (link_id, children) => {
-    const payload = await getJSON(API_URL + "/api/morechildren.json?" + buildQuery({ api_type: "json", link_id, children: children.join(",") }));
-    if (payload.json.errors.length > 0) {
-      logError("no comments to load", payload.json.errors);
-      return [];
-    }
+    const payload = await getJSON(API_URL + "/api/morechildren.json?" + buildQuery({ api_type: "json", link_id, children: children.join(",") })).catch(() => null);
+    if (!payload || payload.json.errors.length > 0)
+      return logError([], "api.getMoreComments() error", payload);
     const flatComments = payload.json.data.things;
     const nestedComments = flatComments.reduce((acc, cmt) => {
       const parent = flatComments.find((x3) => x3.data.name === cmt.data.parent_id);
@@ -730,7 +742,7 @@ ${r4}}
   var useStore = staterino_min_default({
     state: initialState,
     merge: mergerino_min_default,
-    hooks: { useLayoutEffect: h, useReducer: p2 }
+    hooks: { useLayoutEffect: h2, useReducer: p3 }
   });
   var { get: getState, set: setState, subscribe } = useStore;
 
@@ -743,9 +755,9 @@ ${r4}}
   var setComments = setter("comments");
   var setNoContent = setter("noContent");
   var setFirstLoad = setter("firstLoad");
-  var init = async (conf2) => {
+  var init = (conf2) => {
     setState([() => initialState, { conf: conf2 }]);
-    conf2.getPosts().then(setPosts).finally(() => setPostsLoading(false));
+    return conf2.getPosts().catch((error) => logError([], conf2, "conf.getPosts() threw", error)).then(setPosts).finally(() => setPostsLoading(false));
   };
 
   // src/state/subs.ts
@@ -776,12 +788,14 @@ ${r4}}
   // src/cmp/PostSelect.tsx
   var PostSelect = () => {
     const [posts, activePost] = useStore([(s4) => s4.posts, (s4) => s4.activePost]);
-    const [showEmpty, setShowEmpty] = l2(false);
+    const [showEmpty, setShowEmpty] = l3(false);
     const postsWithComments = posts.filter((post) => post.num_comments > 0);
     const emptyCount = posts.length - postsWithComments.length;
     let list = showEmpty ? posts : postsWithComments;
     if (activePost && !list.includes(activePost))
       list = [...list, activePost];
+    if (list.length <= 0)
+      return null;
     return /* @__PURE__ */ a("div", {
       className: styles.container
     }, list.map((post) => /* @__PURE__ */ a("button", {
@@ -829,8 +843,8 @@ ${r4}}
   // src/cmp/PostComments/cmp/LoadMoreButton.tsx
   var LoadMoreButton = ({ thing, update }) => {
     const activePost = useStore((s4) => s4.activePost);
-    const [loading, setLoading] = l2(false);
-    const [failed, setFailed] = l2(false);
+    const [loading, setLoading] = l3(false);
+    const [failed, setFailed] = l3(false);
     const { count, children } = thing.data;
     if (count <= 0)
       return null;
@@ -859,7 +873,7 @@ ${r4}}
 
   // src/lib/hooks.ts
   var useRedraw = () => {
-    const [, redraw] = p2((c4) => c4 + 1, 0);
+    const [, redraw] = p3((c4) => c4 + 1, 0);
     return redraw;
   };
 
@@ -876,10 +890,10 @@ ${r4}}
   // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data;
-    const html = d2(() => decodeHTML(body_html), [body_html]);
+    const html = d3(() => decodeHTML(body_html), [body_html]);
     const conf2 = useStore((s4) => s4.conf);
     const redraw = useRedraw();
-    const ref = s2();
+    const ref = s3();
     const toggle = () => {
       thing.data.collapsed = !collapsed;
       redraw();
@@ -963,6 +977,7 @@ ${r4}}
       margin 10 0
       color $text-subdued
     }
+    p { margin 0;padding 0 }
     p:not(:last-child) { margin-bottom 18 }
     table {
       th { ta left }
@@ -995,38 +1010,19 @@ ${r4}}
 
   // src/cmp/PostComments/PostComments.tsx
   var PostComments = () => {
-    var _a;
     const [loading, things, activePost] = useStore([
       (s4) => s4.commentsLoading,
       (s4) => s4.comments,
       (s4) => s4.activePost
     ]);
     const update = useUpdate(things || []);
-    return /* @__PURE__ */ a("div", {
-      className: container
-    }, loading ? `Loading comments for ${(_a = activePost == null ? void 0 : activePost.title) != null ? _a : "???"}\u2026` : things.length <= 0 ? "No comments yet." : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
+    if (!activePost)
+      return null;
+    return /* @__PURE__ */ a("div", null, loading ? `Loading comments for ${activePost.title}\u2026` : things.length <= 0 ? "No comments yet." : things.map((thing) => /* @__PURE__ */ a(PostCommentChild, {
       key: thing.data.id,
       thing,
       update
     })));
-  };
-  var container = zaftig_min_default`margin-top 15`.class;
-
-  // src/cmp/App.tsx
-  var App = ({ conf: conf2, onNoContent }) => {
-    const [postsLoading, noPosts] = useStore([(s4) => s4.postsLoading, (s4) => s4.posts.length <= 0]);
-    y2(() => {
-      init(conf2);
-      return subscribe([(s4) => s4.noContent], (noContent) => {
-        if (noContent)
-          onNoContent();
-      });
-    }, []);
-    if (postsLoading)
-      return /* @__PURE__ */ a("div", null, "Loading posts\u2026");
-    if (noPosts)
-      return /* @__PURE__ */ a("div", null, "No posts found\u2026");
-    return /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, null), /* @__PURE__ */ a(PostComments, null));
   };
 
   // src/cmp/SwitchComments.tsx
@@ -1043,11 +1039,31 @@ ${r4}}
   width 100%
 `.class;
 
-  // src/conf/crunchyroll.ts
-  var filterForEp = (posts, episode) => {
-    const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
-    return posts.filter((post) => epRegex.test(post.title));
+  // src/cmp/App.tsx
+  var App = ({ conf: conf2, setNativeCommentsVisible }) => {
+    const [postsLoading, noPosts] = useStore([(s4) => s4.postsLoading, (s4) => s4.posts.length <= 0]);
+    y3(() => {
+      init(conf2);
+      return subscribe([(s4) => s4.noContent], (noContent) => {
+        if (noContent && visible)
+          toggleVisible();
+      });
+    }, []);
+    const [visible, setVisible] = l3(true);
+    const toggleVisible = () => {
+      setNativeCommentsVisible(visible);
+      setVisible(!visible);
+    };
+    const message = postsLoading ? "Loading posts\u2026" : noPosts ? "No posts found\u2026" : "";
+    return /* @__PURE__ */ a("div", {
+      className: container
+    }, /* @__PURE__ */ a(SwitchComments, {
+      onSwitch: toggleVisible
+    }), visible && (message || /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, null), /* @__PURE__ */ a(PostComments, null))));
   };
+  var container = zaftig_min_default`d flex;flex-direction column;gap 10`.class;
+
+  // src/conf/crunchyroll.ts
   var crunchyroll = {
     commentSelector: ".guestbook.comments",
     isMatch: () => !!getById("showmedia_about_media"),
@@ -1094,16 +1110,31 @@ ${r4}}
     }
   };
 
+  // src/conf/animixplay.ts
+  var animixplay = {
+    commentSelector: "#disqus_thread",
+    isMatch: () => Boolean(q(".playerpage")),
+    dark: true,
+    async getPosts() {
+      var _a, _b;
+      const title = (_a = q(".animetitle")) == null ? void 0 : _a.textContent;
+      const epNum = (_b = q("#epslistplace button[disabled]")) == null ? void 0 : _b.textContent;
+      const posts = await searchPosts(`${title} episode ${epNum}`);
+      return epNum ? filterForEp(posts, epNum) : posts;
+    }
+  };
+
   // src/conf/index.ts
   var confs = {
     crunchyroll,
-    youtube
+    youtube,
+    animixplay
   };
   var confNames = Object.keys(confs);
   var getConf = () => {
     const host = location.hostname;
-    const mode = confNames.find((name) => host.includes(name));
-    return mode ? confs[mode] : null;
+    const confName2 = confNames.find((name) => host.includes(name));
+    return confName2 ? { conf: confs[confName2], confName: confName2 } : {};
   };
 
   // src/lib/wait-for-elems.ts
@@ -1126,13 +1157,20 @@ ${r4}}
         });
       }
     };
-    const observer = new MutationObserver(throttle(300, check));
-    const start = () => observer.observe(container2, {
-      subtree: true,
-      childList: true,
-      ...mutationConfig
-    });
-    const stop = () => observer.disconnect();
+    const throttledCheck = throttle(300, check);
+    const observer = new MutationObserver(throttledCheck);
+    const start = () => {
+      check();
+      observer.observe(container2, {
+        subtree: true,
+        childList: true,
+        ...mutationConfig
+      });
+    };
+    const stop = () => {
+      throttledCheck.stop();
+      observer.disconnect();
+    };
     start();
     return { start, stop };
   };
@@ -1172,17 +1210,18 @@ ${r4}}
       ups: "#ff8300"
     }),
     dark: generateTheme({
-      background: "#333",
-      text: { normal: "#fff", subdued: "#ddd" },
-      link: { color: "#1b3e92" },
-      button: { background: "#555" },
+      background: "#191919",
+      text: { normal: "#fff", subdued: "#b2b2b2" },
+      link: { color: "#6e96b7" },
+      button: { background: "#303030" },
       ups: "orange"
     }),
     common: zaftig_min_default`
-    padding 5
     font-size 16
     color $text-normal
     background $background
+    text-align left
+
     button { font-size 16; color $text-normal; background $button-background }
     a { 
       color $link-color
@@ -1205,7 +1244,7 @@ ${r4}}
 
   // src/index.tsx
   log("started!");
-  var conf = getConf();
+  var { conf, confName } = getConf();
   if (!conf) {
     logError("encountered unknown host", location.hostname);
   } else {
@@ -1224,54 +1263,37 @@ ${r4}}
           stopWaiting: true,
           onmatch: (comments) => {
             log("comments area found", comments);
-            cleanup.push(mount(conf, comments));
+            cleanup.push(mountApp(conf, comments));
           }
         });
         cleanup.push(wait.stop);
         return () => {
-          log("leaving page cleaning up", cleanup);
+          log("leaving page cleaning up");
           cleanup.forEach((fn) => fn());
         };
       }
     });
   }
-  var mount = (conf2, comments) => {
+  var mountApp = (conf2, comments) => {
     comments.style.display = "none";
-    let hideReddit = false;
-    const switchComments = () => {
-      hideReddit = !hideReddit;
-      comments.style.display = hideReddit ? "" : "none";
-      appWrapper.style.display = hideReddit ? "none" : "";
-      if (hideReddit) {
-        requestAnimationFrame(() => {
+    const wrapper = document.createElement("div");
+    wrapper.className = themes.common.concat(conf2.dark ? themes.dark : themes.light, conf2.theme && generateTheme(conf2.theme)).class;
+    comments.parentElement.insertBefore(wrapper, comments);
+    N(/* @__PURE__ */ a(App, {
+      conf: conf2,
+      setNativeCommentsVisible: (visible) => {
+        comments.style.display = visible ? "" : "none";
+        if (visible && confName === "youtube") {
           if (comments.clientHeight < 100) {
             window.scrollBy(0, 1);
             window.scrollBy(0, -1);
           }
-        });
+        }
       }
-    };
-    const [removeSwitch] = insertBefore(comments, conf2, /* @__PURE__ */ a(SwitchComments, {
-      onSwitch: switchComments
-    }));
-    const [removeApp, appWrapper] = insertBefore(comments, conf2, /* @__PURE__ */ a(App, {
-      conf: conf2,
-      onNoContent: () => !hideReddit && switchComments()
-    }));
+    }), wrapper);
     return () => {
-      removeApp();
-      removeSwitch();
+      N(null, wrapper);
+      wrapper.remove();
     };
-  };
-  var unmount = (elem) => {
-    N(null, elem);
-    elem.remove();
-  };
-  var insertBefore = (before, conf2, view) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = themes.common.concat(conf2.dark ? themes.dark : themes.light, conf2.theme && generateTheme(conf2.theme)).class;
-    before.parentElement.insertBefore(wrapper, before);
-    N(view, wrapper);
-    return [() => unmount(wrapper), wrapper];
   };
 })();
