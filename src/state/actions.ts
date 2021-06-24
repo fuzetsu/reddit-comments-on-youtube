@@ -1,4 +1,5 @@
 import { Post } from 'lib/api'
+import { logError } from 'lib/util'
 import { Conf } from 'types'
 import { initialState, setState } from './state'
 import { KeySetter, State } from './types'
@@ -13,11 +14,12 @@ export const setComments = setter('comments')
 export const setNoContent = setter('noContent')
 export const setFirstLoad = setter('firstLoad')
 
-export const init = async (conf: Conf) => {
+export const init = (conf: Conf) => {
   setState([() => initialState, { conf }])
 
-  conf
+  return conf
     .getPosts()
+    .catch(error => logError([], conf, 'conf.getPosts() threw', error))
     .then(setPosts)
     .finally(() => setPostsLoading(false))
 }

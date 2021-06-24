@@ -54,7 +54,11 @@ export type CommentChild = Comment | LoadMore
 const getJSON = <T>(url: string) => fetch(url).then(res => res.json() as Promise<T>)
 
 export const searchPosts = async (query: string, sort = true): Promise<Post[]> => {
-  const payload = await getJSON<PostPayload>(API_URL + '/search.json?' + buildQuery({ q: query }))
+  const payload = await getJSON<PostPayload>(
+    API_URL + '/search.json?' + buildQuery({ q: query })
+  ).catch(error => logError(null, 'api.getPosts() error', error))
+
+  if (!payload) return []
 
   const results = payload.data.children.map(({ data: post }) => ({
     ...post,
@@ -70,7 +74,9 @@ export const getComments = async (
 ): Promise<CommentChild[]> => {
   const payload = await getJSON<CommentPayload>(
     API_URL + permalink + '.json?' + buildQuery({ comment: parentComment?.data.id })
-  )
+  ).catch(error => logError(null, 'api.getComments() error', error))
+
+  if (!payload) return []
 
   return payload[1].data.children
 }
@@ -80,12 +86,10 @@ export const getMoreComments = async (link_id: string, children: string[]): Prom
     API_URL +
       '/api/morechildren.json?' +
       buildQuery({ api_type: 'json', link_id, children: children.join(',') })
-  )
+  ).catch(() => null)
 
-  if (payload.json.errors.length > 0) {
-    logError('no comments to load', payload.json.errors)
-    return []
-  }
+  if (!payload || payload.json.errors.length > 0)
+    return logError([], 'api.getMoreComments() error', payload)
 
   const flatComments = payload.json.data.things
   const nestedComments = flatComments.reduce<Comment[]>((acc, cmt) => {
