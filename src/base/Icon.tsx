@@ -5,8 +5,10 @@ import { ZaftigStyle } from '../types'
 
 const API = 'https://icongr.am/feather'
 
+type IconName = 'message-circle'
+
 interface Props {
-  name: string
+  name: IconName
   onClick?(): void
   className?: string | ZaftigStyle
   size?: number
