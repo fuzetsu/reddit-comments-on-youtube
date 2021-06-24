@@ -17,6 +17,8 @@ export const PostSelect = () => {
   // always show selected post
   if (activePost && !list.includes(activePost)) list = [...list, activePost]
 
+  if (list.length <= 0) return null
+
   return (
     <div className={styles.container}>
       {list.map(post => (
