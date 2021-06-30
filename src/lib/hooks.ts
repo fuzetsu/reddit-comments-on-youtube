@@ -1,4 +1,4 @@
-import { Inputs, useEffect, useReducer } from 'preact/hooks'
+import { Inputs, useEffect, useReducer, useRef } from 'preact/hooks'
 
 export const useRedraw = () => {
   const [, redraw] = useReducer(c => c + 1, 0)
@@ -17,4 +17,10 @@ export const useInterval = (ms: number, callback: () => void, deps: Inputs = [])
     const id = setInterval(callback, ms)
     return () => clearInterval(id)
   }, [ms, ...deps])
+}
+
+export const useUpdatingRef = <T>(value: T) => {
+  const ref = useRef(value)
+  ref.current = value
+  return ref
 }
