@@ -33,8 +33,9 @@ subscribe(
   activePost => {
     if (!activePost) return
     setCommentsLoading(true)
-    getComments(activePost)
-      .then(setComments)
-      .finally(() => setCommentsLoading(false))
+    getComments(activePost).then(comments => {
+      setComments(comments)
+      setCommentsLoading(false)
+    })
   }
 )
