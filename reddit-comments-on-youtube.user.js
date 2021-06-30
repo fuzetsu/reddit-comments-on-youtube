@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.6
+// @version     1.0.7
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
@@ -82,23 +82,23 @@
       });
   }
   function m(n3, l4, u4, i4, t6, o5, e6, c4, s4, a4) {
-    var h3, p4, _2, k3, b3, m4, w2, A2 = i4 && i4.__k || f, P2 = A2.length;
+    var h3, p4, _2, k3, b3, m4, w2, A3 = i4 && i4.__k || f, P2 = A3.length;
     for (u4.__k = [], h3 = 0; h3 < l4.length; h3++)
       if ((k3 = u4.__k[h3] = (k3 = l4[h3]) == null || typeof k3 == "boolean" ? null : typeof k3 == "string" || typeof k3 == "number" || typeof k3 == "bigint" ? v(null, k3, null, null, k3) : Array.isArray(k3) ? v(y, { children: k3 }, null, null, null) : k3.__b > 0 ? v(k3.type, k3.props, k3.key, null, k3.__v) : k3) != null) {
-        if (k3.__ = u4, k3.__b = u4.__b + 1, (_2 = A2[h3]) === null || _2 && k3.key == _2.key && k3.type === _2.type)
-          A2[h3] = void 0;
+        if (k3.__ = u4, k3.__b = u4.__b + 1, (_2 = A3[h3]) === null || _2 && k3.key == _2.key && k3.type === _2.type)
+          A3[h3] = void 0;
         else
           for (p4 = 0; p4 < P2; p4++) {
-            if ((_2 = A2[p4]) && k3.key == _2.key && k3.type === _2.type) {
-              A2[p4] = void 0;
+            if ((_2 = A3[p4]) && k3.key == _2.key && k3.type === _2.type) {
+              A3[p4] = void 0;
               break;
             }
             _2 = null;
           }
-        I(n3, k3, _2 = _2 || r, t6, o5, e6, c4, s4, a4), b3 = k3.__e, (p4 = k3.ref) && _2.ref != p4 && (w2 || (w2 = []), _2.ref && w2.push(_2.ref, null, k3), w2.push(p4, k3.__c || b3, k3)), b3 != null ? (m4 == null && (m4 = b3), typeof k3.type == "function" && k3.__k != null && k3.__k === _2.__k ? k3.__d = s4 = g(k3, s4, n3) : s4 = x(n3, k3, _2, A2, b3, s4), a4 || u4.type !== "option" ? typeof u4.type == "function" && (u4.__d = s4) : n3.value = "") : s4 && _2.__e == s4 && s4.parentNode != n3 && (s4 = d(_2));
+        I(n3, k3, _2 = _2 || r, t6, o5, e6, c4, s4, a4), b3 = k3.__e, (p4 = k3.ref) && _2.ref != p4 && (w2 || (w2 = []), _2.ref && w2.push(_2.ref, null, k3), w2.push(p4, k3.__c || b3, k3)), b3 != null ? (m4 == null && (m4 = b3), typeof k3.type == "function" && k3.__k != null && k3.__k === _2.__k ? k3.__d = s4 = g(k3, s4, n3) : s4 = x(n3, k3, _2, A3, b3, s4), a4 || u4.type !== "option" ? typeof u4.type == "function" && (u4.__d = s4) : n3.value = "") : s4 && _2.__e == s4 && s4.parentNode != n3 && (s4 = d(_2));
       }
     for (u4.__e = m4, h3 = P2; h3--; )
-      A2[h3] != null && (typeof u4.type == "function" && A2[h3].__e != null && A2[h3].__e == u4.__d && (u4.__d = d(i4, h3 + 1)), L(A2[h3], A2[h3]));
+      A3[h3] != null && (typeof u4.type == "function" && A3[h3].__e != null && A3[h3].__e == u4.__d && (u4.__d = d(i4, h3 + 1)), L(A3[h3], A3[h3]));
     if (w2)
       for (h3 = 0; h3 < w2.length; h3++)
         z(w2[h3], w2[++h3], w2[++h3]);
@@ -170,7 +170,7 @@
     this.l[l4.type + true](n.event ? n.event(l4) : l4);
   }
   function I(l4, u4, i4, t6, o5, r4, f4, e6, s4) {
-    var a4, v3, h3, d4, _2, k3, b3, g4, w2, x3, A2, P2 = u4.type;
+    var a4, v3, h3, d4, _2, k3, b3, g4, w2, x3, A3, P2 = u4.type;
     if (u4.constructor !== void 0)
       return null;
     i4.__h != null && (s4 = i4.__h, e6 = u4.__e = i4.__e, u4.__h = null, r4 = [e6]), (a4 = n.__b) && a4(u4);
@@ -190,7 +190,7 @@
               v3.componentDidUpdate(d4, _2, k3);
             });
           }
-          v3.context = x3, v3.props = g4, v3.state = v3.__s, (a4 = n.__r) && a4(u4), v3.__d = false, v3.__v = u4, v3.__P = l4, a4 = v3.render(v3.props, v3.state, v3.context), v3.state = v3.__s, v3.getChildContext != null && (t6 = c(c({}, t6), v3.getChildContext())), h3 || v3.getSnapshotBeforeUpdate == null || (k3 = v3.getSnapshotBeforeUpdate(d4, _2)), A2 = a4 != null && a4.type === y && a4.key == null ? a4.props.children : a4, m(l4, Array.isArray(A2) ? A2 : [A2], u4, i4, t6, o5, r4, f4, e6, s4), v3.base = u4.__e, u4.__h = null, v3.__h.length && f4.push(v3), b3 && (v3.__E = v3.__ = null), v3.__e = false;
+          v3.context = x3, v3.props = g4, v3.state = v3.__s, (a4 = n.__r) && a4(u4), v3.__d = false, v3.__v = u4, v3.__P = l4, a4 = v3.render(v3.props, v3.state, v3.context), v3.state = v3.__s, v3.getChildContext != null && (t6 = c(c({}, t6), v3.getChildContext())), h3 || v3.getSnapshotBeforeUpdate == null || (k3 = v3.getSnapshotBeforeUpdate(d4, _2)), A3 = a4 != null && a4.type === y && a4.key == null ? a4.props.children : a4, m(l4, Array.isArray(A3) ? A3 : [A3], u4, i4, t6, o5, r4, f4, e6, s4), v3.base = u4.__e, u4.__h = null, v3.__h.length && f4.push(v3), b3 && (v3.__E = v3.__ = null), v3.__e = false;
         } else
           r4 == null && u4.__v === i4.__v ? (u4.__k = i4.__k, u4.__e = i4.__e) : u4.__e = j(i4.__e, u4, i4, t6, o5, r4, f4, s4);
       (a4 = n.diffed) && a4(u4);
@@ -415,14 +415,14 @@ ${r4}}
         a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e7 == 1 ? a4 == " " ? (s5 = n3.trim()) && (e7 = 2, n3 = "") : n3 += a4 : e7 == 2 && (i4 ? a4 == i4 && t7[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o5] = { i: k3(s5, n3.trim()) || (s5 + " " + n3).trim(), t: "", o: [] }, e7 = 1, s5 = n3 = "") : (S(r5[o5], s5, n3.trim() + i4), a4 == "}" && r5[--o5].o.push(r5.pop()), e7 = 1, s5 = n3 = i4 = "");
       }
       return r5[0];
-    }), A2 = o2((t7) => {
+    }), A3 = o2((t7) => {
       const r5 = "anim-" + s4 + "-" + (b3 += 1);
       return O("@keyframes " + r5, _2(t7)), r5;
     }), j3 = o2((t7) => {
       const r5 = _2(t7), e7 = (r5.u ? r5.u + "-" : "") + s4 + "-" + (b3 += 1);
       return O("." + e7, r5), new v3(e7 + (r5.l ? " " + r5.l : ""));
     }), B = m2(j3);
-    return B.anim = m2(A2), B.concat = z2, B.getSheet = () => c4, B.global = m2((t7) => O(":root", _2(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y2, B.setDebug = (t7) => p4 = t7, B.setDot = (t7) => d4 = t7, B.style = m2((t7) => _2(t7).t), B;
+    return B.anim = m2(A3), B.concat = z2, B.getSheet = () => c4, B.global = m2((t7) => O(":root", _2(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y2, B.setDebug = (t7) => p4 = t7, B.setDot = (t7) => d4 = t7, B.style = m2((t7) => _2(t7).t), B;
   };
   var zaftig_min_default = y2();
 
@@ -468,6 +468,11 @@ ${r4}}
   function d3(n3, u4) {
     var r4 = m3(t3++, 7);
     return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
+  }
+  function A2(n3, t6) {
+    return o3 = 8, d3(function() {
+      return n3;
+    }, t6);
   }
   function x2() {
     i3.forEach(function(t6) {
@@ -782,7 +787,10 @@ ${r4}}
     if (!activePost)
       return;
     setCommentsLoading(true);
-    getComments(activePost).then(setComments).finally(() => setCommentsLoading(false));
+    getComments(activePost).then((comments) => {
+      setComments(comments);
+      setCommentsLoading(false);
+    });
   });
 
   // src/cmp/PostSelect.tsx
@@ -849,43 +857,67 @@ ${r4}}
     if (count <= 0)
       return null;
     const label = failed ? "Can't find those dang comments" : `${loading ? "Loading" : "Load"} ${count} more comments`;
+    const onClick = async () => {
+      setLoading(true);
+      const results = await getMoreComments(activePost.name, children);
+      setLoading(false);
+      if (results.length <= 0) {
+        setFailed(true);
+        await sleep(1200);
+      }
+      update((parent) => {
+        const currentPosition = parent.indexOf(thing);
+        if (currentPosition >= 0)
+          parent.splice(currentPosition, 1, ...results);
+      });
+    };
     return /* @__PURE__ */ a("div", {
-      className: zaftig_min_default`:not(:last-child) { margin-bottom 18 }`.class
+      className: styles2.wrapper
     }, /* @__PURE__ */ a("button", {
       disabled: loading || failed,
-      className: zaftig_min_default`padding 5 10;border none`.class,
-      onClick: async () => {
-        setLoading(true);
-        const results = await getMoreComments(activePost.name, children);
-        setLoading(false);
-        if (results.length <= 0) {
-          setFailed(true);
-          await sleep(1200);
-        }
-        update((parent) => {
-          const currentPosition = parent.indexOf(thing);
-          if (currentPosition >= 0)
-            parent.splice(currentPosition, 1, ...results);
-        });
-      }
+      className: styles2.button,
+      onClick
     }, label));
   };
+  var styles2 = createStyles({
+    wrapper: zaftig_min_default`:not(:last-child) { margin-bottom 18 }`,
+    button: zaftig_min_default`padding 5 10;border none`
+  });
 
   // src/lib/hooks.ts
   var useRedraw = () => {
     const [, redraw] = p3((c4) => c4 + 1, 0);
     return redraw;
   };
+  var useUpdatingRef = (value) => {
+    const ref = s3(value);
+    ref.current = value;
+    return ref;
+  };
 
   // src/cmp/PostComments/hooks.ts
   var useUpdate = (parent) => {
     const redraw = useRedraw();
-    const update = (fn) => {
-      fn(parent);
+    const parentRef = useUpdatingRef(parent);
+    const update = A2((fn) => {
+      fn(parentRef.current);
       redraw();
-    };
+    }, []);
     return update;
   };
+
+  // src/base/CustomButton.tsx
+  function CustomButton({ tag, children, ...props }) {
+    const onKeyPress = (e6) => {
+      var _a;
+      (_a = props.onKeyPress) == null ? void 0 : _a.call(e6.currentTarget, e6);
+      if (!e6.defaultPrevented && props.onClick && (e6.key === " " || e6.key === "Enter")) {
+        e6.preventDefault();
+        props.onClick.call(e6.currentTarget, e6);
+      }
+    };
+    return a(tag, { role: "button", tabIndex: 0, ...props, onKeyPress }, children);
+  }
 
   // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
@@ -908,27 +940,30 @@ ${r4}}
     const createdTime = new Date(created_utc * 1e3);
     const editedTime = edited && new Date(edited * 1e3);
     const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate();
+    const ariaLabel = (collapsed ? "expand" : "collapse") + " comment";
     return /* @__PURE__ */ a("div", {
-      className: styles2.comment
-    }, /* @__PURE__ */ a("div", {
-      className: styles2.border,
+      className: styles3.comment
+    }, /* @__PURE__ */ a(CustomButton, {
+      tag: "div",
+      "aria-label": ariaLabel,
+      className: styles3.border,
       onClick: toggle
     }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
       ref,
-      className: styles2.commentInfo,
+      className: styles3.commentInfo,
       style: { marginBottom: collapsed ? "" : "10px" }
     }, /* @__PURE__ */ a("a", {
-      className: styles2.author,
+      className: styles3.author,
       target: "_blank",
       href: API_URL + subURI("/u/:author", { author })
     }, author), /* @__PURE__ */ a("span", {
-      className: styles2.ups
+      className: styles3.ups
     }, reduceCount(ups)), /* @__PURE__ */ a("a", {
-      className: styles2.date,
+      className: styles3.date,
       target: "_blank",
       href: API_URL + permalink
     }, prettyTime(createdTime, "date-time"), editedTime && /* @__PURE__ */ a(y, null, " edited ", prettyTime(editedTime, differentDay ? "date-time" : "time")))), !collapsed && /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("div", {
-      className: styles2.body,
+      className: styles3.body,
       dangerouslySetInnerHTML: { __html: html },
       onClick: (e6) => {
         if (e6.target instanceof HTMLAnchorElement) {
@@ -938,14 +973,14 @@ ${r4}}
         }
       }
     }), replies && /* @__PURE__ */ a("div", {
-      className: styles2.replies
+      className: styles3.replies
     }, replies.data.children.map((child) => /* @__PURE__ */ a(PostCommentChild, {
       key: child.data.id,
       thing: child,
       update
     }))))));
   };
-  var styles2 = createStyles({
+  var styles3 = createStyles({
     comment: zaftig_min_default`
     display grid
     grid-template-columns auto 1fr
@@ -961,7 +996,7 @@ ${r4}}
     cursor pointer
     $color $text-subdued
 
-    :hover { $color $text-normal }
+    :hover,:focus { $color $text-normal }
     ::after {
       display block
       content ' '
@@ -1179,25 +1214,44 @@ ${r4}}
   var waitForUrl = ({ matcher = "any", stopWaiting = false, onmatch }) => {
     const isMatch = matcher === "any" ? () => true : typeof matcher === "function" ? matcher : (url) => matcher.test(url);
     let lastUrl = "";
-    let cleanup;
     const check = () => {
       const url = location.href;
       if (url === lastUrl)
         return;
       lastUrl = url;
       if (cleanup) {
-        cleanup();
-        cleanup = void 0;
+        runCleanup();
+        if (stopWaiting)
+          return stop();
       }
       if (isMatch(url)) {
-        if (stopWaiting)
-          stop();
-        cleanup = onmatch(url);
+        try {
+          cleanup = onmatch(url);
+        } finally {
+          if (stopWaiting && !cleanup)
+            stop();
+        }
       }
     };
-    const id = setInterval(check, 500);
-    const stop = () => clearInterval(id);
-    return { stop };
+    let cleanup;
+    const runCleanup = () => {
+      if (!cleanup)
+        return;
+      cleanup();
+      cleanup = void 0;
+    };
+    let id;
+    const start = () => {
+      stop();
+      id = setInterval(check, 500);
+      check();
+    };
+    const stop = () => {
+      clearInterval(id);
+      runCleanup();
+    };
+    start();
+    return { stop, start };
   };
 
   // src/theme.ts
@@ -1274,7 +1328,7 @@ ${r4}}
       }
     });
   }
-  var mountApp = (conf2, comments) => {
+  function mountApp(conf2, comments) {
     comments.style.display = "none";
     const wrapper = document.createElement("div");
     wrapper.className = themes.common.concat(conf2.dark ? themes.dark : themes.light, conf2.theme && generateTheme(conf2.theme)).class;
@@ -1295,5 +1349,5 @@ ${r4}}
       N(null, wrapper);
       wrapper.remove();
     };
-  };
+  }
 })();
