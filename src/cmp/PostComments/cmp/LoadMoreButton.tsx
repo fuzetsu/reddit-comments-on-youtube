@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
 import { getMoreComments, LoadMore } from 'lib/api'
-import { sleep } from 'lib/util'
+import { createStyles, sleep } from 'lib/util'
 import { ChildProps } from '../types'
 import { useStore } from 'state'
 
@@ -18,31 +18,34 @@ export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
     ? "Can't find those dang comments"
     : `${loading ? 'Loading' : 'Load'} ${count} more comments`
 
+  const onClick = async () => {
+    setLoading(true)
+    // not possible for activePost to be null if comments are loaded
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const results = await getMoreComments(activePost!.name, children)
+    setLoading(false)
+
+    if (results.length <= 0) {
+      setFailed(true)
+      await sleep(1200)
+    }
+
+    update(parent => {
+      const currentPosition = parent.indexOf(thing)
+      if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
+    })
+  }
+
   return (
-    <div className={z`:not(:last-child) { margin-bottom 18 }`.class}>
-      <button
-        disabled={loading || failed}
-        className={z`padding 5 10;border none`.class}
-        onClick={async () => {
-          setLoading(true)
-          // not possible for activePost to be null if comments are loaded
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const results = await getMoreComments(activePost!.name, children)
-          setLoading(false)
-
-          if (results.length <= 0) {
-            setFailed(true)
-            await sleep(1200)
-          }
-
-          update(parent => {
-            const currentPosition = parent.indexOf(thing)
-            if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
-          })
-        }}
-      >
+    <div className={styles.wrapper}>
+      <button disabled={loading || failed} className={styles.button} onClick={onClick}>
         {label}
       </button>
     </div>
   )
 }
+
+const styles = createStyles({
+  wrapper: z`:not(:last-child) { margin-bottom 18 }`,
+  button: z`padding 5 10;border none`
+})
