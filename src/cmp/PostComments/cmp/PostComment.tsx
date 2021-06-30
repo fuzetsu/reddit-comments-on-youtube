@@ -8,6 +8,7 @@ import { useUpdate } from '../hooks'
 import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
 import { useStore } from 'state'
+import { CustomButton } from 'base/CustomButton'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data
@@ -34,9 +35,11 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const editedTime = edited && new Date(edited * 1000)
   const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate()
 
+  const ariaLabel = (collapsed ? 'expand' : 'collapse') + ' comment'
+
   return (
     <div className={styles.comment}>
-      <div className={styles.border} onClick={toggle} />
+      <CustomButton tag="div" aria-label={ariaLabel} className={styles.border} onClick={toggle} />
       <div>
         <div
           ref={ref}
@@ -101,7 +104,7 @@ const styles = createStyles({
     cursor pointer
     $color $text-subdued
 
-    :hover { $color $text-normal }
+    :hover,:focus { $color $text-normal }
     ::after {
       display block
       content ' '
