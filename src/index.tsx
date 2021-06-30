@@ -45,7 +45,7 @@ if (!conf) {
   })
 }
 
-const mountApp = (conf: Conf, comments: HTMLElement) => {
+function mountApp(conf: Conf, comments: HTMLElement) {
   // start with native comments hidden
   comments.style.display = 'none'
 
