@@ -15,25 +15,46 @@ export const waitForUrl = ({ matcher = 'any', stopWaiting = false, onmatch }: Pr
       : (url: string) => matcher.test(url)
 
   let lastUrl = ''
-  let cleanup: Cleanup
   const check = () => {
     const url = location.href
     if (url === lastUrl) return
     lastUrl = url
 
     if (cleanup) {
-      cleanup()
-      cleanup = undefined
+      runCleanup()
+      if (stopWaiting) return stop()
     }
 
     if (isMatch(url)) {
-      if (stopWaiting) stop()
-      cleanup = onmatch(url)
+      try {
+        cleanup = onmatch(url)
+      } finally {
+        // don't stop until next url change to run cleanup
+        if (stopWaiting && !cleanup) stop()
+      }
     }
   }
 
-  const id = setInterval(check, 500)
+  let cleanup: Cleanup
+  const runCleanup = () => {
+    if (!cleanup) return
+    cleanup()
+    cleanup = undefined
+  }
 
-  const stop = () => clearInterval(id)
-  return { stop }
+  let id: number
+  const start = () => {
+    stop()
+    id = setInterval(check, 500)
+    check()
+  }
+
+  const stop = () => {
+    clearInterval(id)
+    runCleanup()
+  }
+
+  start()
+
+  return { stop, start }
 }
