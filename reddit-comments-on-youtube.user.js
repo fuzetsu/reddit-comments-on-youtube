@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.7
+// @version     1.0.8
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
@@ -919,9 +919,67 @@ ${r4}}
     return a(tag, { role: "button", tabIndex: 0, ...props, onKeyPress }, children);
   }
 
+  // src/theme.ts
+  var Themes = {
+    light: generateTheme({
+      background: "#fefefe",
+      text: { normal: "#444", subdued: "#666" },
+      link: { color: "#1b3e92" },
+      button: { background: "#eee" },
+      ups: "#ff8300"
+    }),
+    dark: generateTheme({
+      background: "#191919",
+      text: { normal: "#fff", subdued: "#b2b2b2" },
+      link: { color: "#6e96b7" },
+      button: { background: "#303030" },
+      ups: "orange"
+    }),
+    common: zaftig_min_default`
+    font-size 16
+    color $text-normal
+    background $background
+    text-align left
+
+    button { font-size 16; color $text-normal; background $button-background }
+    a { 
+      color $link-color
+      text-decoration none
+      :hover { text-decoration underline }
+    }
+  `
+  };
+  function generateTheme(theme) {
+    const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
+      const cur = [...parents, k3];
+      if (typeof v3 === "object")
+        Object.assign(acc, getVars(v3, cur));
+      else
+        acc[cur.join("-")] = v3;
+      return acc;
+    }, {});
+    return zaftig_min_default(Object.entries(getVars(theme)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
+  }
+  var CommentBorderColors = {
+    day: [
+      "rgb(226, 26, 25)",
+      "rgb(243, 146, 51)",
+      "rgb(249, 231, 49)",
+      "rgb(84, 166, 76)",
+      "rgb(54, 141, 238)"
+    ],
+    night: [
+      "rgb(226, 26, 25)",
+      "rgb(243, 146, 51)",
+      "rgb(249, 231, 49)",
+      "rgb(84, 166, 76)",
+      "rgb(54, 141, 238)"
+    ]
+  };
+
   // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
-    const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data;
+    const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } = thing.data;
     const html = d3(() => decodeHTML(body_html), [body_html]);
     const conf2 = useStore((s4) => s4.conf);
     const redraw = useRedraw();
@@ -941,12 +999,14 @@ ${r4}}
     const editedTime = edited && new Date(edited * 1e3);
     const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate();
     const ariaLabel = (collapsed ? "expand" : "collapse") + " comment";
+    const borderColors = CommentBorderColors[conf2.dark ? "night" : "day"];
+    const borderClassName = zaftig_min_default.concat(styles3.border, zaftig_min_default`$color ${borderColors[depth % borderColors.length]}`).class;
     return /* @__PURE__ */ a("div", {
       className: styles3.comment
     }, /* @__PURE__ */ a(CustomButton, {
       tag: "div",
       "aria-label": ariaLabel,
-      className: styles3.border,
+      className: borderClassName,
       onClick: toggle
     }), /* @__PURE__ */ a("div", null, /* @__PURE__ */ a("div", {
       ref,
@@ -994,9 +1054,8 @@ ${r4}}
     margin -9
     user-select none
     cursor pointer
-    $color $text-subdued
 
-    :hover,:focus { $color $text-normal }
+    :hover,:focus { opacity 0.5 }
     ::after {
       display block
       content ' '
@@ -1254,48 +1313,6 @@ ${r4}}
     return { stop, start };
   };
 
-  // src/theme.ts
-  var themes = {
-    light: generateTheme({
-      background: "#fefefe",
-      text: { normal: "#444", subdued: "#666" },
-      link: { color: "#1b3e92" },
-      button: { background: "#eee" },
-      ups: "#ff8300"
-    }),
-    dark: generateTheme({
-      background: "#191919",
-      text: { normal: "#fff", subdued: "#b2b2b2" },
-      link: { color: "#6e96b7" },
-      button: { background: "#303030" },
-      ups: "orange"
-    }),
-    common: zaftig_min_default`
-    font-size 16
-    color $text-normal
-    background $background
-    text-align left
-
-    button { font-size 16; color $text-normal; background $button-background }
-    a { 
-      color $link-color
-      text-decoration none
-      :hover { text-decoration underline }
-    }
-  `
-  };
-  function generateTheme(theme) {
-    const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
-      const cur = [...parents, k3];
-      if (typeof v3 === "object")
-        Object.assign(acc, getVars(v3, cur));
-      else
-        acc[cur.join("-")] = v3;
-      return acc;
-    }, {});
-    return zaftig_min_default(Object.entries(getVars(theme)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
-  }
-
   // src/index.tsx
   log("started!");
   var { conf, confName } = getConf();
@@ -1331,7 +1348,7 @@ ${r4}}
   function mountApp(conf2, comments) {
     comments.style.display = "none";
     const wrapper = document.createElement("div");
-    wrapper.className = themes.common.concat(conf2.dark ? themes.dark : themes.light, conf2.theme && generateTheme(conf2.theme)).class;
+    wrapper.className = Themes.common.concat(conf2.dark ? Themes.dark : Themes.light, conf2.theme && generateTheme(conf2.theme)).class;
     comments.parentElement.insertBefore(wrapper, comments);
     N(/* @__PURE__ */ a(App, {
       conf: conf2,

@@ -1,6 +1,6 @@
 {
   "name": "reddit-comments-on-youtube",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Userscript that embeds reddit comments related to a youtube/crunchyroll video",
   "main": "reddit-comments-on-youtube.user.js",
   "repository": "https://github.com/fuzetsu/reddit-comments-on-youtube.git",
