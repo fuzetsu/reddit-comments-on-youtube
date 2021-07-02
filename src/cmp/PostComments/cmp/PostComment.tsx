@@ -9,9 +9,11 @@ import { ChildProps } from '../types'
 import { PostCommentChild } from './PostCommentChild'
 import { useStore } from 'state'
 import { CustomButton } from 'base/CustomButton'
+import { CommentBorderColors } from 'theme'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
-  const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink } = thing.data
+  const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } =
+    thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const conf = useStore(s => s.conf)
@@ -37,9 +39,15 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
 
   const ariaLabel = (collapsed ? 'expand' : 'collapse') + ' comment'
 
+  const borderColors = CommentBorderColors[conf.dark ? 'night' : 'day']
+  const borderClassName = z.concat(
+    styles.border,
+    z`$color ${borderColors[depth % borderColors.length]}`
+  ).class
+
   return (
     <div className={styles.comment}>
-      <CustomButton tag="div" aria-label={ariaLabel} className={styles.border} onClick={toggle} />
+      <CustomButton tag="div" aria-label={ariaLabel} className={borderClassName} onClick={toggle} />
       <div>
         <div
           ref={ref}
@@ -102,9 +110,8 @@ const styles = createStyles({
     margin -9
     user-select none
     cursor pointer
-    $color $text-subdued
 
-    :hover,:focus { $color $text-normal }
+    :hover,:focus { opacity 0.5 }
     ::after {
       display block
       content ' '

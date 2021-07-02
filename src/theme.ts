@@ -15,7 +15,7 @@ export interface Theme {
   }
 }
 
-export const themes = {
+export const Themes = {
   light: generateTheme({
     background: '#fefefe',
     text: { normal: '#444', subdued: '#666' },
@@ -43,7 +43,7 @@ export const themes = {
       :hover { text-decoration underline }
     }
   `
-}
+} as const
 
 export function generateTheme(theme: Theme) {
   const getVars = <T>(obj: T, parents: string[] = []) =>
@@ -55,3 +55,20 @@ export function generateTheme(theme: Theme) {
     }, {} as { [name: string]: string })
   return z(Object.entries(getVars(theme)).reduce((acc, [k, v]) => `${acc}$${k} ${v};`, ''))
 }
+
+export const CommentBorderColors = {
+  day: [
+    'rgb(226, 26, 25)',
+    'rgb(243, 146, 51)',
+    'rgb(249, 231, 49)',
+    'rgb(84, 166, 76)',
+    'rgb(54, 141, 238)'
+  ],
+  night: [
+    'rgb(226, 26, 25)',
+    'rgb(243, 146, 51)',
+    'rgb(249, 231, 49)',
+    'rgb(84, 166, 76)',
+    'rgb(54, 141, 238)'
+  ]
+} as const

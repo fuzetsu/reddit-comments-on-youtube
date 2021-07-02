@@ -39,6 +39,7 @@ export interface Comment {
     ups: number
     name: string
     author: string
+    depth: number
     body_html: string
     edited: false | number
     is_submitter: boolean

@@ -4,7 +4,7 @@ import { getConf } from 'conf'
 import { log, logError } from 'lib/util'
 import { waitForElems } from 'lib/wait-for-elems'
 import { waitForUrl } from 'lib/wait-for-url'
-import { generateTheme, themes } from 'theme'
+import { generateTheme, Themes } from 'theme'
 import { Conf } from 'types'
 
 log('started!')
@@ -51,8 +51,8 @@ function mountApp(conf: Conf, comments: HTMLElement) {
 
   const wrapper = document.createElement('div')
 
-  wrapper.className = themes.common.concat(
-    conf.dark ? themes.dark : themes.light,
+  wrapper.className = Themes.common.concat(
+    conf.dark ? Themes.dark : Themes.light,
     conf.theme && generateTheme(conf.theme)
   ).class
 
