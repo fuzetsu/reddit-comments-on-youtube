@@ -5,14 +5,16 @@ import { createStyles, reduceCount } from 'lib/util'
 import { useStore } from 'state'
 import { setActivePost } from 'state/actions'
 
+const MAX_INITIAL_VISIBLE = 7
+
 export const PostSelect = () => {
   const [posts, activePost] = useStore([s => s.posts, s => s.activePost])
-  const [showEmpty, setShowEmpty] = useState(false)
+  const [showAll, setShowAll] = useState(false)
 
-  const postsWithComments = posts.filter(post => post.num_comments > 0)
-  const emptyCount = posts.length - postsWithComments.length
+  const visiblePosts = posts.filter(post => post.num_comments > 0).slice(0, MAX_INITIAL_VISIBLE)
+  const hiddenCount = posts.length - visiblePosts.length
 
-  let list = showEmpty ? posts : postsWithComments
+  let list = showAll ? posts : visiblePosts
 
   // always show selected post
   if (activePost && !list.includes(activePost)) list = [...list, activePost]
@@ -35,9 +37,9 @@ export const PostSelect = () => {
           <div title={post.title}>{post.title}</div>
         </button>
       ))}
-      {emptyCount > 0 && posts.length > 1 && (
-        <button className={styles.toggleEmpty} onClick={() => setShowEmpty(!showEmpty)}>
-          {showEmpty ? 'Hide' : `Show`} {emptyCount} posts without comments
+      {hiddenCount > 0 && posts.length > 1 && (
+        <button className={styles.toggleEmpty} onClick={() => setShowAll(!showAll)}>
+          {showAll ? `Hide ${hiddenCount} posts` : `Show ${hiddenCount} hidden posts`}
         </button>
       )}
     </div>
