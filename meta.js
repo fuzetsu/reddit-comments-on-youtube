@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.8
+// @version     1.0.9
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*

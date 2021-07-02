@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.8
+// @version     1.0.9
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
@@ -794,12 +794,13 @@ ${r4}}
   });
 
   // src/cmp/PostSelect.tsx
+  var MAX_INITIAL_VISIBLE = 7;
   var PostSelect = () => {
     const [posts, activePost] = useStore([(s4) => s4.posts, (s4) => s4.activePost]);
-    const [showEmpty, setShowEmpty] = l3(false);
-    const postsWithComments = posts.filter((post) => post.num_comments > 0);
-    const emptyCount = posts.length - postsWithComments.length;
-    let list = showEmpty ? posts : postsWithComments;
+    const [showAll, setShowAll] = l3(false);
+    const visiblePosts = posts.filter((post) => post.num_comments > 0).slice(0, MAX_INITIAL_VISIBLE);
+    const hiddenCount = posts.length - visiblePosts.length;
+    let list = showAll ? posts : visiblePosts;
     if (activePost && !list.includes(activePost))
       list = [...list, activePost];
     if (list.length <= 0)
@@ -819,10 +820,10 @@ ${r4}}
       title: post.subreddit
     }, "/r/", post.subreddit), /* @__PURE__ */ a("div", {
       title: post.title
-    }, post.title))), emptyCount > 0 && posts.length > 1 && /* @__PURE__ */ a("button", {
+    }, post.title))), hiddenCount > 0 && posts.length > 1 && /* @__PURE__ */ a("button", {
       className: styles.toggleEmpty,
-      onClick: () => setShowEmpty(!showEmpty)
-    }, showEmpty ? "Hide" : `Show`, " ", emptyCount, " posts without comments"));
+      onClick: () => setShowAll(!showAll)
+    }, showAll ? `Hide ${hiddenCount} posts` : `Show ${hiddenCount} hidden posts`));
   };
   var buttonBase = zaftig_min_default`
   cursor pointer
