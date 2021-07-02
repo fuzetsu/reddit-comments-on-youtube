@@ -12,10 +12,18 @@
     "dist": "cat ./meta.js ./dist/bundle.js > reddit-comments-on-youtube.user.js",
     "dev": "concurrently --raw --kill-others npm:watch:*",
     "lint": "eslint src/**",
+    "bump-p": "bump -p meta.js package.json",
+    "bump-m": "bump -m meta.js package.json",
     "watch:lint": "chokidar \"./dist/*\" -c \"eslint src/**\"",
     "watch:build": "esbuild src/index.tsx --bundle --inject:./shims/preact.ts --jsx-factory=h --jsx-fragment=Fragment --watch --outfile=dist/bundle.js",
     "watch:ts": "tsc --watch --preserveWatchOutput",
     "watch:dist": "chokidar \"./dist/*\" \"./meta.js\" -c \"npm run dist\""
+  },
+  "dependencies": {
+    "mergerino": "^0.4.0",
+    "preact": "^10.5.13",
+    "staterino": "^2.0.0",
+    "zaftig": "^0.10.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.26.0",
@@ -24,7 +32,8 @@
     "concurrently": "^6.2.0",
     "esbuild": "^0.12.6",
     "eslint": "^7.28.0",
-    "typescript": "^4.3.2"
+    "typescript": "^4.3.2",
+    "@rstacruz/bump-cli": "^2.0.0"
   },
   "eslintConfig": {
     "root": true,
@@ -51,11 +60,5 @@
     "semi": false,
     "arrowParens": "avoid",
     "trailingComma": "none"
-  },
-  "dependencies": {
-    "mergerino": "^0.4.0",
-    "preact": "^10.5.13",
-    "staterino": "^2.0.0",
-    "zaftig": "^0.10.0"
   }
 }

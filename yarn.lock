@@ -66,6 +66,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@rstacruz/bump-cli@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@rstacruz/bump-cli/-/bump-cli-2.0.0.tgz#517951b7cb92591cc69f07323f0e586656253869"
+  integrity sha512-eqxltJnu3Z5HZQmyh8B13e+YczV6ZU6vUsOAHx7o4AG/OTzKrRG0Sei1h0Lop6DHc1qpfxl5Q66fsjLEkxAI7A==
+  dependencies:
+    minimist "^1.1.0"
+    semver "^3.0.1"
+
 "@types/json-schema@^7.0.7":
   version "7.0.7"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.7.tgz#98a993516c859eb0d5c4c8f098317a9ea68db9ad"
@@ -939,6 +947,11 @@ minimatch@^3.0.4:
   dependencies:
     brace-expansion "^1.1.7"
 
+minimist@^1.1.0:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
+  integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
+
 ms@2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
@@ -1154,6 +1167,11 @@ rxjs@^6.6.3:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
+
+semver@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-3.0.1.tgz#720ac012515a252f91fb0dd2e99a56a70d6cf078"
+  integrity sha1-cgrAElFaJS+R+w3S6ZpWpw1s8Hg=
 
 semver@^7.2.1, semver@^7.3.5:
   version "7.3.5"
