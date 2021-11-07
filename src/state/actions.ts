@@ -15,7 +15,7 @@ export const setNoContent = setter('noContent')
 export const setFirstLoad = setter('firstLoad')
 
 export const init = (conf: Conf) => {
-  setState([() => initialState, { conf }])
+  setState([() => initialState, { conf: () => conf }])
 
   return conf
     .getPosts()

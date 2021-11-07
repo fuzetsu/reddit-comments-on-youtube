@@ -18,20 +18,20 @@ if (!conf) {
     matcher: 'any',
     onmatch: url => {
       log('url changed', url)
-      if (!conf.isMatch()) {
+      if (!conf.isMatch(url)) {
         log("but it's not a match...")
         return
       }
-      log('its a match! looking for comments area')
+      log('its a match! looking for area')
 
       const cleanup: (() => void)[] = []
 
       const wait = waitForElems({
-        selector: conf.commentSelector,
+        selector: conf.areaSelector,
         stopWaiting: true,
-        onmatch: comments => {
-          log('comments area found', comments)
-          cleanup.push(mountApp(conf, comments))
+        onmatch: area => {
+          log('area found', area)
+          cleanup.push(mountApp(conf, area))
         }
       })
 
@@ -45,10 +45,7 @@ if (!conf) {
   })
 }
 
-function mountApp(conf: Conf, comments: HTMLElement) {
-  // start with native comments hidden
-  comments.style.display = 'none'
-
+function mountApp(conf: Conf, area: HTMLElement) {
   const wrapper = document.createElement('div')
 
   wrapper.className = Themes.common.concat(
@@ -56,19 +53,25 @@ function mountApp(conf: Conf, comments: HTMLElement) {
     conf.theme && generateTheme(conf.theme)
   ).class
 
-  // if parentElement is actually null, then just crash m8
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  comments.parentElement!.insertBefore(wrapper, comments)
+  if (conf.modal) {
+    area.prepend(wrapper)
+  } else {
+    // start with native area hidden
+    area.style.display = 'none'
+    // if parentElement is actually null, then just crash m8
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    area.parentElement!.insertBefore(wrapper, area)
+  }
 
   render(
     <App
       conf={conf}
       setNativeCommentsVisible={visible => {
-        comments.style.display = visible ? '' : 'none'
+        area.style.display = visible ? '' : 'none'
         if (visible && confName === 'youtube') {
           // if comments container is short assume it hasn't loaded
           // trigger a slight scroll to prod it into doing so
-          if (comments.clientHeight < 100) {
+          if (area.clientHeight < 100) {
             window.scrollBy(0, 1)
             window.scrollBy(0, -1)
           }

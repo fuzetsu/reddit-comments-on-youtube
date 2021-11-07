@@ -3,7 +3,7 @@ import { filterForEp, q } from 'lib/util'
 import { Conf } from 'types'
 
 export const animixplay: Conf = {
-  commentSelector: '#disqus_thread',
+  areaSelector: '#disqus_thread',
   isMatch: () => Boolean(q('.playerpage')),
   dark: true,
   async getPosts() {

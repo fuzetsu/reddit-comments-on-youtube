@@ -6,5 +6,6 @@
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
+// @match       https://*.funimation.com/*
 // @grant       none
 // ==/UserScript==

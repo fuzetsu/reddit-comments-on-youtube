@@ -37,7 +37,7 @@ export const Themes = {
     text-align left
 
     button { font-size 16; color $text-normal; background $button-background }
-    a { 
+    a {
       color $link-color
       text-decoration none
       :hover { text-decoration underline }

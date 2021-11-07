@@ -135,6 +135,7 @@ const styles = createStyles({
       th, td { padding 10 5 }
     }
     ul, ol { margin 18 0; padding-left 30 }
+    a { color $link-color !important }
   `,
   ups: z`color $ups;font-weight bold`,
   date: z`&& { color $text-subdued }`,

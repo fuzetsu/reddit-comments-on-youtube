@@ -3,7 +3,7 @@ import { filterForEp, getById, logError, q } from 'lib/util'
 import { Conf } from 'types'
 
 export const crunchyroll: Conf = {
-  commentSelector: '.guestbook.comments',
+  areaSelector: '.guestbook.comments',
   isMatch: () => !!getById('showmedia_about_media'),
   getPosts: async () => {
     const animeName = getById('showmedia_about_media')?.textContent?.replace(/\s+/g, ' ')

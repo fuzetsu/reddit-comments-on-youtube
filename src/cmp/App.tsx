@@ -7,6 +7,7 @@ import { useStore } from 'state'
 import { init } from 'state/actions'
 import { subscribe } from 'state/state'
 import { SwitchComments } from './SwitchComments'
+import { Modal } from './Modal'
 
 interface Props {
   conf: Conf
@@ -31,6 +32,28 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
 
   const message = postsLoading ? 'Loading posts…' : noPosts ? 'No posts found…' : ''
 
+  const [open, setOpen] = useState(false)
+
+  if (conf.modal) {
+    return (
+      <>
+        <button className={modalButton} onClick={() => setOpen(true)}>
+          Reddit
+        </button>
+        <Modal open={open} onClose={() => setOpen(false)}>
+          <>
+            {message || (
+              <div className={container}>
+                <PostSelect />
+                <PostComments />
+              </div>
+            )}
+          </>
+        </Modal>
+      </>
+    )
+  }
+
   return (
     <div className={container}>
       <SwitchComments onSwitch={toggleVisible} />
@@ -46,3 +69,4 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
 }
 
 const container = z`d flex;flex-direction column;gap 10`.class
+const modalButton = z`padding 5`.class
