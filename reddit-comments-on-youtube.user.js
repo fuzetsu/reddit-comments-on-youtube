@@ -2,10 +2,11 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.0.9
+// @version     1.1.0
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
+// @match       https://*.funimation.com/*
 // @grant       none
 // ==/UserScript==
 (() => {
@@ -761,7 +762,7 @@ ${r4}}
   var setNoContent = setter("noContent");
   var setFirstLoad = setter("firstLoad");
   var init = (conf2) => {
-    setState([() => initialState, { conf: conf2 }]);
+    setState([() => initialState, { conf: () => conf2 }]);
     return conf2.getPosts().catch((error) => logError([], conf2, "conf.getPosts() threw", error)).then(setPosts).finally(() => setPostsLoading(false));
   };
 
@@ -943,7 +944,7 @@ ${r4}}
     text-align left
 
     button { font-size 16; color $text-normal; background $button-background }
-    a { 
+    a {
       color $link-color
       text-decoration none
       :hover { text-decoration underline }
@@ -1080,6 +1081,7 @@ ${r4}}
       th, td { padding 10 5 }
     }
     ul, ol { margin 18 0; padding-left 30 }
+    a { color $link-color !important }
   `,
     ups: zaftig_min_default`color $ups;font-weight bold`,
     date: zaftig_min_default`&& { color $text-subdued }`,
@@ -1134,6 +1136,36 @@ ${r4}}
   width 100%
 `.class;
 
+  // src/cmp/Modal.tsx
+  function Modal({ children, open, onClose }) {
+    if (!open)
+      return null;
+    return /* @__PURE__ */ a("div", {
+      className: overlay,
+      onClick: (e6) => {
+        if (e6.target === e6.currentTarget)
+          onClose == null ? void 0 : onClose();
+      }
+    }, /* @__PURE__ */ a("div", {
+      className: card
+    }, children));
+  }
+  var overlay = zaftig_min_default`
+  position fixed
+  top 0;right 0;left 0;bottom 0
+  background rgba(0,0,0,0.8)
+  d flex;jc center;ai center
+`.class;
+  var card = zaftig_min_default`
+  bc $background
+  p 35
+  width 90%
+  max-width 1200
+  max-height 95vh
+  min-height 30vh
+  overflow-y auto
+`.class;
+
   // src/cmp/App.tsx
   var App = ({ conf: conf2, setNativeCommentsVisible }) => {
     const [postsLoading, noPosts] = useStore([(s4) => s4.postsLoading, (s4) => s4.posts.length <= 0]);
@@ -1150,6 +1182,18 @@ ${r4}}
       setVisible(!visible);
     };
     const message = postsLoading ? "Loading posts\u2026" : noPosts ? "No posts found\u2026" : "";
+    const [open, setOpen] = l3(false);
+    if (conf2.modal) {
+      return /* @__PURE__ */ a(y, null, /* @__PURE__ */ a("button", {
+        className: modalButton,
+        onClick: () => setOpen(true)
+      }, "Reddit"), /* @__PURE__ */ a(Modal, {
+        open,
+        onClose: () => setOpen(false)
+      }, /* @__PURE__ */ a(y, null, message || /* @__PURE__ */ a("div", {
+        className: container
+      }, /* @__PURE__ */ a(PostSelect, null), /* @__PURE__ */ a(PostComments, null)))));
+    }
     return /* @__PURE__ */ a("div", {
       className: container
     }, /* @__PURE__ */ a(SwitchComments, {
@@ -1157,10 +1201,11 @@ ${r4}}
     }), visible && (message || /* @__PURE__ */ a(y, null, /* @__PURE__ */ a(PostSelect, null), /* @__PURE__ */ a(PostComments, null))));
   };
   var container = zaftig_min_default`d flex;flex-direction column;gap 10`.class;
+  var modalButton = zaftig_min_default`padding 5`.class;
 
   // src/conf/crunchyroll.ts
   var crunchyroll = {
-    commentSelector: ".guestbook.comments",
+    areaSelector: ".guestbook.comments",
     isMatch: () => !!getById("showmedia_about_media"),
     getPosts: async () => {
       var _a, _b, _c, _d, _e, _f;
@@ -1181,7 +1226,7 @@ ${r4}}
     return (_a = url.match(/v=([^&]+)/i)) == null ? void 0 : _a[1];
   };
   var youtube = {
-    commentSelector: "#comments",
+    areaSelector: "#comments",
     scrollOffset: () => {
       var _a;
       return ((_a = q(".ytd-masthead")) == null ? void 0 : _a.clientHeight) || 60;
@@ -1207,7 +1252,7 @@ ${r4}}
 
   // src/conf/animixplay.ts
   var animixplay = {
-    commentSelector: "#disqus_thread",
+    areaSelector: "#disqus_thread",
     isMatch: () => Boolean(q(".playerpage")),
     dark: true,
     async getPosts() {
@@ -1219,11 +1264,36 @@ ${r4}}
     }
   };
 
+  // src/conf/funimation.ts
+  var funimation = {
+    areaSelector: ".video-player-controls__aux-controls",
+    modal: true,
+    dark: true,
+    isMatch: (url) => url.includes("/v/"),
+    getPosts: async () => {
+      var _a, _b, _c;
+      const [titleElem, epInfoElem] = qq(".meta-overlay__data-block li");
+      const animeName = titleElem.textContent;
+      if (!animeName) {
+        logError("unable to find anime name");
+        return [];
+      }
+      const url = subURI("https://kitsu.io/api/edge/anime?filter[text]=:animeName", { animeName });
+      const data = await fetch(url).then((res) => res.json());
+      const goodTitle = data.data[0].attributes.canonicalTitle;
+      const epInfo = (_b = (_a = epInfoElem.textContent) == null ? void 0 : _a.replace(/\s+/g, " ").match(/Episode [0-9]+/)) == null ? void 0 : _b[0];
+      const posts = await searchPosts(goodTitle + " " + epInfo + " discussion");
+      const epNum = (_c = epInfo == null ? void 0 : epInfo.match(/[0-9]+/)) == null ? void 0 : _c[0];
+      return epNum ? filterForEp(posts, epNum) : posts;
+    }
+  };
+
   // src/conf/index.ts
   var confs = {
     crunchyroll,
     youtube,
-    animixplay
+    animixplay,
+    funimation
   };
   var confNames = Object.keys(confs);
   var getConf = () => {
@@ -1324,18 +1394,18 @@ ${r4}}
       matcher: "any",
       onmatch: (url) => {
         log("url changed", url);
-        if (!conf.isMatch()) {
+        if (!conf.isMatch(url)) {
           log("but it's not a match...");
           return;
         }
-        log("its a match! looking for comments area");
+        log("its a match! looking for area");
         const cleanup = [];
         const wait = waitForElems({
-          selector: conf.commentSelector,
+          selector: conf.areaSelector,
           stopWaiting: true,
-          onmatch: (comments) => {
-            log("comments area found", comments);
-            cleanup.push(mountApp(conf, comments));
+          onmatch: (area) => {
+            log("area found", area);
+            cleanup.push(mountApp(conf, area));
           }
         });
         cleanup.push(wait.stop);
@@ -1346,17 +1416,21 @@ ${r4}}
       }
     });
   }
-  function mountApp(conf2, comments) {
-    comments.style.display = "none";
+  function mountApp(conf2, area) {
     const wrapper = document.createElement("div");
     wrapper.className = Themes.common.concat(conf2.dark ? Themes.dark : Themes.light, conf2.theme && generateTheme(conf2.theme)).class;
-    comments.parentElement.insertBefore(wrapper, comments);
+    if (conf2.modal) {
+      area.prepend(wrapper);
+    } else {
+      area.style.display = "none";
+      area.parentElement.insertBefore(wrapper, area);
+    }
     N(/* @__PURE__ */ a(App, {
       conf: conf2,
       setNativeCommentsVisible: (visible) => {
-        comments.style.display = visible ? "" : "none";
+        area.style.display = visible ? "" : "none";
         if (visible && confName === "youtube") {
-          if (comments.clientHeight < 100) {
+          if (area.clientHeight < 100) {
             window.scrollBy(0, 1);
             window.scrollBy(0, -1);
           }
