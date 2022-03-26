@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.1.0
+// @version     1.1.1
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
@@ -1237,7 +1237,7 @@ ${r4}}
       text: { normal: "var(--yt-spec-text-primary)", subdued: "var(--yt-spec-text-secondary)" },
       link: { color: "var(--yt-spec-call-to-action)" },
       button: { background: "var(--yt-spec-badge-chip-background)" },
-      ups: "var(--paper-orange-800)"
+      ups: "orange"
     },
     getPosts: async () => {
       const url = location.href;
