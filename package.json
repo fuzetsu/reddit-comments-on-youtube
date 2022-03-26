@@ -1,6 +1,6 @@
 {
   "name": "reddit-comments-on-youtube",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Userscript that embeds reddit comments related to a youtube/crunchyroll video",
   "main": "reddit-comments-on-youtube.user.js",
   "repository": "https://github.com/fuzetsu/reddit-comments-on-youtube.git",
@@ -21,19 +21,19 @@
   },
   "dependencies": {
     "mergerino": "^0.4.0",
-    "preact": "^10.5.13",
+    "preact": "^10.6.6",
     "staterino": "^2.0.0",
     "zaftig": "^0.10.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
-    "chokidar-cli": "^2.1.0",
-    "concurrently": "^6.2.0",
-    "esbuild": "^0.12.6",
-    "eslint": "^7.28.0",
-    "typescript": "^4.3.2",
-    "@rstacruz/bump-cli": "^2.0.0"
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "chokidar-cli": "^3",
+    "concurrently": "^7",
+    "esbuild": "^0.12.29",
+    "eslint": "^8",
+    "typescript": "^4.6.3",
+    "@rstacruz/bump-cli": "^2.0.1"
   },
   "eslintConfig": {
     "root": true,
