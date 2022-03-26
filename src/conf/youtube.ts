@@ -13,7 +13,7 @@ export const youtube: Conf = {
     text: { normal: 'var(--yt-spec-text-primary)', subdued: 'var(--yt-spec-text-secondary)' },
     link: { color: 'var(--yt-spec-call-to-action)' },
     button: { background: 'var(--yt-spec-badge-chip-background)' },
-    ups: 'var(--paper-orange-800)'
+    ups: 'orange'
   },
   getPosts: async () => {
     const url = location.href
