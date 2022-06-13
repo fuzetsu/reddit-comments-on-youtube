@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.1.2
+// @version     1.1.3
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animixplay.to/*
@@ -81,21 +81,21 @@
         n4.__d && (o5 = (t6 = (l4 = n4).__v).__e, (r4 = l4.__P) && (u4 = [], (i4 = a({}, t6)).__v = t6.__v + 1, j(r4, t6, i4, l4.__n, r4.ownerSVGElement !== void 0, t6.__h != null ? [o5] : null, u4, o5 == null ? k(t6) : o5, t6.__h), z(u4, t6), t6.__e != o5 && b(t6)));
       });
   }
-  function w(n3, l4, u4, i4, t6, o5, r4, f4, s4, a4) {
-    var h4, v3, p3, _2, b3, m4, g4, w3 = i4 && i4.__k || c, A2 = w3.length;
+  function w(n3, l4, u4, i4, t6, o5, r4, f4, s3, a4) {
+    var h4, v3, p3, _3, b3, m4, g4, w3 = i4 && i4.__k || c, A2 = w3.length;
     for (u4.__k = [], h4 = 0; h4 < l4.length; h4++)
-      if ((_2 = u4.__k[h4] = (_2 = l4[h4]) == null || typeof _2 == "boolean" ? null : typeof _2 == "string" || typeof _2 == "number" || typeof _2 == "bigint" ? y(null, _2, null, null, _2) : Array.isArray(_2) ? y(d, { children: _2 }, null, null, null) : _2.__b > 0 ? y(_2.type, _2.props, _2.key, null, _2.__v) : _2) != null) {
-        if (_2.__ = u4, _2.__b = u4.__b + 1, (p3 = w3[h4]) === null || p3 && _2.key == p3.key && _2.type === p3.type)
+      if ((_3 = u4.__k[h4] = (_3 = l4[h4]) == null || typeof _3 == "boolean" ? null : typeof _3 == "string" || typeof _3 == "number" || typeof _3 == "bigint" ? y(null, _3, null, null, _3) : Array.isArray(_3) ? y(d, { children: _3 }, null, null, null) : _3.__b > 0 ? y(_3.type, _3.props, _3.key, null, _3.__v) : _3) != null) {
+        if (_3.__ = u4, _3.__b = u4.__b + 1, (p3 = w3[h4]) === null || p3 && _3.key == p3.key && _3.type === p3.type)
           w3[h4] = void 0;
         else
           for (v3 = 0; v3 < A2; v3++) {
-            if ((p3 = w3[v3]) && _2.key == p3.key && _2.type === p3.type) {
+            if ((p3 = w3[v3]) && _3.key == p3.key && _3.type === p3.type) {
               w3[v3] = void 0;
               break;
             }
             p3 = null;
           }
-        j(n3, _2, p3 = p3 || e, t6, o5, r4, f4, s4, a4), b3 = _2.__e, (v3 = _2.ref) && p3.ref != v3 && (g4 || (g4 = []), p3.ref && g4.push(p3.ref, null, _2), g4.push(v3, _2.__c || b3, _2)), b3 != null ? (m4 == null && (m4 = b3), typeof _2.type == "function" && _2.__k === p3.__k ? _2.__d = s4 = x(_2, s4, n3) : s4 = P(n3, _2, p3, w3, b3, s4), typeof u4.type == "function" && (u4.__d = s4)) : s4 && p3.__e == s4 && s4.parentNode != n3 && (s4 = k(p3));
+        j(n3, _3, p3 = p3 || e, t6, o5, r4, f4, s3, a4), b3 = _3.__e, (v3 = _3.ref) && p3.ref != v3 && (g4 || (g4 = []), p3.ref && g4.push(p3.ref, null, _3), g4.push(v3, _3.__c || b3, _3)), b3 != null ? (m4 == null && (m4 = b3), typeof _3.type == "function" && _3.__k === p3.__k ? _3.__d = s3 = x(_3, s3, n3) : s3 = P(n3, _3, p3, w3, b3, s3), typeof u4.type == "function" && (u4.__d = s3)) : s3 && p3.__e == s3 && s3.parentNode != n3 && (s3 = k(p3));
       }
     for (u4.__e = m4, h4 = A2; h4--; )
       w3[h4] != null && (typeof u4.type == "function" && w3[h4].__e != null && w3[h4].__e == u4.__d && (u4.__d = k(i4, h4 + 1)), N(w3[h4], w3[h4]));
@@ -152,7 +152,7 @@
         o5 = l4 !== (l4 = l4.replace(/Capture$/, "")), l4 = l4.toLowerCase() in n3 ? l4.toLowerCase().slice(2) : l4.slice(2), n3.l || (n3.l = {}), n3.l[l4 + o5] = u4, u4 ? i4 || n3.addEventListener(l4, o5 ? T : I, o5) : n3.removeEventListener(l4, o5 ? T : I, o5);
       else if (l4 !== "dangerouslySetInnerHTML") {
         if (t6)
-          l4 = l4.replace(/xlink[H:h]/, "h").replace(/sName$/, "s");
+          l4 = l4.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
         else if (l4 !== "href" && l4 !== "list" && l4 !== "form" && l4 !== "tabIndex" && l4 !== "download" && l4 in n3)
           try {
             n3[l4] = u4 == null ? "" : u4;
@@ -169,14 +169,14 @@
     this.l[n3.type + true](l.event ? l.event(n3) : n3);
   }
   function j(n3, u4, i4, t6, o5, r4, f4, e6, c4) {
-    var s4, h4, v3, y4, p3, k3, b3, m4, g4, x3, A2, P2 = u4.type;
+    var s3, h4, v3, y4, p3, k3, b3, m4, g4, x3, A2, P2 = u4.type;
     if (u4.constructor !== void 0)
       return null;
-    i4.__h != null && (c4 = i4.__h, e6 = u4.__e = i4.__e, u4.__h = null, r4 = [e6]), (s4 = l.__b) && s4(u4);
+    i4.__h != null && (c4 = i4.__h, e6 = u4.__e = i4.__e, u4.__h = null, r4 = [e6]), (s3 = l.__b) && s3(u4);
     try {
       n:
         if (typeof P2 == "function") {
-          if (m4 = u4.props, g4 = (s4 = P2.contextType) && t6[s4.__c], x3 = s4 ? g4 ? g4.props.value : s4.__ : t6, i4.__c ? b3 = (h4 = u4.__c = i4.__c).__ = h4.__E : ("prototype" in P2 && P2.prototype.render ? u4.__c = h4 = new P2(m4, x3) : (u4.__c = h4 = new _(m4, x3), h4.constructor = P2, h4.render = O), g4 && g4.sub(h4), h4.props = m4, h4.state || (h4.state = {}), h4.context = x3, h4.__n = t6, v3 = h4.__d = true, h4.__h = []), h4.__s == null && (h4.__s = h4.state), P2.getDerivedStateFromProps != null && (h4.__s == h4.state && (h4.__s = a({}, h4.__s)), a(h4.__s, P2.getDerivedStateFromProps(m4, h4.__s))), y4 = h4.props, p3 = h4.state, v3)
+          if (m4 = u4.props, g4 = (s3 = P2.contextType) && t6[s3.__c], x3 = s3 ? g4 ? g4.props.value : s3.__ : t6, i4.__c ? b3 = (h4 = u4.__c = i4.__c).__ = h4.__E : ("prototype" in P2 && P2.prototype.render ? u4.__c = h4 = new P2(m4, x3) : (u4.__c = h4 = new _(m4, x3), h4.constructor = P2, h4.render = O), g4 && g4.sub(h4), h4.props = m4, h4.state || (h4.state = {}), h4.context = x3, h4.__n = t6, v3 = h4.__d = true, h4.__h = []), h4.__s == null && (h4.__s = h4.state), P2.getDerivedStateFromProps != null && (h4.__s == h4.state && (h4.__s = a({}, h4.__s)), a(h4.__s, P2.getDerivedStateFromProps(m4, h4.__s))), y4 = h4.props, p3 = h4.state, v3)
             P2.getDerivedStateFromProps == null && h4.componentWillMount != null && h4.componentWillMount(), h4.componentDidMount != null && h4.__h.push(h4.componentDidMount);
           else {
             if (P2.getDerivedStateFromProps == null && m4 !== y4 && h4.componentWillReceiveProps != null && h4.componentWillReceiveProps(m4, x3), !h4.__e && h4.shouldComponentUpdate != null && h4.shouldComponentUpdate(m4, h4.__s, x3) === false || u4.__v === i4.__v) {
@@ -189,10 +189,10 @@
               h4.componentDidUpdate(y4, p3, k3);
             });
           }
-          h4.context = x3, h4.props = m4, h4.state = h4.__s, (s4 = l.__r) && s4(u4), h4.__d = false, h4.__v = u4, h4.__P = n3, s4 = h4.render(h4.props, h4.state, h4.context), h4.state = h4.__s, h4.getChildContext != null && (t6 = a(a({}, t6), h4.getChildContext())), v3 || h4.getSnapshotBeforeUpdate == null || (k3 = h4.getSnapshotBeforeUpdate(y4, p3)), A2 = s4 != null && s4.type === d && s4.key == null ? s4.props.children : s4, w(n3, Array.isArray(A2) ? A2 : [A2], u4, i4, t6, o5, r4, f4, e6, c4), h4.base = u4.__e, u4.__h = null, h4.__h.length && f4.push(h4), b3 && (h4.__E = h4.__ = null), h4.__e = false;
+          h4.context = x3, h4.props = m4, h4.state = h4.__s, (s3 = l.__r) && s3(u4), h4.__d = false, h4.__v = u4, h4.__P = n3, s3 = h4.render(h4.props, h4.state, h4.context), h4.state = h4.__s, h4.getChildContext != null && (t6 = a(a({}, t6), h4.getChildContext())), v3 || h4.getSnapshotBeforeUpdate == null || (k3 = h4.getSnapshotBeforeUpdate(y4, p3)), A2 = s3 != null && s3.type === d && s3.key == null ? s3.props.children : s3, w(n3, Array.isArray(A2) ? A2 : [A2], u4, i4, t6, o5, r4, f4, e6, c4), h4.base = u4.__e, u4.__h = null, h4.__h.length && f4.push(h4), b3 && (h4.__E = h4.__ = null), h4.__e = false;
         } else
           r4 == null && u4.__v === i4.__v ? (u4.__k = i4.__k, u4.__e = i4.__e) : u4.__e = L(i4.__e, u4, i4, t6, o5, r4, f4, c4);
-      (s4 = l.diffed) && s4(u4);
+      (s3 = l.diffed) && s3(u4);
     } catch (n4) {
       u4.__v = null, (c4 || r4 != null) && (u4.__e = e6, u4.__h = !!c4, r4[r4.indexOf(e6)] = null), l.__e(n4, u4, i4);
     }
@@ -209,11 +209,11 @@
     });
   }
   function L(l4, u4, i4, t6, o5, r4, f4, c4) {
-    var s4, a4, v3, y4 = i4.props, p3 = u4.props, d4 = u4.type, _2 = 0;
+    var s3, a4, v3, y4 = i4.props, p3 = u4.props, d4 = u4.type, _3 = 0;
     if (d4 === "svg" && (o5 = true), r4 != null) {
-      for (; _2 < r4.length; _2++)
-        if ((s4 = r4[_2]) && "setAttribute" in s4 == !!d4 && (d4 ? s4.localName === d4 : s4.nodeType === 3)) {
-          l4 = s4, r4[_2] = null;
+      for (; _3 < r4.length; _3++)
+        if ((s3 = r4[_3]) && "setAttribute" in s3 == !!d4 && (d4 ? s3.localName === d4 : s3.nodeType === 3)) {
+          l4 = s3, r4[_3] = null;
           break;
         }
     }
@@ -227,16 +227,16 @@
     else {
       if (r4 = r4 && n.call(l4.childNodes), a4 = (y4 = i4.props || e).dangerouslySetInnerHTML, v3 = p3.dangerouslySetInnerHTML, !c4) {
         if (r4 != null)
-          for (y4 = {}, _2 = 0; _2 < l4.attributes.length; _2++)
-            y4[l4.attributes[_2].name] = l4.attributes[_2].value;
+          for (y4 = {}, _3 = 0; _3 < l4.attributes.length; _3++)
+            y4[l4.attributes[_3].name] = l4.attributes[_3].value;
         (v3 || a4) && (v3 && (a4 && v3.__html == a4.__html || v3.__html === l4.innerHTML) || (l4.innerHTML = v3 && v3.__html || ""));
       }
       if (C(l4, p3, y4, o5, c4), v3)
         u4.__k = [];
-      else if (_2 = u4.props.children, w(l4, Array.isArray(_2) ? _2 : [_2], u4, i4, t6, o5 && d4 !== "foreignObject", r4, f4, r4 ? r4[0] : i4.__k && k(i4, 0), c4), r4 != null)
-        for (_2 = r4.length; _2--; )
-          r4[_2] != null && h(r4[_2]);
-      c4 || ("value" in p3 && (_2 = p3.value) !== void 0 && (_2 !== l4.value || d4 === "progress" && !_2 || d4 === "option" && _2 !== y4.value) && H(l4, "value", _2, y4.value, false), "checked" in p3 && (_2 = p3.checked) !== void 0 && _2 !== l4.checked && H(l4, "checked", _2, y4.checked, false));
+      else if (_3 = u4.props.children, w(l4, Array.isArray(_3) ? _3 : [_3], u4, i4, t6, o5 && d4 !== "foreignObject", r4, f4, r4 ? r4[0] : i4.__k && k(i4, 0), c4), r4 != null)
+        for (_3 = r4.length; _3--; )
+          r4[_3] != null && h(r4[_3]);
+      c4 || ("value" in p3 && (_3 = p3.value) !== void 0 && (_3 !== l4.value || d4 === "progress" && !_3 || d4 === "option" && _3 !== y4.value) && H(l4, "value", _3, y4.value, false), "checked" in p3 && (_3 = p3.checked) !== void 0 && _3 !== l4.checked && H(l4, "checked", _3, y4.checked, false));
     }
     return l4;
   }
@@ -270,12 +270,12 @@
     var o5, r4, f4;
     l.__ && l.__(u4, i4), r4 = (o5 = typeof t6 == "function") ? null : t6 && t6.__k || i4.__k, f4 = [], j(i4, u4 = (!o5 && t6 || i4).__k = v(d, null, [u4]), r4 || e, e, i4.ownerSVGElement !== void 0, !o5 && t6 ? [t6] : r4 ? null : i4.firstChild ? n.call(i4.childNodes) : null, f4, !o5 && t6 ? t6 : r4 ? r4.__e : i4.firstChild, o5), z(f4, u4);
   }
-  n = c.slice, l = { __e: function(n3, l4) {
-    for (var u4, i4, t6; l4 = l4.__; )
-      if ((u4 = l4.__c) && !u4.__)
+  n = c.slice, l = { __e: function(n3, l4, u4, i4) {
+    for (var t6, o5, r4; l4 = l4.__; )
+      if ((t6 = l4.__c) && !t6.__)
         try {
-          if ((i4 = u4.constructor) && i4.getDerivedStateFromError != null && (u4.setState(i4.getDerivedStateFromError(n3)), t6 = u4.__d), u4.componentDidCatch != null && (u4.componentDidCatch(n3), t6 = u4.__d), t6)
-            return u4.__E = u4;
+          if ((o5 = t6.constructor) && o5.getDerivedStateFromError != null && (t6.setState(o5.getDerivedStateFromError(n3)), r4 = t6.__d), t6.componentDidCatch != null && (t6.componentDidCatch(n3, i4 || {}), r4 = t6.__d), r4)
+            return t6.__E = t6;
         } catch (l5) {
           n3 = l5;
         }
@@ -331,7 +331,7 @@ ${r4}}
     }
   };
   var y2 = (t6 = {}) => {
-    const { helpers: r4 = {}, unit: e6 = "px", id: s4 = "z" + Math.random().toString(36).slice(2) } = t6;
+    const { helpers: r4 = {}, unit: e6 = "px", id: s3 = "z" + Math.random().toString(36).slice(2) } = t6;
     let { style: c4, dot: d4 = true, debug: p3 = false } = t6, b3 = 0;
     class v3 {
       constructor(t7) {
@@ -358,7 +358,7 @@ ${r4}}
     }, w3 = (t7, r5, e7) => {
       const o5 = g2(e7 ? ((t8) => t8.replace(/(::?)([a-z-]+)(\()?/gi, (t9, r6, e8, n3) => (e8 == "placeholder" && i2 != "moz" ? e8 = "input-" + e8 : e8 == "matches" && (e8 = "any"), e8[0] == "-" || $2(n3 ? t9 + ".f)" : t9) ? t9 : `${r6}-${i2}-${e8}${n3 || ""}`)))(t7) : t7, r5);
       if (o5) {
-        c4 || (c4 = h2(), c4.id = s4);
+        c4 || (c4 = h2(), c4.id = s3);
         try {
           c4.sheet.insertRule(o5, c4.sheet.cssRules.length), p3 && (c4.textContent += o5);
         } catch (o6) {
@@ -390,7 +390,7 @@ ${r4}}
       }
       const c5 = k3(r5, o5);
       if (c5) {
-        const r6 = _2(c5);
+        const r6 = _3(c5);
         return t7.t += r6.t, void (t7.o = t7.o.concat(r6.o));
       }
       if (!o5)
@@ -402,26 +402,26 @@ ${r4}}
       o5.indexOf("$") >= 0 && (o5 = o5.replace(/\$([a-z0-9-]+)/gi, "var(--$1)")), l2(r5) && (o5 = o5.split(" ").map((t8) => isNaN(t8) ? t8 : t8 + e6).join(" "));
       const d5 = `  ${r5}: ${o5};
 `;
-      p3 && !$2(s4, d5) && n2("invalid css", d5), t7.t += d5;
-    }, _2 = o2((t7) => {
+      p3 && !$2(s3, d5) && n2("invalid css", d5), t7.t += d5;
+    }, _3 = o2((t7) => {
       const r5 = [{ t: "", o: [] }];
       if (!(t7 = t7 && t7.trim()))
         return r5[0];
       t7 += ";";
-      let e7 = 1, n3 = "", o5 = 0, i4 = "", s5 = "";
+      let e7 = 1, n3 = "", o5 = 0, i4 = "", s4 = "";
       for (let c5 = 0; c5 < t7.length; c5++) {
         const a4 = t7[c5];
-        a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e7 == 1 ? a4 == " " ? (s5 = n3.trim()) && (e7 = 2, n3 = "") : n3 += a4 : e7 == 2 && (i4 ? a4 == i4 && t7[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o5] = { i: k3(s5, n3.trim()) || (s5 + " " + n3).trim(), t: "", o: [] }, e7 = 1, s5 = n3 = "") : (S2(r5[o5], s5, n3.trim() + i4), a4 == "}" && r5[--o5].o.push(r5.pop()), e7 = 1, s5 = n3 = i4 = "");
+        a4 != "\n" && (a4 != ";" && a4 != "}" || i4) ? a4 != "{" || i4 ? e7 == 1 ? a4 == " " ? (s4 = n3.trim()) && (e7 = 2, n3 = "") : n3 += a4 : e7 == 2 && (i4 ? a4 == i4 && t7[c5 - 1] != "\\" && (i4 = "") : a4 != "'" && a4 != '"' || (i4 = a4), n3 += a4) : (r5[++o5] = { i: k3(s4, n3.trim()) || (s4 + " " + n3).trim(), t: "", o: [] }, e7 = 1, s4 = n3 = "") : (S2(r5[o5], s4, n3.trim() + i4), a4 == "}" && r5[--o5].o.push(r5.pop()), e7 = 1, s4 = n3 = i4 = "");
       }
       return r5[0];
     }), A2 = o2((t7) => {
-      const r5 = "anim-" + s4 + "-" + (b3 += 1);
-      return O2("@keyframes " + r5, _2(t7)), r5;
+      const r5 = "anim-" + s3 + "-" + (b3 += 1);
+      return O2("@keyframes " + r5, _3(t7)), r5;
     }), j3 = o2((t7) => {
-      const r5 = _2(t7), e7 = (r5.u ? r5.u + "-" : "") + s4 + "-" + (b3 += 1);
+      const r5 = _3(t7), e7 = (r5.u ? r5.u + "-" : "") + s3 + "-" + (b3 += 1);
       return O2("." + e7, r5), new v3(e7 + (r5.l ? " " + r5.l : ""));
     }), B = m2(j3);
-    return B.anim = m2(A2), B.concat = z2, B.getSheet = () => c4, B.global = m2((t7) => O2(":root", _2(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y2, B.setDebug = (t7) => p3 = t7, B.setDot = (t7) => d4 = t7, B.style = m2((t7) => _2(t7).t), B;
+    return B.anim = m2(A2), B.concat = z2, B.getSheet = () => c4, B.global = m2((t7) => O2(":root", _3(t7))), B.helper = (t7) => Object.assign(r4, t7), B.new = y2, B.setDebug = (t7) => p3 = t7, B.setDot = (t7) => d4 = t7, B.style = m2((t7) => _3(t7).t), B;
   };
   var zaftig_min_default = y2();
 
@@ -436,40 +436,40 @@ ${r4}}
   var e3 = l.diffed;
   var a3 = l.__c;
   var v2 = l.unmount;
-  function m3(t6, r4) {
+  function l3(t6, r4) {
     l.__h && l.__h(u3, t6, o3 || r4), o3 = 0;
     var i4 = u3.__H || (u3.__H = { __: [], __h: [] });
     return t6 >= i4.__.length && i4.__.push({}), i4.__[t6];
   }
-  function l3(n3) {
+  function m3(n3) {
     return o3 = 1, p2(w2, n3);
   }
   function p2(n3, r4, o5) {
-    var i4 = m3(t3++, 2);
+    var i4 = l3(t3++, 2);
     return i4.t = n3, i4.__c || (i4.__ = [o5 ? o5(r4) : w2(void 0, r4), function(n4) {
       var t6 = i4.t(i4.__[0], n4);
       i4.__[0] !== t6 && (i4.__ = [t6, i4.__[1]], i4.__c.setState({}));
     }], i4.__c = u3), i4.__;
   }
   function y3(r4, o5) {
-    var i4 = m3(t3++, 3);
+    var i4 = l3(t3++, 3);
     !l.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u3.__H.__h.push(i4));
   }
-  function h3(r4, o5) {
-    var i4 = m3(t3++, 4);
+  function d3(r4, o5) {
+    var i4 = l3(t3++, 4);
     !l.__s && k2(i4.__H, o5) && (i4.__ = r4, i4.__H = o5, u3.__h.push(i4));
   }
-  function s3(n3) {
-    return o3 = 5, d3(function() {
+  function h3(n3) {
+    return o3 = 5, _2(function() {
       return { current: n3 };
     }, []);
   }
-  function d3(n3, u4) {
-    var r4 = m3(t3++, 7);
+  function _2(n3, u4) {
+    var r4 = l3(t3++, 7);
     return k2(r4.__H, u4) && (r4.__ = n3(), r4.__H = u4, r4.__h = n3), r4.__;
   }
   function A(n3, t6) {
-    return o3 = 8, d3(function() {
+    return o3 = 8, _2(function() {
       return n3;
     }, t6);
   }
@@ -566,7 +566,7 @@ ${r4}}
     }
     return day_diff == 0 && (diff < 60 && "just now" || diff < 120 && "1 minute ago" || diff < 3600 && Math.floor(diff / 60) + " minutes ago" || diff < 7200 && "1 hour ago" || diff < 86400 && Math.floor(diff / 3600) + " hours ago") || day_diff == 1 && "Yesterday" || day_diff < 7 && day_diff + " days ago" || day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
   };
-  var namePart = [`%c${SCRIPT_NAME}:`, "color:#ddd"];
+  var namePart = [`%c${SCRIPT_NAME}:`, "color:orange"];
   var makeLog = (type) => (first, ...rest) => {
     console[type](...namePart, first, ...rest);
     return first;
@@ -619,6 +619,19 @@ ${r4}}
     const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
     return posts.filter((post) => epRegex.test(post.title));
   };
+  var keepTrying = (fn, max) => new Promise((resolve, reject) => {
+    let tries = 0;
+    const id = setInterval(() => {
+      tries += 1;
+      if (!fn()) {
+        if (tries >= max)
+          reject(clearInterval(id));
+        return;
+      }
+      clearInterval(id);
+      resolve();
+    }, 1e3);
+  });
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -630,10 +643,12 @@ ${r4}}
     spin = false,
     themeColor = "text-normal"
   }) => {
-    const ref = s3();
-    const [color, setColor] = l3("currentColor");
+    const ref = h3(null);
+    const [color, setColor] = m3("currentColor");
     y3(() => {
       const update = () => {
+        if (!ref.current)
+          return;
         let newColor = getCSSVar(themeColor, ref.current).slice(1);
         if (newColor.length === 3)
           newColor += newColor;
@@ -690,46 +705,109 @@ ${r4}}
     return nestedComments;
   };
 
+  // src/lib/wait-for-elems.ts
+  var waitForElemsWithTimout = ({
+    timeout,
+    onTimeout,
+    ...rest
+  }) => {
+    let id = -1;
+    const { stop } = waitForElems({
+      ...rest,
+      stopWaiting: true,
+      onMatch: (elem) => {
+        clearTimeout(id);
+        rest.onMatch(elem);
+      }
+    });
+    id = setTimeout(() => {
+      stop();
+      onTimeout == null ? void 0 : onTimeout();
+    }, timeout);
+    return {
+      stop: () => {
+        clearTimeout(id);
+        stop();
+      }
+    };
+  };
+  var waitForElems = ({
+    selector,
+    onMatch: onmatch,
+    stopWaiting = false,
+    container: container2 = document.body,
+    mutationConfig
+  }) => {
+    const seen = /* @__PURE__ */ new WeakSet();
+    const check = () => {
+      const found = qq(selector).filter((elem) => !seen.has(elem));
+      if (found.length > 0) {
+        if (stopWaiting)
+          stop();
+        found.forEach((elem) => {
+          seen.add(elem);
+          onmatch(elem);
+        });
+      }
+    };
+    const throttledCheck = throttle(300, check);
+    const observer = new MutationObserver(throttledCheck);
+    const start = () => {
+      check();
+      observer.observe(container2, {
+        subtree: true,
+        childList: true,
+        ...mutationConfig
+      });
+    };
+    const stop = () => {
+      throttledCheck.stop();
+      observer.disconnect();
+    };
+    start();
+    return { start, stop };
+  };
+
   // node_modules/staterino/dist/staterino.min.js
   var e4 = (e6, t6) => e6 === t6 || e6.length === t6.length && e6.every((e7, r4) => e7 === t6[r4]);
   var t4 = (e6) => e6;
   var staterino_min_default = ({ merge: r4, hooks: { useReducer: c4, useLayoutEffect: o5 }, state: n3 = {} }) => {
-    let s4 = n3;
+    let s3 = n3;
     const a4 = (e6) => {
-      return typeof e6 == "string" ? (t6 = s4, e6.split(".").reduce((e7, t7) => e7 ? e7[t7] : void 0, t6)) : e6(s4);
+      return typeof e6 == "string" ? (t6 = s3, e6.split(".").reduce((e7, t7) => e7 ? e7[t7] : void 0, t6)) : e6(s3);
       var t6;
     }, l4 = (e6) => Array.isArray(e6) ? [e6.map(a4), true] : [a4(e6), false], u4 = (t6) => {
       const [r5, c5] = l4(t6.t);
       (c5 ? e4(r5, t6.o) : r5 === t6.o) || (typeof t6.s == "function" && t6.s(), t6.s = ((e6, t7, r6) => e6[r6 ? "apply" : "call"](null, t7))(t6.l, t6.o = r5, c5));
-    }, f4 = new Set(), y4 = (e6) => (f4.add(e6), u4(e6), () => f4.delete(e6)), i4 = (r5 = t4) => {
-      const [, n4] = c4((e6) => e6 + 1, 0), [s5] = c4(t4, { l: n4 });
-      return s5.t && (Array.isArray(r5) ? e4(r5, s5.t) : r5 === s5.t) || (s5.o = l4(r5)[0], s5.t = r5), o5(() => y4(s5), []), s5.o;
+    }, f4 = /* @__PURE__ */ new Set(), y4 = (e6) => (f4.add(e6), u4(e6), () => f4.delete(e6)), i4 = (r5 = t4) => {
+      const [, n4] = c4((e6) => e6 + 1, 0), [s4] = c4(t4, { l: n4 });
+      return s4.t && (Array.isArray(r5) ? e4(r5, s4.t) : r5 === s4.t) || (s4.o = l4(r5)[0], s4.t = r5), o5(() => y4(s4), []), s4.o;
     };
-    return i4.get = () => s4, i4.set = (e6) => {
-      s4 = r4(s4, e6), f4.forEach(u4);
+    return i4.get = () => s3, i4.set = (e6) => {
+      s3 = r4(s3, e6), f4.forEach(u4);
     }, i4.subscribe = (e6, r5) => (r5 || ([e6, r5] = [t4, e6]), y4({ l: r5, t: e6, o: [] })), i4;
   };
 
   // node_modules/mergerino/dist/mergerino.min.js
   var e5 = Object.assign || ((e6, t6) => (t6 && Object.keys(t6).forEach((o5) => e6[o5] = t6[o5]), e6));
-  var t5 = (e6, r4, s4) => {
-    const c4 = typeof s4;
-    if (s4 && c4 === "object")
-      if (Array.isArray(s4))
-        for (const o5 of s4)
+  var t5 = (e6, r4, s3) => {
+    const c4 = typeof s3;
+    if (s3 && c4 === "object")
+      if (Array.isArray(s3))
+        for (const o5 of s3)
           r4 = t5(e6, r4, o5);
       else
-        for (const c5 of Object.keys(s4)) {
-          const f4 = s4[c5];
+        for (const c5 of Object.keys(s3)) {
+          const f4 = s3[c5];
           typeof f4 == "function" ? r4[c5] = f4(r4[c5], o4) : f4 === void 0 ? e6 && !isNaN(c5) ? r4.splice(c5, 1) : delete r4[c5] : f4 === null || typeof f4 != "object" || Array.isArray(f4) ? r4[c5] = f4 : typeof r4[c5] == "object" ? r4[c5] = f4 === r4[c5] ? f4 : o4(r4[c5], f4) : r4[c5] = t5(false, {}, f4);
         }
     else
-      c4 === "function" && (r4 = s4(r4, o4));
+      c4 === "function" && (r4 = s3(r4, o4));
     return r4;
   };
   var o4 = (o5, ...r4) => {
-    const s4 = Array.isArray(o5);
-    return t5(s4, s4 ? o5.slice() : e5({}, o5), r4);
+    const s3 = Array.isArray(o5);
+    return t5(s3, s3 ? o5.slice() : e5({}, o5), r4);
   };
   var mergerino_min_default = o4;
 
@@ -746,7 +824,7 @@ ${r4}}
   var useStore = staterino_min_default({
     state: initialState,
     merge: mergerino_min_default,
-    hooks: { useLayoutEffect: h3, useReducer: p2 }
+    hooks: { useLayoutEffect: d3, useReducer: p2 }
   });
   var { get: getState, set: setState, subscribe } = useStore;
 
@@ -759,20 +837,41 @@ ${r4}}
   var setComments = setter("comments");
   var setNoContent = setter("noContent");
   var setFirstLoad = setter("firstLoad");
+  var loadConf = (conf2) => {
+    conf2.getPosts().catch((error) => logError([], conf2, "conf.getPosts() threw", error)).then(setPosts).finally(() => setPostsLoading(false));
+  };
+  var SEC_TIMEOUT = 5;
   var init = (conf2) => {
     setState([() => initialState, { conf: () => conf2 }]);
-    return conf2.getPosts().catch((error) => logError([], conf2, "conf.getPosts() threw", error)).then(setPosts).finally(() => setPostsLoading(false));
+    if (!conf2.waitFor)
+      return loadConf(conf2);
+    log("conf has waitFor configured", conf2.waitFor);
+    const handleDone = () => {
+      loadConf(conf2);
+      log("finished waiting", conf2.waitFor);
+    };
+    const handleTimeout = () => logError("timed out waiting for", conf2.waitFor);
+    if (typeof conf2.waitFor === "string") {
+      waitForElemsWithTimout({
+        selector: conf2.waitFor,
+        onMatch: handleDone,
+        timeout: SEC_TIMEOUT * 1e3,
+        onTimeout: handleTimeout
+      });
+      return;
+    }
+    keepTrying(conf2.waitFor, SEC_TIMEOUT).then(handleDone).catch(handleTimeout);
   };
 
   // src/state/subs.ts
-  subscribe([(s4) => s4.firstLoad, (s4) => s4.commentsLoading, (s4) => s4.comments], (first, loading, comments) => {
+  subscribe([(s3) => s3.firstLoad, (s3) => s3.commentsLoading, (s3) => s3.comments], (first, loading, comments) => {
     if (loading || !first)
       return;
     setFirstLoad(false);
     if (comments.length <= 0)
       setNoContent(true);
   });
-  subscribe([(s4) => s4.firstLoad, (s4) => s4.postsLoading, (s4) => s4.posts], (first, loading, posts) => {
+  subscribe([(s3) => s3.firstLoad, (s3) => s3.postsLoading, (s3) => s3.posts], (first, loading, posts) => {
     if (loading || !first)
       return;
     if (posts.length > 0) {
@@ -782,7 +881,7 @@ ${r4}}
       setNoContent(true);
     }
   });
-  subscribe((s4) => s4.activePost, (activePost) => {
+  subscribe((s3) => s3.activePost, (activePost) => {
     if (!activePost)
       return;
     setCommentsLoading(true);
@@ -795,8 +894,8 @@ ${r4}}
   // src/cmp/PostSelect.tsx
   var MAX_INITIAL_VISIBLE = 7;
   var PostSelect = () => {
-    const [posts, activePost] = useStore([(s4) => s4.posts, (s4) => s4.activePost]);
-    const [showAll, setShowAll] = l3(false);
+    const [posts, activePost] = useStore([(s3) => s3.posts, (s3) => s3.activePost]);
+    const [showAll, setShowAll] = m3(false);
     const visiblePosts = posts.filter((post) => post.num_comments > 0).slice(0, MAX_INITIAL_VISIBLE);
     const hiddenCount = posts.length - visiblePosts.length;
     let list = showAll ? posts : visiblePosts;
@@ -850,9 +949,9 @@ ${r4}}
 
   // src/cmp/PostComments/cmp/LoadMoreButton.tsx
   var LoadMoreButton = ({ thing, update }) => {
-    const activePost = useStore((s4) => s4.activePost);
-    const [loading, setLoading] = l3(false);
-    const [failed, setFailed] = l3(false);
+    const activePost = useStore((s3) => s3.activePost);
+    const [loading, setLoading] = m3(false);
+    const [failed, setFailed] = m3(false);
     const { count, children } = thing.data;
     if (count <= 0)
       return null;
@@ -890,7 +989,7 @@ ${r4}}
     return redraw;
   };
   var useUpdatingRef = (value) => {
-    const ref = s3(value);
+    const ref = h3(value);
     ref.current = value;
     return ref;
   };
@@ -980,15 +1079,15 @@ ${r4}}
   // src/cmp/PostComments/cmp/PostComment.tsx
   var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } = thing.data;
-    const html = d3(() => decodeHTML(body_html), [body_html]);
-    const conf2 = useStore((s4) => s4.conf);
+    const html = _2(() => decodeHTML(body_html), [body_html]);
+    const conf2 = useStore((s3) => s3.conf);
     const redraw = useRedraw();
-    const ref = s3();
+    const ref = h3(null);
     const toggle = () => {
       thing.data.collapsed = !collapsed;
       redraw();
       const offset = typeof conf2.scrollOffset === "function" ? conf2.scrollOffset() : conf2.scrollOffset;
-      if (ref.current.getBoundingClientRect().top < (offset != null ? offset : 0)) {
+      if (ref.current && ref.current.getBoundingClientRect().top < (offset != null ? offset : 0)) {
         ref.current.scrollIntoView();
         if (offset)
           window.scrollBy(0, -offset);
@@ -1106,9 +1205,9 @@ ${r4}}
   // src/cmp/PostComments/PostComments.tsx
   var PostComments = () => {
     const [loading, things, activePost] = useStore([
-      (s4) => s4.commentsLoading,
-      (s4) => s4.comments,
-      (s4) => s4.activePost
+      (s3) => s3.commentsLoading,
+      (s3) => s3.comments,
+      (s3) => s3.activePost
     ]);
     const update = useUpdate(things || []);
     if (!activePost)
@@ -1166,21 +1265,21 @@ ${r4}}
 
   // src/cmp/App.tsx
   var App = ({ conf: conf2, setNativeCommentsVisible }) => {
-    const [postsLoading, noPosts] = useStore([(s4) => s4.postsLoading, (s4) => s4.posts.length <= 0]);
+    const [postsLoading, noPosts] = useStore([(s3) => s3.postsLoading, (s3) => s3.posts.length <= 0]);
     y3(() => {
       init(conf2);
-      return subscribe([(s4) => s4.noContent], (noContent) => {
+      return subscribe([(s3) => s3.noContent], (noContent) => {
         if (noContent && visible)
           toggleVisible();
       });
     }, []);
-    const [visible, setVisible] = l3(true);
+    const [visible, setVisible] = m3(true);
     const toggleVisible = () => {
       setNativeCommentsVisible(visible);
       setVisible(!visible);
     };
     const message = postsLoading ? "Loading posts\u2026" : noPosts ? "No posts found\u2026" : "";
-    const [open, setOpen] = l3(false);
+    const [open, setOpen] = m3(false);
     if (conf2.modal) {
       return /* @__PURE__ */ v(d, null, /* @__PURE__ */ v("button", {
         className: modalButton,
@@ -1253,6 +1352,7 @@ ${r4}}
     areaSelector: "#disqus_thread",
     isMatch: () => Boolean(q(".playerpage")),
     dark: true,
+    waitFor: "#epslistplace button[disabled]",
     async getPosts() {
       var _a, _b;
       const title = (_a = q(".animetitle")) == null ? void 0 : _a.textContent;
@@ -1298,44 +1398,6 @@ ${r4}}
     const host = location.hostname;
     const confName2 = confNames.find((name) => host.includes(name));
     return confName2 ? { conf: confs[confName2], confName: confName2 } : {};
-  };
-
-  // src/lib/wait-for-elems.ts
-  var waitForElems = ({
-    selector,
-    onmatch,
-    stopWaiting = false,
-    container: container2 = document.body,
-    mutationConfig
-  }) => {
-    const seen = new WeakSet();
-    const check = () => {
-      const found = qq(selector).filter((elem) => !seen.has(elem));
-      if (found.length > 0) {
-        if (stopWaiting)
-          stop();
-        found.forEach((elem) => {
-          seen.add(elem);
-          onmatch(elem);
-        });
-      }
-    };
-    const throttledCheck = throttle(300, check);
-    const observer = new MutationObserver(throttledCheck);
-    const start = () => {
-      check();
-      observer.observe(container2, {
-        subtree: true,
-        childList: true,
-        ...mutationConfig
-      });
-    };
-    const stop = () => {
-      throttledCheck.stop();
-      observer.disconnect();
-    };
-    start();
-    return { start, stop };
   };
 
   // src/lib/wait-for-url.ts
@@ -1401,7 +1463,7 @@ ${r4}}
         const wait = waitForElems({
           selector: conf.areaSelector,
           stopWaiting: true,
-          onmatch: (area) => {
+          onMatch: (area) => {
             log("area found", area);
             cleanup.push(mountApp(conf, area));
           }
