@@ -2,15 +2,41 @@ import { qq, throttle } from './util'
 
 interface Props {
   selector: string
-  onmatch(elem: HTMLElement): void
+  onMatch(elem: HTMLElement): void
   stopWaiting?: boolean
   container?: Element
   mutationConfig?: MutationObserverInit
 }
 
+export const waitForElemsWithTimout = ({
+  timeout,
+  onTimeout,
+  ...rest
+}: { timeout: number; onTimeout?(): void } & Omit<Props, 'stopWaiting'>) => {
+  let id = -1
+  const { stop } = waitForElems({
+    ...rest,
+    stopWaiting: true,
+    onMatch: elem => {
+      clearTimeout(id)
+      rest.onMatch(elem)
+    }
+  })
+  id = setTimeout(() => {
+    stop()
+    onTimeout?.()
+  }, timeout)
+  return {
+    stop: () => {
+      clearTimeout(id)
+      stop()
+    }
+  }
+}
+
 export const waitForElems = ({
   selector,
-  onmatch,
+  onMatch: onmatch,
   stopWaiting = false,
   container = document.body,
   mutationConfig

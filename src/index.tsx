@@ -29,7 +29,7 @@ if (!conf) {
       const wait = waitForElems({
         selector: conf.areaSelector,
         stopWaiting: true,
-        onmatch: area => {
+        onMatch: area => {
           log('area found', area)
           cleanup.push(mountApp(conf, area))
         }
