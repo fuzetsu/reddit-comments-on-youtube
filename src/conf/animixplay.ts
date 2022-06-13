@@ -6,6 +6,7 @@ export const animixplay: Conf = {
   areaSelector: '#disqus_thread',
   isMatch: () => Boolean(q('.playerpage')),
   dark: true,
+  waitFor: '#epslistplace button[disabled]',
   async getPosts() {
     const title = q('.animetitle')?.textContent
     const epNum = q('#epslistplace button[disabled]')?.textContent

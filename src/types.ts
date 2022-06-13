@@ -9,6 +9,7 @@ export interface Conf {
   getPosts(): Promise<Post[]>
   dark?: boolean
   theme?: Theme
+  waitFor?: string | (() => boolean)
   scrollOffset?: number | (() => number)
 }
 
