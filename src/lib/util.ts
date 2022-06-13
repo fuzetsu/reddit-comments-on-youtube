@@ -63,7 +63,7 @@ export const anim = (
   element.addEventListener('animation' + type, handler)
 }
 
-const namePart = [`%c${SCRIPT_NAME}:`, 'color:#ddd']
+const namePart = [`%c${SCRIPT_NAME}:`, 'color:orange']
 const makeLog =
   (type: 'error' | 'log') =>
   <T>(first: T, ...rest: unknown[]) => {
@@ -138,3 +138,17 @@ export const filterForEp = (posts: Post[], episode: string) => {
   const epRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')
   return posts.filter(post => epRegex.test(post.title))
 }
+
+export const keepTrying = (fn: () => boolean, max: number) =>
+  new Promise<void>((resolve, reject) => {
+    let tries = 0
+    const id = setInterval(() => {
+      tries += 1
+      if (!fn()) {
+        if (tries >= max) reject(clearInterval(id))
+        return
+      }
+      clearInterval(id)
+      resolve()
+    }, 1000)
+  })
