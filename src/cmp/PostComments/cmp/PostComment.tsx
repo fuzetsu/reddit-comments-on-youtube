@@ -19,13 +19,13 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const conf = useStore(s => s.conf)
 
   const redraw = useRedraw()
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement>(null)
   const toggle = () => {
     thing.data.collapsed = !collapsed
     redraw()
 
     const offset = typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
-    if (ref.current.getBoundingClientRect().top < (offset ?? 0)) {
+    if (ref.current && ref.current.getBoundingClientRect().top < (offset ?? 0)) {
       ref.current.scrollIntoView()
       if (offset) window.scrollBy(0, -offset)
     }

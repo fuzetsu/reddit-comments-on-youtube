@@ -24,10 +24,11 @@ export const Icon = ({
   spin = false,
   themeColor = 'text-normal'
 }: Props) => {
-  const ref = useRef<HTMLImageElement>()
+  const ref = useRef<HTMLImageElement>(null)
   const [color, setColor] = useState('currentColor')
   useEffect(() => {
     const update = () => {
+      if (!ref.current) return
       let newColor = getCSSVar(themeColor, ref.current).slice(1)
       if (newColor.length === 3) newColor += newColor
       setColor(newColor)
