@@ -56,7 +56,7 @@ const getJSON = <T>(url: string) => fetch(url).then(res => res.json() as Promise
 
 export const searchPosts = async (query: string, sort = true): Promise<Post[]> => {
   const payload = await getJSON<PostPayload>(
-    API_URL + '/search.json?' + buildQuery({ q: query })
+    API_URL + '/search.json?' + buildQuery({ q: query, limit: '50' })
   ).catch(error => logError(null, 'api.getPosts() error', error))
 
   if (!payload) return []
