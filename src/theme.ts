@@ -46,7 +46,7 @@ export const Themes = {
 } as const
 
 export function generateTheme(theme: Theme) {
-  const getVars = <T>(obj: T, parents: string[] = []) =>
+  const getVars = <T extends object>(obj: T, parents: string[] = []) =>
     Object.entries(obj).reduce((acc, [k, v]) => {
       const cur = [...parents, k]
       if (typeof v === 'object') Object.assign(acc, getVars(v, cur))

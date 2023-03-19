@@ -22,6 +22,6 @@ export const funimation: Conf = {
     const epInfo = epInfoElem.textContent?.replace(/\s+/g, ' ').match(/Episode [0-9]+/)?.[0]
     const posts = await searchPosts(goodTitle + ' ' + epInfo + ' discussion')
     const epNum = epInfo?.match(/[0-9]+/)?.[0]
-    return epNum ? filterForEp(posts, epNum) : posts
+    return epNum ? filterForEp(epNum, posts) : posts
   }
 }

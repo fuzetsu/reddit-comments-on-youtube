@@ -1,12 +1,12 @@
 import { crunchyroll } from './crunchyroll'
 import { youtube } from './youtube'
-import { animixplay } from './animixplay'
+import { nineAnime } from './9anime'
 import { funimation } from './funimation'
 
 const confs = {
   crunchyroll,
   youtube,
-  animixplay,
+  ['9anime']: nineAnime,
   funimation
 } as const
 

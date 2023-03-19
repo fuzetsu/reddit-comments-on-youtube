@@ -17,6 +17,6 @@ export const crunchyroll: Conf = {
       .pop()
       ?.match(/[0-9]+/)?.[0]
     const posts = await searchPosts(animeName + ' discussion')
-    return epNum ? filterForEp(posts, epNum) : posts
+    return epNum ? filterForEp(epNum, posts) : posts
   }
 }
