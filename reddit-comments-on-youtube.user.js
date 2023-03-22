@@ -2,10 +2,10 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.1.4
+// @version     1.1.5
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
-// @match       https://animixplay.to/*
+// @match       https://9anime.pl/*
 // @match       https://*.funimation.com/*
 // @grant       none
 // ==/UserScript==
@@ -657,9 +657,16 @@ ${r4}}
       return acc;
     }, {});
   };
-  var filterForEp = (posts, episode) => {
+  var filterForEp = (episode, posts) => {
     const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
     return posts.filter((post) => epRegex.test(post.title));
+  };
+  var removeExtraRegex = /[^a-z0-9]*/gi;
+  var cleanTitle = (title) => title.replace(removeExtraRegex, "");
+  var filterForTitle = (title, posts) => {
+    const query = cleanTitle(title).toLocaleLowerCase();
+    const filtered = posts.filter((post) => cleanTitle(post.title.toLocaleLowerCase()).includes(query));
+    return filtered.length ? filtered : posts;
   };
   var keepTrying = (fn, max) => new Promise((resolve, reject) => {
     let tries = 0;
@@ -1464,7 +1471,7 @@ ${r4}}
       }
       const epNum = (_f = (_e = (_d = (_c = q("#showmedia_about_media h4:last-child")) == null ? void 0 : _c.textContent) == null ? void 0 : _d.split(",").pop()) == null ? void 0 : _e.match(/[0-9]+/)) == null ? void 0 : _f[0];
       const posts = await searchPosts(animeName + " discussion");
-      return epNum ? filterForEp(posts, epNum) : posts;
+      return epNum ? filterForEp(epNum, posts) : posts;
     }
   };
 
@@ -1498,18 +1505,23 @@ ${r4}}
     }
   };
 
-  // src/conf/animixplay.ts
-  var animixplay = {
+  // src/conf/9anime.ts
+  var nineAnime = {
     areaSelector: "#disqus_thread",
-    isMatch: () => Boolean(q(".playerpage")),
+    isMatch: () => Boolean(q("#player")),
     dark: true,
-    waitFor: "#epslistplace button[disabled]",
+    waitFor: ".ep-range .active",
     async getPosts() {
-      var _a, _b;
-      const title = (_a = q(".animetitle")) == null ? void 0 : _a.textContent;
-      const epNum = (_b = q("#epslistplace button[disabled]")) == null ? void 0 : _b.textContent;
-      const posts = await searchPosts(`${title} episode ${epNum}`);
-      return epNum ? filterForEp(posts, epNum) : posts;
+      var _a, _b, _c, _d;
+      const title = (_a = q(".info > .title")) == null ? void 0 : _a.textContent;
+      if (!title)
+        return [];
+      const epNum = (_d = (_c = (_b = q(".ep-range .active")) == null ? void 0 : _b.textContent) == null ? void 0 : _c.match(/[0-9]+/)) == null ? void 0 : _d[0];
+      const query = epNum ? `${title} episode ${epNum}` : title;
+      let posts = await searchPosts(`subreddit:anime ${query}`);
+      if (posts.length <= 0)
+        posts = await searchPosts(query);
+      return title ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts) : posts;
     }
   };
 
@@ -1533,7 +1545,7 @@ ${r4}}
       const epInfo = (_b = (_a = epInfoElem.textContent) == null ? void 0 : _a.replace(/\s+/g, " ").match(/Episode [0-9]+/)) == null ? void 0 : _b[0];
       const posts = await searchPosts(goodTitle + " " + epInfo + " discussion");
       const epNum = (_c = epInfo == null ? void 0 : epInfo.match(/[0-9]+/)) == null ? void 0 : _c[0];
-      return epNum ? filterForEp(posts, epNum) : posts;
+      return epNum ? filterForEp(epNum, posts) : posts;
     }
   };
 
@@ -1541,7 +1553,7 @@ ${r4}}
   var confs = {
     crunchyroll,
     youtube,
-    animixplay,
+    ["9anime"]: nineAnime,
     funimation
   };
   var confNames = Object.keys(confs);
