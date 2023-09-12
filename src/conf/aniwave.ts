@@ -2,7 +2,7 @@ import { searchPosts } from 'lib/api'
 import { filterForEp, filterForTitle, q } from 'lib/util'
 import { Conf } from 'types'
 
-export const nineAnime: Conf = {
+export const aniwave: Conf = {
   areaSelector: '#disqus_thread',
   isMatch: () => Boolean(q('#player')),
   dark: true,
