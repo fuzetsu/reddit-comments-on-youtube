@@ -21,8 +21,10 @@ export const PostSelect = () => {
 
   if (list.length <= 0) return null
 
+  const containerStyle = z.concat(styles.container, posts.length > 1 && z`gtc 1fr 1fr`).class
+
   return (
-    <div className={styles.container}>
+    <div className={containerStyle}>
       {list.map(post => (
         <button
           key={post.name}
@@ -55,7 +57,7 @@ const buttonBase = z`
 `
 
 const styles = createStyles({
-  container: z`display grid;grid-template-columns 1fr 1fr;gap 4`,
+  container: z`display grid;gap 4`,
   toggleEmpty: buttonBase.concat(z`padding 10`),
   item: buttonBase.concat(z`
     text-align left
