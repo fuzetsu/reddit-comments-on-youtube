@@ -2,10 +2,10 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.1.5
+// @version     1.1.6
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
-// @match       https://9anime.pl/*
+// @match       https://aniwave.to/*
 // @match       https://*.funimation.com/*
 // @grant       none
 // ==/UserScript==
@@ -977,8 +977,9 @@ ${r4}}
       list = [...list, activePost];
     if (list.length <= 0)
       return null;
+    const containerStyle = zaftig_min_default.concat(styles.container, posts.length > 1 && zaftig_min_default`gtc 1fr 1fr`).class;
     return /* @__PURE__ */ o4("div", {
-      className: styles.container,
+      className: containerStyle,
       children: [
         list.map((post) => /* @__PURE__ */ o4("button", {
           className: styles.item,
@@ -1024,7 +1025,7 @@ ${r4}}
   border-bottom 4px solid $button-background
 `;
   var styles = createStyles({
-    container: zaftig_min_default`display grid;grid-template-columns 1fr 1fr;gap 4`,
+    container: zaftig_min_default`display grid;gap 4`,
     toggleEmpty: buttonBase.concat(zaftig_min_default`padding 10`),
     item: buttonBase.concat(zaftig_min_default`
     text-align left
@@ -1505,8 +1506,8 @@ ${r4}}
     }
   };
 
-  // src/conf/9anime.ts
-  var nineAnime = {
+  // src/conf/aniwave.ts
+  var aniwave = {
     areaSelector: "#disqus_thread",
     isMatch: () => Boolean(q("#player")),
     dark: true,
@@ -1553,7 +1554,7 @@ ${r4}}
   var confs = {
     crunchyroll,
     youtube,
-    ["9anime"]: nineAnime,
+    aniwave,
     funimation
   };
   var confNames = Object.keys(confs);
