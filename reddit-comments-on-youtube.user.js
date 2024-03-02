@@ -580,6 +580,7 @@ ${r4}}
   // src/constants.ts
   var SCRIPT_NAME = "RCOY";
   var API_URL = "https://www.reddit.com";
+  var APP_ID = "RCOY";
 
   // src/lib/util.ts
   var getById = (id) => document.getElementById(id);
@@ -1346,6 +1347,7 @@ ${r4}}
     if (!activePost)
       return null;
     return /* @__PURE__ */ o4("div", {
+      id: APP_ID + "PostComments",
       children: loading ? `Loading comments for ${activePost.title}\u2026` : things.length <= 0 ? "No comments yet." : things.map((thing) => /* @__PURE__ */ o4(PostCommentChild, {
         thing,
         update
@@ -1507,17 +1509,18 @@ ${r4}}
   };
 
   // src/conf/aniwave.ts
+  var currentEpisodeSel = ".ep-range .active";
   var aniwave = {
     areaSelector: "#disqus_thread",
     isMatch: () => Boolean(q("#player")),
     dark: true,
-    waitFor: ".ep-range .active",
+    waitFor: currentEpisodeSel,
     async getPosts() {
       var _a, _b, _c, _d;
       const title = (_a = q(".info > .title")) == null ? void 0 : _a.textContent;
       if (!title)
         return [];
-      const epNum = (_d = (_c = (_b = q(".ep-range .active")) == null ? void 0 : _b.textContent) == null ? void 0 : _c.match(/[0-9]+/)) == null ? void 0 : _d[0];
+      const epNum = (_d = (_c = (_b = q(currentEpisodeSel)) == null ? void 0 : _b.textContent) == null ? void 0 : _c.match(/[0-9]+/)) == null ? void 0 : _d[0];
       const query = epNum ? `${title} episode ${epNum}` : title;
       let posts = await searchPosts(`subreddit:anime ${query}`);
       if (posts.length <= 0)
@@ -1642,6 +1645,7 @@ ${r4}}
   }
   function mountApp(conf2, area) {
     const wrapper = document.createElement("div");
+    wrapper.id = APP_ID;
     wrapper.className = Themes.common.concat(
       conf2.dark ? Themes.dark : Themes.light,
       conf2.theme && generateTheme(conf2.theme)

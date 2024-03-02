@@ -1,3 +1,4 @@
+import { APP_ID } from 'constants'
 import { PostCommentChild } from './cmp/PostCommentChild'
 import { useUpdate } from './hooks'
 import { useStore } from 'state'
@@ -13,7 +14,7 @@ export const PostComments = () => {
   if (!activePost) return null
 
   return (
-    <div>
+    <div id={APP_ID + 'PostComments'}>
       {loading
         ? `Loading comments for ${activePost.title}…`
         : things.length <= 0

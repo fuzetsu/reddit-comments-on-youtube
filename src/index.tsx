@@ -6,6 +6,7 @@ import { waitForElems } from 'lib/wait-for-elems'
 import { waitForUrl } from 'lib/wait-for-url'
 import { generateTheme, Themes } from 'theme'
 import { Conf } from 'types'
+import { APP_ID } from 'constants'
 
 log('started!')
 
@@ -48,6 +49,7 @@ if (!conf) {
 function mountApp(conf: Conf, area: HTMLElement) {
   const wrapper = document.createElement('div')
 
+  wrapper.id = APP_ID
   wrapper.className = Themes.common.concat(
     conf.dark ? Themes.dark : Themes.light,
     conf.theme && generateTheme(conf.theme)
