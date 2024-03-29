@@ -7,5 +7,5 @@
 // @match       https://*.crunchyroll.com/*
 // @match       https://animepahe.ru/*
 // @match       https://*.funimation.com/*
-// @grant       none
+// @grant       GM_xmlhttpRequest
 // ==/UserScript==

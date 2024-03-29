@@ -57,12 +57,26 @@ export interface Comment {
 
 export type CommentChild = Comment | LoadMore
 
-const getJSON = <T>(url: string) => fetch(url).then(res => res.json() as Promise<T>)
+const getJSON = <T>(url: string) => {
+  if (window.GM_xmlhttpRequest) {
+    return new Promise<T>((resolve, reject) =>
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      window.GM_xmlhttpRequest!({
+        url,
+        responseType: 'json',
+        anonymous: true,
+        onerror: response => reject(response.responseText),
+        onload: response => resolve(response.response as T)
+      })
+    )
+  }
+  return fetch(url).then(res => res.json() as T)
+}
 
 export const searchPosts = async (query: string, sort = true): Promise<Post[]> => {
   const payload = await getJSON<PostPayload>(
     API_URL + '/search.json?' + buildQuery({ q: query, limit: '50' })
-  ).catch(error => logError(null, 'api.getPosts() error', error))
+  ).catch(error => logError(null, 'api.searchPosts() error', error))
 
   if (!payload) return []
 
@@ -70,7 +84,6 @@ export const searchPosts = async (query: string, sort = true): Promise<Post[]> =
     ...post,
     title: decodeHTML(post.title)
   }))
-
   return sort ? results.sort((a, b) => b.num_comments - a.num_comments) : results
 }
 
