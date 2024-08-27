@@ -4,7 +4,7 @@ import { Conf } from 'types'
 
 export const funimation: Conf = {
   areaSelector: '.video-player-controls__aux-controls',
-  modal: true,
+  mode: 'modal',
   dark: true,
   isMatch: url => url.includes('/v/'),
   getPosts: async () => {

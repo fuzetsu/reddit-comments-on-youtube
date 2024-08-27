@@ -4,7 +4,7 @@ import { Theme } from 'theme'
 
 export interface Conf {
   areaSelector: string
-  modal?: boolean
+  mode?: 'modal' | 'insert' | 'swap'
   isMatch?(url: string): boolean
   getPosts(): Promise<Post[]>
   dark?: boolean

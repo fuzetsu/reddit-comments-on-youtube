@@ -5,7 +5,7 @@
 // @version     1.1.6
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
-// @match       https://aniwave.to/*
+// @match       https://animepahe.ru/*
 // @match       https://*.funimation.com/*
 // @grant       none
 // ==/UserScript==

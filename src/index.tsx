@@ -47,7 +47,7 @@ if (!conf) {
 }
 
 function mountApp(conf: Conf, area: HTMLElement) {
-  const wrapper = document.createElement('div')
+  const wrapper = document.createElement(conf.mode === 'modal' ? 'span' : 'div')
 
   wrapper.id = APP_ID
   wrapper.className = Themes.common.concat(
@@ -55,14 +55,20 @@ function mountApp(conf: Conf, area: HTMLElement) {
     conf.theme && generateTheme(conf.theme)
   ).class
 
-  if (conf.modal) {
-    area.prepend(wrapper)
-  } else {
-    // start with native area hidden
-    area.style.display = 'none'
-    // if parentElement is actually null, then just crash m8
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    area.parentElement!.insertBefore(wrapper, area)
+  switch (conf.mode) {
+    case 'modal':
+      area.prepend(wrapper)
+      break
+    case 'insert':
+      area.append(wrapper)
+      break
+    case 'swap':
+    default:
+      // start with native area hidden
+      area.style.display = 'none'
+      // if parentElement is actually null, then just crash m8
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      area.parentElement!.insertBefore(wrapper, area)
   }
 
   render(

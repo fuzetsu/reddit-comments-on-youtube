@@ -2,15 +2,15 @@ import { searchPosts } from 'lib/api'
 import { filterForEp, filterForTitle, q } from 'lib/util'
 import { Conf } from 'types'
 
-const currentEpisodeSel = '.ep-range .active'
+const currentEpisodeSel = '#episodeMenu'
 
-export const aniwave: Conf = {
-  areaSelector: '#disqus_thread',
-  isMatch: () => Boolean(q('#player')),
+export const animepahe: Conf = {
+  areaSelector: '.theatre',
   dark: true,
+  mode: 'insert',
   waitFor: currentEpisodeSel,
   async getPosts() {
-    const title = q('.info > .title')?.textContent
+    const title = q('h1 a')?.title
     if (!title) return []
     const epNum = q(currentEpisodeSel)?.textContent?.match(/[0-9]+/)?.[0]
     const query = epNum ? `${title} episode ${epNum}` : title

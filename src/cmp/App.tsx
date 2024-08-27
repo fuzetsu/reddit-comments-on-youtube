@@ -34,7 +34,7 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
 
   const [open, setOpen] = useState(false)
 
-  if (conf.modal) {
+  if (conf.mode === 'modal') {
     return (
       <>
         <button className={modalButton} onClick={() => setOpen(true)}>
@@ -54,9 +54,11 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
     )
   }
 
+  const isSwap = !conf.mode || conf.mode === 'swap'
+
   return (
     <div className={container}>
-      <SwitchComments onSwitch={toggleVisible} />
+      {isSwap && <SwitchComments onSwitch={toggleVisible} />}
       {visible &&
         (message || (
           <>
