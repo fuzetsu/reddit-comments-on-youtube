@@ -139,10 +139,10 @@ export const filterForEp = (episode: string, posts: Post[]) => {
   return posts.filter(post => epRegex.test(post.title))
 }
 
-const removeExtraRegex = /[^a-z0-9]*/gi
+const removeExtraRegex = /[^a-z0-9 ]*/gi
 const cleanTitle = (title: string) => title.replace(removeExtraRegex, '')
 export const filterForTitle = (title: string, posts: Post[]) => {
-  const query = cleanTitle(title).toLocaleLowerCase()
+  const query = cleanTitle(title).trim().toLocaleLowerCase()
   const filtered = posts.filter(post => cleanTitle(post.title.toLocaleLowerCase()).includes(query))
   return filtered.length ? filtered : posts
 }
