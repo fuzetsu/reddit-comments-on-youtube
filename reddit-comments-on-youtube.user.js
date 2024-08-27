@@ -2,12 +2,12 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.1.6
+// @version     1.2.0
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
-// @match       https://aniwave.to/*
+// @match       https://animepahe.ru/*
 // @match       https://*.funimation.com/*
-// @grant       none
+// @grant       GM_xmlhttpRequest
 // ==/UserScript==
 "use strict";
 (() => {
@@ -662,10 +662,10 @@ ${r4}}
     const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
     return posts.filter((post) => epRegex.test(post.title));
   };
-  var removeExtraRegex = /[^a-z0-9]*/gi;
+  var removeExtraRegex = /[^a-z0-9 ]*/gi;
   var cleanTitle = (title) => title.replace(removeExtraRegex, "");
   var filterForTitle = (title, posts) => {
-    const query = cleanTitle(title).toLocaleLowerCase();
+    const query = cleanTitle(title).trim().toLocaleLowerCase();
     const filtered = posts.filter((post) => cleanTitle(post.title.toLocaleLowerCase()).includes(query));
     return filtered.length ? filtered : posts;
   };
@@ -732,11 +732,24 @@ ${r4}}
   };
 
   // src/lib/api.ts
-  var getJSON = (url) => fetch(url).then((res) => res.json());
+  var getJSON = (url) => {
+    if (window.GM_xmlhttpRequest) {
+      return new Promise(
+        (resolve, reject) => window.GM_xmlhttpRequest({
+          url,
+          responseType: "json",
+          anonymous: true,
+          onerror: (response) => reject(response.responseText),
+          onload: (response) => resolve(response.response)
+        })
+      );
+    }
+    return fetch(url).then((res) => res.json());
+  };
   var searchPosts = async (query, sort = true) => {
     const payload = await getJSON(
       API_URL + "/search.json?" + buildQuery({ q: query, limit: "50" })
-    ).catch((error) => logError(null, "api.getPosts() error", error));
+    ).catch((error) => logError(null, "api.searchPosts() error", error));
     if (!payload)
       return [];
     const results = payload.data.children.map(({ data: post }) => ({
@@ -751,7 +764,26 @@ ${r4}}
     ).catch((error) => logError(null, "api.getComments() error", error));
     if (!payload)
       return [];
-    return payload[1].data.children;
+    const comments = payload[1].data.children;
+    const post = payload[0].data.children[0].data;
+    if (post.selftext_html) {
+      return [
+        {
+          kind: "t1",
+          data: {
+            ...post,
+            is_submitter: true,
+            depth: 0,
+            body_html: post.selftext_html,
+            parent_id: post.id,
+            collapsed: false,
+            replies: ""
+          }
+        },
+        ...comments
+      ];
+    }
+    return comments;
   };
   var getMoreComments = async (link_id, children) => {
     const payload = await getJSON(
@@ -1136,6 +1168,8 @@ ${r4}}
       ups: "orange"
     }),
     common: zaftig_min_default`
+    max-width 1400
+    margin auto
     font-size 16
     color $text-normal
     background $background
@@ -1150,14 +1184,17 @@ ${r4}}
   `
   };
   function generateTheme(theme) {
-    const getVars = (obj, parents = []) => Object.entries(obj).reduce((acc, [k3, v3]) => {
-      const cur = [...parents, k3];
-      if (typeof v3 === "object")
-        Object.assign(acc, getVars(v3, cur));
-      else
-        acc[cur.join("-")] = v3;
-      return acc;
-    }, {});
+    const getVars = (obj, parents = []) => Object.entries(obj).reduce(
+      (acc, [k3, v3]) => {
+        const cur = [...parents, k3];
+        if (typeof v3 === "object")
+          Object.assign(acc, getVars(v3, cur));
+        else
+          acc[cur.join("-")] = v3;
+        return acc;
+      },
+      {}
+    );
     return zaftig_min_default(Object.entries(getVars(theme)).reduce((acc, [k3, v3]) => `${acc}$${k3} ${v3};`, ""));
   }
   var CommentBorderColors = {
@@ -1370,23 +1407,53 @@ ${r4}}
   width 100%
 `.class;
 
+  // src/base/Portal.tsx
+  function Portal({ parent, children }) {
+    const renderFn = _2(null);
+    const targetRef = _2(null);
+    h3(() => {
+      var _a, _b;
+      let target = targetRef.current;
+      if (!target) {
+        target = targetRef.current = document.createElement("div");
+        target.className = (_b = (_a = document.getElementById(APP_ID)) == null ? void 0 : _a.className) != null ? _b : "";
+      }
+      const container2 = parent || document.body;
+      container2.appendChild(target);
+      renderFn.current = () => target && P(children, target);
+      return () => {
+        renderFn.current = null;
+        if (target)
+          container2.removeChild(target);
+      };
+    }, [parent]);
+    h3(() => {
+      var _a;
+      return (_a = renderFn.current) == null ? void 0 : _a.call(renderFn, children);
+    });
+    return null;
+  }
+
   // src/cmp/Modal.tsx
   function Modal({ children, open, onClose }) {
     if (!open)
       return null;
-    return /* @__PURE__ */ o4("div", {
-      className: overlay,
-      onClick: (e6) => {
-        if (e6.target === e6.currentTarget)
-          onClose == null ? void 0 : onClose();
-      },
+    return /* @__PURE__ */ o4(Portal, {
       children: /* @__PURE__ */ o4("div", {
-        className: card,
-        children
+        className: overlay,
+        onClick: (e6) => {
+          if (e6.target === e6.currentTarget)
+            onClose == null ? void 0 : onClose();
+        },
+        children: /* @__PURE__ */ o4("div", {
+          className: card,
+          children
+        })
       })
     });
   }
   var overlay = zaftig_min_default`
+  z-index 99999999
   position fixed
   top 0;right 0;left 0;bottom 0
   background rgba(0,0,0,0.8)
@@ -1394,9 +1461,9 @@ ${r4}}
 `.class;
   var card = zaftig_min_default`
   bc $background
-  p 35
+  p 10
   width 90%
-  max-width 1200
+  max-width 1400
   max-height 95vh
   min-height 30vh
   overflow-y auto
@@ -1419,7 +1486,7 @@ ${r4}}
     };
     const message = postsLoading ? "Loading posts\u2026" : noPosts ? "No posts found\u2026" : "";
     const [open, setOpen] = p3(false);
-    if (conf2.modal) {
+    if (conf2.mode === "modal") {
       return /* @__PURE__ */ o4(p, {
         children: [
           /* @__PURE__ */ o4("button", {
@@ -1443,10 +1510,11 @@ ${r4}}
         ]
       });
     }
+    const isSwap = !conf2.mode || conf2.mode === "swap";
     return /* @__PURE__ */ o4("div", {
       className: container,
       children: [
-        /* @__PURE__ */ o4(SwitchComments, {
+        isSwap && /* @__PURE__ */ o4(SwitchComments, {
           onSwitch: toggleVisible
         }),
         visible && (message || /* @__PURE__ */ o4(p, {
@@ -1508,16 +1576,16 @@ ${r4}}
     }
   };
 
-  // src/conf/aniwave.ts
-  var currentEpisodeSel = ".ep-range .active";
-  var aniwave = {
-    areaSelector: "#disqus_thread",
-    isMatch: () => Boolean(q("#player")),
+  // src/conf/animepahe.ts
+  var currentEpisodeSel = "#episodeMenu";
+  var animepahe = {
+    areaSelector: ".theatre",
     dark: true,
+    mode: "insert",
     waitFor: currentEpisodeSel,
     async getPosts() {
       var _a, _b, _c, _d;
-      const title = (_a = q(".info > .title")) == null ? void 0 : _a.textContent;
+      const title = (_a = q("h1 a")) == null ? void 0 : _a.title;
       if (!title)
         return [];
       const epNum = (_d = (_c = (_b = q(currentEpisodeSel)) == null ? void 0 : _b.textContent) == null ? void 0 : _c.match(/[0-9]+/)) == null ? void 0 : _d[0];
@@ -1532,7 +1600,7 @@ ${r4}}
   // src/conf/funimation.ts
   var funimation = {
     areaSelector: ".video-player-controls__aux-controls",
-    modal: true,
+    mode: "modal",
     dark: true,
     isMatch: (url) => url.includes("/v/"),
     getPosts: async () => {
@@ -1557,7 +1625,7 @@ ${r4}}
   var confs = {
     crunchyroll,
     youtube,
-    aniwave,
+    animepahe,
     funimation
   };
   var confNames = Object.keys(confs);
@@ -1621,7 +1689,7 @@ ${r4}}
       matcher: "any",
       onmatch: (url) => {
         log("url changed", url);
-        if (!conf.isMatch(url)) {
+        if (conf.isMatch ? !conf.isMatch(url) : q(conf.areaSelector) == null) {
           log("but it's not a match...");
           return;
         }
@@ -1644,17 +1712,23 @@ ${r4}}
     });
   }
   function mountApp(conf2, area) {
-    const wrapper = document.createElement("div");
+    const wrapper = document.createElement(conf2.mode === "modal" ? "span" : "div");
     wrapper.id = APP_ID;
     wrapper.className = Themes.common.concat(
       conf2.dark ? Themes.dark : Themes.light,
       conf2.theme && generateTheme(conf2.theme)
     ).class;
-    if (conf2.modal) {
-      area.prepend(wrapper);
-    } else {
-      area.style.display = "none";
-      area.parentElement.insertBefore(wrapper, area);
+    switch (conf2.mode) {
+      case "modal":
+        area.prepend(wrapper);
+        break;
+      case "insert":
+        area.append(wrapper);
+        break;
+      case "swap":
+      default:
+        area.style.display = "none";
+        area.parentElement.insertBefore(wrapper, area);
     }
     P(
       /* @__PURE__ */ o4(App, {
