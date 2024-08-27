@@ -1,7 +1,7 @@
 import { render } from 'preact'
 import { App } from 'cmp/App'
 import { getConf } from 'conf'
-import { log, logError } from 'lib/util'
+import { log, logError, q } from 'lib/util'
 import { waitForElems } from 'lib/wait-for-elems'
 import { waitForUrl } from 'lib/wait-for-url'
 import { generateTheme, Themes } from 'theme'
@@ -19,7 +19,7 @@ if (!conf) {
     matcher: 'any',
     onmatch: url => {
       log('url changed', url)
-      if (!conf.isMatch(url)) {
+      if (conf.isMatch ? !conf.isMatch(url) : q(conf.areaSelector) == null) {
         log("but it's not a match...")
         return
       }

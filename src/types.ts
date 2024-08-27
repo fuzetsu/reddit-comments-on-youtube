@@ -5,7 +5,7 @@ import { Theme } from 'theme'
 export interface Conf {
   areaSelector: string
   modal?: boolean
-  isMatch(url: string): boolean
+  isMatch?(url: string): boolean
   getPosts(): Promise<Post[]>
   dark?: boolean
   theme?: Theme
