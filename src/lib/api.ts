@@ -7,17 +7,28 @@ interface PostPayload {
   }
 }
 
-type CommentPayload = [never, { data: { children: (Comment | LoadMore)[] } }]
+type CommentPayload = [
+  { data: { children: [{ data: Post }] } },
+  { data: { children: (Comment | LoadMore)[] } }
+]
 
 type MoreCommentsPayload = { json: { errors: string[]; data: { things: Comment[] } } }
 
-export interface Post {
-  subreddit: string
-  title: string
+interface Data {
+  id: string
+  author: string
+  edited: false | number
+  created_utc: number
   ups: number
   permalink: string
+}
+
+export interface Post extends Data {
+  subreddit: string
+  title: string
   name: string
   num_comments: number
+  selftext_html?: string
 }
 
 export interface LoadMore {
@@ -33,18 +44,12 @@ export interface LoadMore {
 
 export interface Comment {
   kind: 't1'
-  data: {
-    id: string
+  data: Data & {
     parent_id: string
-    ups: number
     name: string
-    author: string
     depth: number
     body_html: string
-    edited: false | number
     is_submitter: boolean
-    permalink: string
-    created_utc: number
     collapsed: boolean
     replies: '' | { data: { children: CommentChild[] } }
   }
@@ -79,7 +84,28 @@ export const getComments = async (
 
   if (!payload) return []
 
-  return payload[1].data.children
+  const comments = payload[1].data.children
+
+  const post = payload[0].data.children[0].data
+  if (post.selftext_html) {
+    return [
+      {
+        kind: 't1',
+        data: {
+          ...post,
+          is_submitter: true,
+          depth: 0,
+          body_html: post.selftext_html,
+          parent_id: post.id,
+          collapsed: false,
+          replies: ''
+        }
+      },
+      ...comments
+    ]
+  }
+
+  return comments
 }
 
 export const getMoreComments = async (link_id: string, children: string[]): Promise<Comment[]> => {
