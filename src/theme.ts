@@ -31,6 +31,8 @@ export const Themes = {
     ups: 'orange'
   }),
   common: z`
+    max-width 1400
+    margin auto
     font-size 16
     color $text-normal
     background $background
@@ -47,12 +49,15 @@ export const Themes = {
 
 export function generateTheme(theme: Theme) {
   const getVars = <T extends object>(obj: T, parents: string[] = []) =>
-    Object.entries(obj).reduce((acc, [k, v]) => {
-      const cur = [...parents, k]
-      if (typeof v === 'object') Object.assign(acc, getVars(v, cur))
-      else acc[cur.join('-')] = v
-      return acc
-    }, {} as { [name: string]: string })
+    Object.entries(obj).reduce(
+      (acc, [k, v]) => {
+        const cur = [...parents, k]
+        if (typeof v === 'object') Object.assign(acc, getVars(v, cur))
+        else acc[cur.join('-')] = v
+        return acc
+      },
+      {} as { [name: string]: string }
+    )
   return z(Object.entries(getVars(theme)).reduce((acc, [k, v]) => `${acc}$${k} ${v};`, ''))
 }
 
