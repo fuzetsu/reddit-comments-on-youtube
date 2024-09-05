@@ -3,7 +3,7 @@ import z from 'zaftig'
 import { Icon } from 'base/Icon'
 import { createStyles, reduceCount } from 'lib/util'
 import { useStore } from 'state'
-import { setActivePost } from 'state/actions'
+import { loadComments, setActivePost } from 'state/actions'
 
 const MAX_INITIAL_VISIBLE = 7
 
@@ -30,7 +30,7 @@ export const PostSelect = () => {
           key={post.name}
           className={styles.item}
           style={{ borderBottomColor: post === activePost ? 'var(--text-secondary)' : '' }}
-          onClick={() => setActivePost(post)}
+          onClick={() => (post === activePost ? loadComments(post) : setActivePost(post))}
         >
           <div className={styles.numComments}>
             <Icon name="message-circle" /> {reduceCount(post.num_comments)}

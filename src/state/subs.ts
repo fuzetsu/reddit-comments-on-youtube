@@ -1,11 +1,4 @@
-import { getComments } from 'lib/api'
-import {
-  setActivePost,
-  setComments,
-  setCommentsLoading,
-  setFirstLoad,
-  setNoContent
-} from './actions'
+import { loadComments, setActivePost, setFirstLoad, setNoContent } from './actions'
 import { subscribe } from './state'
 
 // set no content flag based on first load
@@ -32,10 +25,6 @@ subscribe(
   s => s.activePost,
   activePost => {
     if (!activePost) return
-    setCommentsLoading(true)
-    getComments(activePost).then(comments => {
-      setComments(comments)
-      setCommentsLoading(false)
-    })
+    loadComments(activePost)
   }
 )

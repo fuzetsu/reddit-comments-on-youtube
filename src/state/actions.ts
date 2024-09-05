@@ -1,4 +1,4 @@
-import { Post } from 'lib/api'
+import { getComments, Post } from 'lib/api'
 import { keepTrying, log, logError } from 'lib/util'
 import { waitForElemsWithTimout } from 'lib/wait-for-elems'
 import { Conf } from 'types'
@@ -48,4 +48,11 @@ export const init = (conf: Conf) => {
   }
 
   keepTrying(conf.waitFor, SEC_TIMEOUT).then(handleDone).catch(handleTimeout)
+}
+
+export const loadComments = async (post: Post) => {
+  setCommentsLoading(true)
+  const comments = await getComments(post)
+  setComments(comments)
+  setCommentsLoading(false)
 }
