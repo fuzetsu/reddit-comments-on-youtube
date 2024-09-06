@@ -44,6 +44,14 @@ export const Themes = {
       text-decoration none
       :hover { text-decoration underline }
     }
+
+    .md-spoiler-text {
+      transition background .5s ease
+      background $text-normal
+      cursor pointer
+
+      &[data-open='true'] { background $background }
+    }
   `
 } as const
 

@@ -16,6 +16,8 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
+  const spoilerState = useMemo(() => new WeakSet<HTMLElement>(), [])
+
   const conf = useStore(s => s.conf)
 
   const redraw = useRedraw()
@@ -79,6 +81,16 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
                   e.preventDefault()
                   const url = e.target.href
                   window.open(url.startsWith('/') ? API_URL + url : url)
+                } else if (e.target instanceof HTMLElement) {
+                  if (e.target.classList.contains('md-spoiler-text')) {
+                    if (spoilerState.has(e.target)) {
+                      e.target.dataset.open = 'false'
+                      spoilerState.delete(e.target)
+                    } else {
+                      e.target.dataset.open = 'true'
+                      spoilerState.add(e.target)
+                    }
+                  }
                 }
               }}
             />
