@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     1.2.0
+// @version     1.3.0
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animepahe.ru/*
@@ -963,6 +963,12 @@ ${r4}}
     }
     keepTrying(conf2.waitFor, SEC_TIMEOUT).then(handleDone).catch(handleTimeout);
   };
+  var loadComments = async (post) => {
+    setCommentsLoading(true);
+    const comments = await getComments(post);
+    setComments(comments);
+    setCommentsLoading(false);
+  };
 
   // src/state/subs.ts
   subscribe(
@@ -990,11 +996,7 @@ ${r4}}
     (activePost) => {
       if (!activePost)
         return;
-      setCommentsLoading(true);
-      getComments(activePost).then((comments) => {
-        setComments(comments);
-        setCommentsLoading(false);
-      });
+      loadComments(activePost);
     }
   );
 
@@ -1017,7 +1019,7 @@ ${r4}}
         list.map((post) => /* @__PURE__ */ o4("button", {
           className: styles.item,
           style: { borderBottomColor: post === activePost ? "var(--text-secondary)" : "" },
-          onClick: () => setActivePost(post),
+          onClick: () => post === activePost ? loadComments(post) : setActivePost(post),
           children: [
             /* @__PURE__ */ o4("div", {
               className: styles.numComments,
@@ -1181,6 +1183,14 @@ ${r4}}
       text-decoration none
       :hover { text-decoration underline }
     }
+
+    .md-spoiler-text {
+      transition background .5s ease
+      background $text-normal
+      cursor pointer
+
+      &[data-open='true'] { background $background }
+    }
   `
   };
   function generateTheme(theme) {
@@ -1218,6 +1228,7 @@ ${r4}}
   var PostComment = ({ thing }) => {
     const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } = thing.data;
     const html = F(() => decodeHTML(body_html), [body_html]);
+    const spoilerState = F(() => /* @__PURE__ */ new WeakSet(), []);
     const conf2 = useStore((s4) => s4.conf);
     const redraw = useRedraw();
     const ref = _2(null);
@@ -1293,6 +1304,16 @@ ${r4}}
                       e6.preventDefault();
                       const url = e6.target.href;
                       window.open(url.startsWith("/") ? API_URL + url : url);
+                    } else if (e6.target instanceof HTMLElement) {
+                      if (e6.target.classList.contains("md-spoiler-text")) {
+                        if (spoilerState.has(e6.target)) {
+                          e6.target.dataset.open = "false";
+                          spoilerState.delete(e6.target);
+                        } else {
+                          e6.target.dataset.open = "true";
+                          spoilerState.add(e6.target);
+                        }
+                      }
                     }
                   }
                 }),
