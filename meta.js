@@ -7,5 +7,7 @@
 // @match       https://*.crunchyroll.com/*
 // @match       https://animepahe.ru/*
 // @match       https://*.funimation.com/*
+// @match       https://dramacool.com.tw/*
+// @match       https://dramacool.com.tr/*
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
