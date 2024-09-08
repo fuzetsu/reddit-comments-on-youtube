@@ -6,10 +6,7 @@ export const dramacool: Conf = {
   areaSelector: '.note',
   getPosts: async () => {
     const title = q('h1')?.textContent
-    if (!title) {
-      logError('unable to find title')
-      return []
-    }
+    if (!title) return logError([], 'unable to find title')
     const slicedTitle = title.slice(0, title.toLowerCase().lastIndexOf('english'))
     const posts = await searchPosts(slicedTitle)
     const epNum = slicedTitle.match(/episode ([0-9]+)/i)?.[1]

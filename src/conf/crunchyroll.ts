@@ -7,10 +7,7 @@ export const crunchyroll: Conf = {
   isMatch: () => !!getById('showmedia_about_media'),
   getPosts: async () => {
     const animeName = getById('showmedia_about_media')?.textContent?.replace(/\s+/g, ' ')
-    if (!animeName) {
-      logError('unable to find anime name')
-      return []
-    }
+    if (!animeName) return logError([], 'unable to find anime name')
 
     const epNum = q('#showmedia_about_media h4:last-child')
       ?.textContent?.split(',')

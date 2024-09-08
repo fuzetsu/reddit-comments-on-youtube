@@ -1,5 +1,5 @@
 import { searchPosts } from 'lib/api'
-import { filterForEp, filterForTitle, q } from 'lib/util'
+import { filterForEp, filterForTitle, logError, q } from 'lib/util'
 import { Conf } from 'types'
 
 const currentEpisodeSel = '#episodeMenu'
@@ -11,7 +11,7 @@ export const animepahe: Conf = {
   waitFor: currentEpisodeSel,
   async getPosts() {
     const title = q('h1 a')?.title
-    if (!title) return []
+    if (!title) return logError([], 'could not find title')
     const epNum = q(currentEpisodeSel)?.textContent?.match(/[0-9]+/)?.[0]
     const query = epNum ? `${title} episode ${epNum}` : title
     let posts = await searchPosts(`subreddit:anime ${query}`)
