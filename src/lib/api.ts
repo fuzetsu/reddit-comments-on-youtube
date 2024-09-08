@@ -73,18 +73,17 @@ const getJSON = <T>(url: string) => {
   return fetch(url).then(res => res.json() as T)
 }
 
-export const searchPosts = async (query: string, sort = true): Promise<Post[]> => {
+export const searchPosts = async (query: string): Promise<Post[]> => {
   const payload = await getJSON<PostPayload>(
     API_URL + '/search.json?' + buildQuery({ q: query, limit: '50' })
   ).catch(error => logError(null, 'api.searchPosts() error', error))
 
   if (!payload) return []
 
-  const results = payload.data.children.map(({ data: post }) => ({
+  return payload.data.children.map(({ data: post }) => ({
     ...post,
     title: decodeHTML(post.title)
   }))
-  return sort ? results.sort((a, b) => b.num_comments - a.num_comments) : results
 }
 
 export const getComments = async (
