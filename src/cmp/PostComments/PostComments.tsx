@@ -5,19 +5,7 @@ import { useStore } from 'state'
 import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
-
-const styles = z`
-  .loading, .no-comments {
-    display flex
-    justify-content center
-    align-items center
-    min-height 200px
-  }
-  .loading-text {
-    margin-left 10px
-    font-size 16px
-  }
-`
+import { createStyles } from 'lib/util'
 
 export const PostComments = () => {
   const [loading, things, activePost] = useStore([
@@ -30,14 +18,14 @@ export const PostComments = () => {
   if (!activePost) return null
 
   return (
-    <div id={APP_ID + 'PostComments'} className={styles.class}>
+    <div id={APP_ID + 'PostComments'} className={styles.container}>
       {loading ? (
-        <div className="loading">
+        <div className={styles.loading}>
           <LoadingAnimation />
-          <span className="loading-text">Loading comments for {activePost.title}…</span>
+          <span className={styles.loadingText}>Loading comments for {activePost.title}…</span>
         </div>
       ) : things.length <= 0 ? (
-        <div className="no-comments">
+        <div className={styles.noComments}>
           <NoComments />
         </div>
       ) : (
@@ -46,3 +34,23 @@ export const PostComments = () => {
     </div>
   )
 }
+
+const styles = createStyles({
+  container: z``,
+  loading: z`
+    display flex
+    justify-content center
+    align-items center
+    min-height 200px
+  `,
+  loadingText: z`
+    margin-left 10px
+    font-size 16px
+  `,
+  noComments: z`
+    display flex
+    justify-content center
+    align-items center
+    min-height 200px
+  `
+})
