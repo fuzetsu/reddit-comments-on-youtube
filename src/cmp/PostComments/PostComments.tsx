@@ -22,7 +22,9 @@ export const PostComments = () => {
       {loading ? (
         <div className={styles.centerNotice}>
           <LoadingAnimation />
-          <span className={styles.loadingText}>Loading comments for {activePost.title}…</span>
+          <span className={styles.loadingText}>
+            Loading comments for {activePost.title.slice(0, 20)}…
+          </span>
         </div>
       ) : things.length <= 0 ? (
         <div className={styles.centerNotice}>
