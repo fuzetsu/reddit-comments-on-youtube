@@ -101,6 +101,7 @@ const styles = createStyles({
     cursor pointer
     border none
     background $button-background
+    overflow hidden
     margin 0
     text-align left
     transition all 0.2s ease
@@ -116,7 +117,7 @@ const styles = createStyles({
     gap 4
   `,
   activeItem: z`
-    outline 2px solid $ups
+    outline 2px solid $ups !important
     &:hover {
       opacity 1
     }
