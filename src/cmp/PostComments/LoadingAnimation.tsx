@@ -1,14 +1,14 @@
-import { h } from 'preact'
 import z from 'zaftig'
+
+const spinAnim = z.anim`
+  0% { transform rotate(0deg) }
+  100% { transform rotate(360deg) }
+`
 
 const styles = z`
   width 50px
   height 50px
-  animation spin 1s linear infinite
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+  animation ${spinAnim} 1s linear infinite
 `
 
 export const LoadingAnimation = () => (

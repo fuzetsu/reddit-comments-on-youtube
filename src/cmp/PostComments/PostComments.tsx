@@ -41,9 +41,7 @@ export const PostComments = () => {
           <NoComments />
         </div>
       ) : (
-        things.map(thing => (
-          <PostCommentChild key={thing.data.id} thing={thing} update={update} />
-        ))
+        things.map(thing => <PostCommentChild key={thing.data.id} thing={thing} update={update} />)
       )}
     </div>
   )
