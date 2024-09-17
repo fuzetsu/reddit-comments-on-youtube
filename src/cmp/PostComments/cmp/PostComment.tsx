@@ -1,5 +1,5 @@
 import z from 'zaftig'
-import { useMemo, useRef } from 'preact/hooks'
+import { useMemo, useRef, useEffect, useState } from 'preact/hooks'
 import { API_URL } from 'constants'
 import { Comment } from 'lib/api'
 import { useRedraw } from 'lib/hooks'
@@ -22,6 +22,15 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
 
   const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentHeight, setContentHeight] = useState(0)
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight)
+    }
+  }, [html, replies])
+
   const toggle = () => {
     thing.data.collapsed = !collapsed
     redraw()
@@ -74,11 +83,12 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
         <div 
           className={styles.commentContent} 
           style={{ 
-            maxHeight: collapsed ? '0' : '10000px',
+            height: collapsed ? '0' : `${contentHeight}px`,
             opacity: collapsed ? 0 : 1,
           }}
         >
           <div
+            ref={contentRef}
             className={styles.body}
             dangerouslySetInnerHTML={{ __html: html }}
             onClick={e => {
@@ -121,7 +131,7 @@ const styles = createStyles({
   `,
   commentContent: z`
     overflow hidden
-    transition max-height 0.3s ease-out, opacity 0.3s ease-out
+    transition height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`
