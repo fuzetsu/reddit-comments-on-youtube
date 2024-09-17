@@ -6,20 +6,23 @@ import { useStore } from 'state'
 import { loadComments, setActivePost } from 'state/actions'
 
 const MAX_INITIAL_VISIBLE = 7
-const MIN_SHIMMER_DURATION = 250
+const MIN_SHIMMER_DURATION = 1000
 
 export const PostSelect = () => {
-  const [posts, activePost, commentsLoading] = useStore([s => s.posts, s => s.activePost, s => s.commentsLoading])
+  const [posts, activePost, commentsLoading] = useStore([
+    s => s.posts,
+    s => s.activePost,
+    s => s.commentsLoading
+  ])
   const [showAll, setShowAll] = useState(false)
   const [isShimmering, setIsShimmering] = useState(false)
 
   useEffect(() => {
     if (commentsLoading) {
       setIsShimmering(true)
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setIsShimmering(false)
       }, MIN_SHIMMER_DURATION)
-      return () => clearTimeout(timer)
     }
   }, [commentsLoading])
 
@@ -149,4 +152,3 @@ const styles = createStyles({
     }
   `
 })
-

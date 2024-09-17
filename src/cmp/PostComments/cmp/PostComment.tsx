@@ -60,11 +60,7 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     <div className={styles.comment}>
       <CustomButton tag="div" aria-label={ariaLabel} className={borderClassName} onClick={toggle} />
       <div>
-        <div
-          ref={ref}
-          className={styles.commentInfo}
-          style={{ marginBottom: collapsed ? '' : '10px' }}
-        >
+        <div ref={ref} className={styles.commentInfo}>
           <a
             className={styles.author}
             target="_blank"
@@ -80,11 +76,12 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             )}
           </a>
         </div>
-        <div 
-          className={styles.commentContent} 
-          style={{ 
+        <div
+          className={styles.commentContent}
+          style={{
+            marginTop: collapsed ? '' : '10px',
             height: collapsed ? '0' : `${contentHeight}px`,
-            opacity: collapsed ? 0 : 1,
+            opacity: collapsed ? 0 : 1
           }}
         >
           <div
@@ -92,30 +89,30 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             className={styles.body}
             dangerouslySetInnerHTML={{ __html: html }}
             onClick={e => {
-                if (e.target instanceof HTMLAnchorElement) {
-                  e.preventDefault()
-                  const url = e.target.href
-                  window.open(url.startsWith('/') ? API_URL + url : url)
-                } else if (e.target instanceof HTMLElement) {
-                  if (e.target.classList.contains('md-spoiler-text')) {
-                    if (spoilerState.has(e.target)) {
-                      e.target.dataset.open = 'false'
-                      spoilerState.delete(e.target)
-                    } else {
-                      e.target.dataset.open = 'true'
-                      spoilerState.add(e.target)
-                    }
+              if (e.target instanceof HTMLAnchorElement) {
+                e.preventDefault()
+                const url = e.target.href
+                window.open(url.startsWith('/') ? API_URL + url : url)
+              } else if (e.target instanceof HTMLElement) {
+                if (e.target.classList.contains('md-spoiler-text')) {
+                  if (spoilerState.has(e.target)) {
+                    e.target.dataset.open = 'false'
+                    spoilerState.delete(e.target)
+                  } else {
+                    e.target.dataset.open = 'true'
+                    spoilerState.add(e.target)
                   }
                 }
-              }}
-            />
-            {replies && (
-              <div className={styles.replies}>
-                {replies.data.children.map(child => (
-                  <PostCommentChild key={child.data.id} thing={child} update={update} />
-                ))}
-              </div>
-            )}
+              }
+            }}
+          />
+          {replies && (
+            <div className={styles.replies}>
+              {replies.data.children.map(child => (
+                <PostCommentChild key={child.data.id} thing={child} update={update} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -131,7 +128,7 @@ const styles = createStyles({
   `,
   commentContent: z`
     overflow hidden
-    transition height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
+    transition height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out, margin 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`
