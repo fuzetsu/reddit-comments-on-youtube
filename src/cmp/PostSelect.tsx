@@ -16,12 +16,17 @@ export const PostSelect = () => {
   ])
   const [showAll, setShowAll] = useState(false)
   const [isShimmering, setIsShimmering] = useState(false)
+  const [shimmerVisible, setShimmerVisible] = useState(false)
 
   useEffect(() => {
     if (commentsLoading) {
       setIsShimmering(true)
+      setShimmerVisible(true)
       setTimeout(() => {
         setIsShimmering(false)
+        setTimeout(() => {
+          setShimmerVisible(false)
+        }, 300) // Fade out duration
       }, MIN_SHIMMER_DURATION)
     }
   }, [commentsLoading])
@@ -46,7 +51,8 @@ export const PostSelect = () => {
               styles.button,
               styles.item,
               post === activePost && styles.activeItem,
-              post === activePost && (commentsLoading || isShimmering) && styles.shimmer
+              post === activePost && (commentsLoading || shimmerVisible) && styles.shimmer,
+              post === activePost && !isShimmering && shimmerVisible && styles.shimmerFadeOut
             ).class
           }
           onClick={() => (post === activePost ? loadComments(post) : setActivePost(post))}
@@ -149,6 +155,12 @@ const styles = createStyles({
       transform translateX(-100%)
       background-image linear-gradient( 90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0))
       animation ${shimmer} 2s infinite
+      transition opacity 0.3s ease-out
+    }
+  `,
+  shimmerFadeOut: z`
+    &::after {
+      opacity 0
     }
   `
 })
