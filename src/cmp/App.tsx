@@ -70,5 +70,5 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
   )
 }
 
-const container = z`d flex;flex-direction column;gap 10`.class
+const container = z`d flex;flex-direction column;gap 5;mt 5`.class
 const modalButton = z`padding 5`.class

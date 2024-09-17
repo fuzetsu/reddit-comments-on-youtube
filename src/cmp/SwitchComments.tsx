@@ -18,11 +18,12 @@ const styles = createStyles({
     cursor pointer
     border none
     background $button-background
-    margin 0
     text-align left
     transition all 0.2s ease
     border-radius 6
-    padding 6 10
+    margin-top 10
+    padding 12
+    width 100%
     &:hover {
       opacity 0.8
     }
