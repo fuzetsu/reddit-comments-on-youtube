@@ -6,8 +6,6 @@ export interface Theme {
   text: {
     normal: string
     subdued: string
-    primary: string
-    secondary: string
   }
   link: {
     color: string

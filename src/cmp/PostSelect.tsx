@@ -30,12 +30,16 @@ export const PostSelect = () => {
           onClick={() => (post === activePost ? loadComments(post) : setActivePost(post))}
         >
           <div className={styles.postInfo}>
-            <div className={styles.subreddit} title={post.subreddit}>r/{post.subreddit}</div>
+            <div className={styles.subreddit} title={post.subreddit}>
+              r/{post.subreddit}
+            </div>
             <div className={styles.numComments}>
               <Icon name="message-circle" /> {reduceCount(post.num_comments)}
             </div>
           </div>
-          <div className={styles.title} title={post.title}>{post.title}</div>
+          <div className={styles.title} title={post.title}>
+            {post.title}
+          </div>
         </button>
       ))}
       {hiddenCount > 0 && posts.length > 1 && (
@@ -49,11 +53,9 @@ export const PostSelect = () => {
 
 const styles = createStyles({
   container: z`
-    display flex
-    flex-direction column
+    display grid
+    grid-template-columns 1fr 1fr
     gap 8
-    max-height 300px
-    overflow-y auto
     padding 8
     background $background
     border-radius 8
@@ -62,7 +64,7 @@ const styles = createStyles({
     cursor pointer
     border none
     margin 0
-    padding 12 16
+    padding 6 10 
     text-align left
     display flex
     flex-direction column
@@ -75,7 +77,7 @@ const styles = createStyles({
     }
   `,
   activeItem: z`
-    border 2px solid $ups
+    outline 2px solid $ups
     &:hover {
       opacity 1
     }
@@ -86,7 +88,7 @@ const styles = createStyles({
     align-items center
   `,
   subreddit: z`
-    font-weight bold
+    font-weight 500
     color $text-subdued
   `,
   numComments: z`
