@@ -6,7 +6,7 @@ import { useStore } from 'state'
 import { loadComments, setActivePost } from 'state/actions'
 
 const MAX_INITIAL_VISIBLE = 7
-const MIN_SHIMMER_DURATION = 1000
+const MIN_SHIMMER_DURATION = 700
 
 export const PostSelect = () => {
   const [posts, activePost, commentsLoading] = useStore([
