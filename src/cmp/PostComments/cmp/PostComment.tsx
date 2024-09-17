@@ -78,14 +78,14 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
         </div>
         <div
           className={styles.commentContent}
+          ref={contentRef}
           style={{
             marginTop: collapsed ? '' : '10px',
-            height: collapsed ? '0' : `${contentHeight}px`,
+            maxHeight: collapsed ? '0' : contentHeight ? `${contentHeight}px` : 'none',
             opacity: collapsed ? 0 : 1
           }}
         >
           <div
-            ref={contentRef}
             className={styles.body}
             dangerouslySetInnerHTML={{ __html: html }}
             onClick={e => {
@@ -128,7 +128,7 @@ const styles = createStyles({
   `,
   commentContent: z`
     overflow hidden
-    transition height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out, margin 0.3s ease-out
+    transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out, margin 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`
