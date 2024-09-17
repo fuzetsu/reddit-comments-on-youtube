@@ -26,7 +26,9 @@ export const PostSelect = () => {
       {list.map(post => (
         <button
           key={post.name}
-          className={z.concat(styles.item, post === activePost && styles.activeItem).class}
+          className={
+            z.concat(styles.button, styles.item, post === activePost && styles.activeItem).class
+          }
           onClick={() => (post === activePost ? loadComments(post) : setActivePost(post))}
         >
           <div className={styles.postInfo}>
@@ -43,7 +45,10 @@ export const PostSelect = () => {
         </button>
       ))}
       {hiddenCount > 0 && posts.length > 1 && (
-        <button className={styles.toggleEmpty} onClick={() => setShowAll(!showAll)}>
+        <button
+          className={z.concat(styles.button, styles.toggleEmpty).class}
+          onClick={() => setShowAll(!showAll)}
+        >
           {showAll ? `Hide ${hiddenCount} posts` : `Show ${hiddenCount} hidden posts`}
         </button>
       )}
@@ -60,21 +65,23 @@ const styles = createStyles({
     background $background
     border-radius 8
   `,
-  item: z`
+  button: z`
     cursor pointer
     border none
-    margin 0
-    padding 6 10 
-    text-align left
-    display flex
-    flex-direction column
-    gap 4
     background $button-background
-    border-radius 6
+    margin 0
+    text-align left
     transition all 0.2s ease
+    border-radius 6
+    padding 6 10
     &:hover {
       opacity 0.8
     }
+  `,
+  item: z`
+    display flex
+    flex-direction column
+    gap 4
   `,
   activeItem: z`
     outline 2px solid $ups
@@ -87,10 +94,7 @@ const styles = createStyles({
     justify-content space-between
     align-items center
   `,
-  subreddit: z`
-    font-weight 500
-    color $text-subdued
-  `,
+  subreddit: z`font-weight 500 color;$text-subdued`,
   numComments: z`
     display flex
     align-items center
@@ -105,15 +109,5 @@ const styles = createStyles({
     text-overflow ellipsis
     white-space nowrap
   `,
-  toggleEmpty: z`
-    cursor pointer
-    border none
-    background none
-    color $text-subdued
-    padding 8
-    text-align center
-    &:hover {
-      text-decoration underline
-    }
-  `
+  toggleEmpty: z` color $text-subdued;text-align center`
 })
