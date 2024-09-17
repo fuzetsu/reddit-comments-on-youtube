@@ -55,7 +55,7 @@ const styles = createStyles({
     max-height 300px
     overflow-y auto
     padding 8
-    background $background-light
+    background $background
     border-radius 8
   `,
   item: z`
@@ -67,18 +67,17 @@ const styles = createStyles({
     display flex
     flex-direction column
     gap 4
-    background $background
+    background $button-background
     border-radius 6
     transition all 0.2s ease
     &:hover {
-      background $background-hover
+      opacity 0.8
     }
   `,
   activeItem: z`
-    background $background-active
-    box-shadow 0 0 0 2px $accent
+    border 2px solid $ups
     &:hover {
-      background $background-active
+      opacity 1
     }
   `,
   postInfo: z`
@@ -88,18 +87,18 @@ const styles = createStyles({
   `,
   subreddit: z`
     font-weight bold
-    color $text-secondary
+    color $text-subdued
   `,
   numComments: z`
     display flex
     align-items center
     gap 4
-    color $text-secondary
+    color $text-subdued
     font-size 0.9em
   `,
   title: z`
     font-size 1.1em
-    color $text-primary
+    color $text-normal
     overflow hidden
     text-overflow ellipsis
     white-space nowrap
@@ -108,7 +107,7 @@ const styles = createStyles({
     cursor pointer
     border none
     background none
-    color $text-secondary
+    color $text-subdued
     padding 8
     text-align center
     &:hover {
