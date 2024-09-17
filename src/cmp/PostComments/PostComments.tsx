@@ -18,14 +18,14 @@ export const PostComments = () => {
   if (!activePost) return null
 
   return (
-    <div id={APP_ID + 'PostComments'} className={styles.container}>
+    <div id={APP_ID + 'PostComments'}>
       {loading ? (
-        <div className={styles.loading}>
+        <div className={styles.centerNotice}>
           <LoadingAnimation />
           <span className={styles.loadingText}>Loading comments for {activePost.title}…</span>
         </div>
       ) : things.length <= 0 ? (
-        <div className={styles.noComments}>
+        <div className={styles.centerNotice}>
           <NoComments />
         </div>
       ) : (
@@ -36,21 +36,11 @@ export const PostComments = () => {
 }
 
 const styles = createStyles({
-  container: z``,
-  loading: z`
+  centerNotice: z`
     display flex
     justify-content center
     align-items center
     min-height 200px
   `,
-  loadingText: z`
-    margin-left 10px
-    font-size 16px
-  `,
-  noComments: z`
-    display flex
-    justify-content center
-    align-items center
-    min-height 200px
-  `
+  loadingText: z`margin-left 10px;font-size 16px`
 })
