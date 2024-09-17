@@ -4,7 +4,6 @@ import { Icon } from 'base/Icon'
 import { createStyles, reduceCount } from 'lib/util'
 import { useStore } from 'state'
 import { loadComments, setActivePost } from 'state/actions'
-import { keyframes } from 'zaftig'
 
 const MAX_INITIAL_VISIBLE = 7
 
@@ -61,6 +60,12 @@ export const PostSelect = () => {
     </div>
   )
 }
+
+const shimmer = z.anim`
+  100% {
+    transform translateX(100%)
+  }
+`
 
 const styles = createStyles({
   container: z`
@@ -127,20 +132,9 @@ const styles = createStyles({
       bottom 0
       left 0
       transform translateX(-100%)
-      background-image linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0,
-        rgba(255, 255, 255, 0.2) 20%,
-        rgba(255, 255, 255, 0.5) 60%,
-        rgba(255, 255, 255, 0)
-      )
+      background-image linear-gradient( 90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0))
       animation ${shimmer} 2s infinite
     }
   `
 })
 
-const shimmer = keyframes`
-  100% {
-    transform translateX(100%)
-  }
-`
