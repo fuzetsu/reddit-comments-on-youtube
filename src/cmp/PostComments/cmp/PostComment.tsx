@@ -71,12 +71,17 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             )}
           </a>
         </div>
-        {!collapsed && (
-          <>
-            <div
-              className={styles.body}
-              dangerouslySetInnerHTML={{ __html: html }}
-              onClick={e => {
+        <div 
+          className={styles.commentContent} 
+          style={{ 
+            maxHeight: collapsed ? '0' : '10000px',
+            opacity: collapsed ? 0 : 1,
+          }}
+        >
+          <div
+            className={styles.body}
+            dangerouslySetInnerHTML={{ __html: html }}
+            onClick={e => {
                 if (e.target instanceof HTMLAnchorElement) {
                   e.preventDefault()
                   const url = e.target.href
@@ -101,8 +106,7 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
                 ))}
               </div>
             )}
-          </>
-        )}
+        </div>
       </div>
     </div>
   )
@@ -114,6 +118,10 @@ const styles = createStyles({
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
+  `,
+  commentContent: z`
+    overflow hidden
+    transition max-height 0.3s ease-out, opacity 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`
