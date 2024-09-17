@@ -42,7 +42,7 @@ export const PostSelect = () => {
   if (list.length <= 0) return null
 
   return (
-    <div className={styles.container}>
+    <div className={z.concat(styles.container, list.length === 1 && z`gtc 1fr`).class}>
       {list.map(post => (
         <button
           key={post.name}
@@ -93,7 +93,7 @@ const styles = createStyles({
     display grid
     grid-template-columns 1fr 1fr
     gap 8
-    padding 8
+    padding 8 0
     background $background
     border-radius 8
   `,
