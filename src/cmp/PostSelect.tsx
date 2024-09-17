@@ -21,22 +21,21 @@ export const PostSelect = () => {
 
   if (list.length <= 0) return null
 
-  const containerStyle = z.concat(styles.container, posts.length > 1 && z`gtc 1fr 1fr`).class
-
   return (
-    <div className={containerStyle}>
+    <div className={styles.container}>
       {list.map(post => (
         <button
           key={post.name}
-          className={styles.item}
-          style={{ borderBottomColor: post === activePost ? 'var(--text-secondary)' : '' }}
+          className={z.concat(styles.item, post === activePost && styles.activeItem).class}
           onClick={() => (post === activePost ? loadComments(post) : setActivePost(post))}
         >
-          <div className={styles.numComments}>
-            <Icon name="message-circle" /> {reduceCount(post.num_comments)}
+          <div className={styles.postInfo}>
+            <div className={styles.subreddit} title={post.subreddit}>r/{post.subreddit}</div>
+            <div className={styles.numComments}>
+              <Icon name="message-circle" /> {reduceCount(post.num_comments)}
+            </div>
           </div>
-          <div title={post.subreddit}>/r/{post.subreddit}</div>
-          <div title={post.title}>{post.title}</div>
+          <div className={styles.title} title={post.title}>{post.title}</div>
         </button>
       ))}
       {hiddenCount > 0 && posts.length > 1 && (
@@ -48,27 +47,72 @@ export const PostSelect = () => {
   )
 }
 
-const buttonBase = z`
-  cursor pointer
-  border none
-  margin 0
-  padding 0
-  border-bottom 4px solid $button-background
-`
-
 const styles = createStyles({
-  container: z`display grid;gap 4`,
-  toggleEmpty: buttonBase.concat(z`padding 10`),
-  item: buttonBase.concat(z`
+  container: z`
+    display flex
+    flex-direction column
+    gap 8
+    max-height 300px
+    overflow-y auto
+    padding 8
+    background $background-light
+    border-radius 8
+  `,
+  item: z`
+    cursor pointer
+    border none
+    margin 0
+    padding 12 16
     text-align left
-    display grid
-    grid-template-columns minmax(min-content, 65px) 2fr 6fr
-    > div {
-      padding 10 5
-      overflow hidden
-      text-overflow ellipsis
-      white-space nowrap
+    display flex
+    flex-direction column
+    gap 4
+    background $background
+    border-radius 6
+    transition all 0.2s ease
+    &:hover {
+      background $background-hover
     }
-  `),
-  numComments: z`font-weight bold`
+  `,
+  activeItem: z`
+    background $background-active
+    box-shadow 0 0 0 2px $accent
+    &:hover {
+      background $background-active
+    }
+  `,
+  postInfo: z`
+    display flex
+    justify-content space-between
+    align-items center
+  `,
+  subreddit: z`
+    font-weight bold
+    color $text-secondary
+  `,
+  numComments: z`
+    display flex
+    align-items center
+    gap 4
+    color $text-secondary
+    font-size 0.9em
+  `,
+  title: z`
+    font-size 1.1em
+    color $text-primary
+    overflow hidden
+    text-overflow ellipsis
+    white-space nowrap
+  `,
+  toggleEmpty: z`
+    cursor pointer
+    border none
+    background none
+    color $text-secondary
+    padding 8
+    text-align center
+    &:hover {
+      text-decoration underline
+    }
+  `
 })
