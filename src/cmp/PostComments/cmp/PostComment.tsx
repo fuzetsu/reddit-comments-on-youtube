@@ -27,12 +27,19 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
 
   useEffect(() => {
     if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight)
+      setContentHeight(x => Math.max(x, contentRef.current?.scrollHeight ?? 0))
     }
   }, [html, replies])
 
+  const [showChildren, setShowChildren] = useState(true)
   const toggle = () => {
     thing.data.collapsed = !collapsed
+    if (collapsed) setShowChildren(true)
+    else {
+      contentRef.current?.addEventListener('transitionend', () => setShowChildren(false), {
+        once: true
+      })
+    }
     redraw()
 
     const offset = typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
@@ -85,33 +92,37 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             opacity: collapsed ? 0 : 1
           }}
         >
-          <div
-            className={styles.body}
-            dangerouslySetInnerHTML={{ __html: html }}
-            onClick={e => {
-              if (e.target instanceof HTMLAnchorElement) {
-                e.preventDefault()
-                const url = e.target.href
-                window.open(url.startsWith('/') ? API_URL + url : url)
-              } else if (e.target instanceof HTMLElement) {
-                if (e.target.classList.contains('md-spoiler-text')) {
-                  if (spoilerState.has(e.target)) {
-                    e.target.dataset.open = 'false'
-                    spoilerState.delete(e.target)
-                  } else {
-                    e.target.dataset.open = 'true'
-                    spoilerState.add(e.target)
+          {showChildren && (
+            <>
+              <div
+                className={styles.body}
+                dangerouslySetInnerHTML={{ __html: html }}
+                onClick={e => {
+                  if (e.target instanceof HTMLAnchorElement) {
+                    e.preventDefault()
+                    const url = e.target.href
+                    window.open(url.startsWith('/') ? API_URL + url : url)
+                  } else if (e.target instanceof HTMLElement) {
+                    if (e.target.classList.contains('md-spoiler-text')) {
+                      if (spoilerState.has(e.target)) {
+                        e.target.dataset.open = 'false'
+                        spoilerState.delete(e.target)
+                      } else {
+                        e.target.dataset.open = 'true'
+                        spoilerState.add(e.target)
+                      }
+                    }
                   }
-                }
-              }
-            }}
-          />
-          {replies && (
-            <div className={styles.replies}>
-              {replies.data.children.map(child => (
-                <PostCommentChild key={child.data.id} thing={child} update={update} />
-              ))}
-            </div>
+                }}
+              />
+              {replies && (
+                <div className={styles.replies}>
+                  {replies.data.children.map(child => (
+                    <PostCommentChild key={child.data.id} thing={child} update={update} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
