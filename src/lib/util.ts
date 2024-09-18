@@ -4,7 +4,6 @@ import { Post } from './api'
 
 export const getById = (id: string) => document.getElementById(id)
 
-export const p = <T>(first: T, ...rest: unknown[]): T => (console.log(first, ...rest), first)
 export const q = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
   ctx.querySelector<T>(sel)
 export const qq = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
