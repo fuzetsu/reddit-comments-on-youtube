@@ -6,7 +6,7 @@ import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
 import { createStyles } from 'lib/util'
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'preact/hooks'
 
 export const PostComments = () => {
   const [loading, things, activePost] = useStore([
