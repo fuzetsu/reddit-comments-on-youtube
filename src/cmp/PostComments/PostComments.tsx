@@ -1,4 +1,4 @@
-import { APP_ID } from 'constants'
+import { APP_ID, MIN_LOAD_TIME } from 'constants'
 import { PostCommentChild } from './cmp/PostCommentChild'
 import { useUpdate } from './hooks'
 import { useStore } from 'state'
@@ -14,22 +14,26 @@ export const PostComments = () => {
     s => s.comments,
     s => s.activePost
   ])
-  const [delayedLoading, setDelayedLoading] = useState(loading)
-  const loadingStartTime = useRef<number | null>(null)
+
   const update = useUpdate(things || [])
+
+  const [delayedLoading, setDelayedLoading] = useState(loading)
+  const loadingStartTime = useRef(0)
 
   useEffect(() => {
     if (loading) {
       setDelayedLoading(true)
       loadingStartTime.current = Date.now()
     } else {
-      const elapsedTime = loadingStartTime.current ? Date.now() - loadingStartTime.current : 0
-      const remainingTime = Math.max(500 - elapsedTime, 0)
-
-      setTimeout(() => {
-        setDelayedLoading(false)
-        loadingStartTime.current = null
-      }, remainingTime)
+      const elapsedTime = Date.now() - loadingStartTime.current
+      if (elapsedTime < MIN_LOAD_TIME) {
+        const remainingTime = Math.max(MIN_LOAD_TIME - elapsedTime, 0)
+        const id = setTimeout(() => {
+          setDelayedLoading(false)
+          loadingStartTime.current = 0
+        }, remainingTime)
+        return () => clearTimeout(id)
+      }
     }
   }, [loading])
 
