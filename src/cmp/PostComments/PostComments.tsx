@@ -6,6 +6,7 @@ import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
 import { createStyles } from 'lib/util'
+import { useState, useEffect } from 'react'
 
 export const PostComments = () => {
   const [loading, things, activePost] = useStore([
@@ -13,13 +14,26 @@ export const PostComments = () => {
     s => s.comments,
     s => s.activePost
   ])
+  const [delayedLoading, setDelayedLoading] = useState(loading)
   const update = useUpdate(things || [])
+
+  useEffect(() => {
+    if (loading) {
+      setDelayedLoading(true)
+      const timer = setTimeout(() => {
+        setDelayedLoading(loading)
+      }, 500)
+      return () => clearTimeout(timer)
+    } else {
+      setDelayedLoading(false)
+    }
+  }, [loading])
 
   if (!activePost) return null
 
   return (
     <div id={APP_ID + 'PostComments'}>
-      {loading ? (
+      {delayedLoading ? (
         <div className={styles.centerNotice}>
           <LoadingAnimation />
           <span className={styles.loadingText}>
