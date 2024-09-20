@@ -6,7 +6,7 @@ import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
 import { createStyles } from 'lib/util'
-import { useState, useEffect, useRef } from 'preact/hooks'
+import { useDelayedLoadingState } from 'lib/hooks'
 
 export const PostComments = () => {
   const [loading, things, activePost] = useStore([
@@ -17,25 +17,7 @@ export const PostComments = () => {
 
   const update = useUpdate(things || [])
 
-  const [delayedLoading, setDelayedLoading] = useState(loading)
-  const loadingStartTime = useRef(0)
-
-  useEffect(() => {
-    if (loading) {
-      setDelayedLoading(true)
-      loadingStartTime.current = Date.now()
-    } else {
-      const elapsedTime = Date.now() - loadingStartTime.current
-      if (elapsedTime < MIN_LOAD_TIME) {
-        const remainingTime = Math.max(MIN_LOAD_TIME - elapsedTime, 0)
-        const id = setTimeout(() => {
-          setDelayedLoading(false)
-          loadingStartTime.current = 0
-        }, remainingTime)
-        return () => clearTimeout(id)
-      }
-    }
-  }, [loading])
+  const delayedLoading = useDelayedLoadingState(loading, MIN_LOAD_TIME)
 
   if (!activePost) return null
 
