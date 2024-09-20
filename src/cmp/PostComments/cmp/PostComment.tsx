@@ -2,7 +2,6 @@ import z from 'zaftig'
 import { useMemo, useRef, useEffect, useState } from 'preact/hooks'
 import { API_URL } from 'constants'
 import { Comment } from 'lib/api'
-import { useRedraw } from 'lib/hooks'
 import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
 import { useUpdate } from '../hooks'
 import { ChildProps } from '../types'
@@ -12,35 +11,46 @@ import { CustomButton } from 'base/CustomButton'
 import { CommentBorderColors } from 'theme'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
-  const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } =
-    thing.data
+  const {
+    ups,
+    author,
+    body_html,
+    replies,
+    collapsed: dataCollapsed,
+    created_utc,
+    edited,
+    permalink,
+    depth
+  } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const spoilerState = useMemo(() => new WeakSet<HTMLElement>(), [])
 
   const conf = useStore(s => s.conf)
 
-  const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState(0)
 
+  const [collapsed, setCollapsed] = useState(false)
+
   useEffect(() => {
     if (contentRef.current) {
       setContentHeight(x => Math.max(x, contentRef.current?.scrollHeight ?? 0))
+      setCollapsed(dataCollapsed)
     }
-  }, [html, replies])
+  }, [html, replies, dataCollapsed])
 
   const [showChildren, setShowChildren] = useState(true)
   const toggle = () => {
-    thing.data.collapsed = !collapsed
-    if (collapsed) setShowChildren(true)
+    thing.data.collapsed = !dataCollapsed
+    setCollapsed(!dataCollapsed)
+    if (dataCollapsed) setShowChildren(true)
     else {
       contentRef.current?.addEventListener('transitionend', () => setShowChildren(false), {
         once: true
       })
     }
-    redraw()
 
     const offset = typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
     if (ref.current && ref.current.getBoundingClientRect().top < (offset ?? 0)) {
