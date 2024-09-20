@@ -35,13 +35,13 @@ export const useDelayedLoadingState = (loading: boolean, minLoadTime: number) =>
       loadingStartTime.current = Date.now()
     } else {
       const elapsedTime = Date.now() - loadingStartTime.current
+      loadingStartTime.current = 0
       if (elapsedTime < minLoadTime) {
         const remainingTime = Math.max(minLoadTime - elapsedTime, 0)
-        const id = setTimeout(() => {
-          setDelayedLoading(false)
-          loadingStartTime.current = 0
-        }, remainingTime)
+        const id = setTimeout(() => setDelayedLoading(false), remainingTime)
         return () => clearTimeout(id)
+      } else {
+        setDelayedLoading(false)
       }
     }
   }, [loading, minLoadTime])
