@@ -1,4 +1,4 @@
-import { CommentChild } from 'lib/api'
+import { CommentChild } from '@/lib/api'
 
 export interface UpdateFn {
   (fn: (parent: CommentChild[]) => void): void

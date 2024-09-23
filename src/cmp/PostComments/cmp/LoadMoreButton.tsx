@@ -1,9 +1,11 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getMoreComments, LoadMore } from 'lib/api'
-import { createStyles, sleep } from 'lib/util'
+
+import { getMoreComments, LoadMore } from '@/lib/api'
+import { createStyles, sleep } from '@/lib/util'
+import { useStore } from '@/state'
+
 import { ChildProps } from '../types'
-import { useStore } from 'state'
 
 export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
   const activePost = useStore(s => s.activePost)

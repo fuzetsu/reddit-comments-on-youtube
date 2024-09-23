@@ -12,6 +12,7 @@
     "dist": "cat ./meta.js ./dist/bundle.js > reddit-comments-on-youtube.user.js",
     "dev": "concurrently --raw --kill-others npm:watch:*",
     "lint": "eslint src/**",
+    "type-check": "tsc",
     "bump-p": "bump -p meta.js package.json",
     "bump-m": "bump -m meta.js package.json",
     "watch:lint": "chokidar \"./dist/*\" -c \"eslint src/**\"",

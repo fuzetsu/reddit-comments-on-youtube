@@ -1,12 +1,13 @@
 import { render } from 'preact'
-import { App } from 'cmp/App'
-import { getConf } from 'conf'
-import { log, logError, q } from 'lib/util'
-import { waitForElems } from 'lib/wait-for-elems'
-import { waitForUrl } from 'lib/wait-for-url'
-import { generateTheme, Themes } from 'theme'
-import { Conf } from 'types'
-import { APP_ID } from 'constants'
+
+import { APP_ID } from '@/constants'
+import { log, logError, q } from '@/lib/util'
+import { waitForElems } from '@/lib/wait-for-elems'
+import { waitForUrl } from '@/lib/wait-for-url'
+import { Conf } from '@/types'
+import { getConf } from '@/conf'
+import { generateTheme, Themes } from '@/theme'
+import { App } from '@/cmp/App'
 
 log('started!')
 

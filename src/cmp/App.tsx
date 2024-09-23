@@ -1,12 +1,14 @@
 import z from 'zaftig'
-import { PostSelect } from './PostSelect'
 import { useEffect, useState } from 'preact/hooks'
-import { PostComments } from './PostComments'
-import { Conf } from 'types'
-import { useStore } from 'state'
-import { init } from 'state/actions'
-import { subscribe } from 'state/state'
+
+import { Conf } from '@/types'
+import { useStore } from '@/state'
+import { init } from '@/state/actions'
+import { subscribe } from '@/state/state'
+
 import { SwitchComments } from './SwitchComments'
+import { PostSelect } from './PostSelect'
+import { PostComments } from './PostComments'
 import { Modal } from './Modal'
 
 interface Props {

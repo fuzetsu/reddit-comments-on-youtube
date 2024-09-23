@@ -1,6 +1,6 @@
-import { searchPosts } from 'lib/api'
-import { filterForEp, filterForTitle, logError, q } from 'lib/util'
-import { Conf } from 'types'
+import { searchPosts } from '@/lib/api'
+import { filterForEp, filterForTitle, logError, q } from '@/lib/util'
+import { Conf } from '@/types'
 
 const currentEpisodeSel = '#episodeMenu'
 

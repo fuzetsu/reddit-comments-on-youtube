@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'preact/hooks'
 import z from 'zaftig'
-import { Icon } from 'base/Icon'
-import { createStyles, reduceCount } from 'lib/util'
-import { useStore } from 'state'
-import { loadComments, setActivePost } from 'state/actions'
+import { Icon } from '@/base/Icon'
+import { createStyles, reduceCount } from '@/lib/util'
+import { useStore } from '@/state'
+import { loadComments, setActivePost } from '@/state/actions'
 
 const MAX_INITIAL_VISIBLE = 7
 const MIN_SHIMMER_DURATION = 700

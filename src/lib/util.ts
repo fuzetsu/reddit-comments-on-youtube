@@ -1,5 +1,5 @@
-import { SCRIPT_NAME } from 'constants'
-import { ZaftigStyle } from 'types'
+import { SCRIPT_NAME } from '@/constants'
+import { ZaftigStyle } from '@/types'
 import { Post } from './api'
 
 export const getById = (id: string) => document.getElementById(id)

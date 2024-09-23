@@ -1,14 +1,16 @@
 import z from 'zaftig'
 import { useMemo, useRef, useEffect, useState } from 'preact/hooks'
-import { API_URL } from 'constants'
-import { Comment } from 'lib/api'
-import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
-import { useUpdate } from '../hooks'
+
+import { API_URL } from '@/constants'
+import { Comment } from '@/lib/api'
+import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from '@/lib/util'
+import { useStore } from '@/state'
+import { CustomButton } from '@/base/CustomButton'
+import { CommentBorderColors } from '@/theme'
+
 import { ChildProps } from '../types'
+import { useUpdate } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
-import { useStore } from 'state'
-import { CustomButton } from 'base/CustomButton'
-import { CommentBorderColors } from 'theme'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const {
