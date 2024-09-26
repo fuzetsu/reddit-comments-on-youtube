@@ -11,6 +11,7 @@ import { CommentBorderColors } from '@/theme'
 import { ChildProps } from '../types'
 import { useUpdate } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
+import { Icon } from '@/base/Icon'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const {
@@ -87,7 +88,10 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
           >
             {author}
           </a>
-          <span className={styles.ups}>{reduceCount(ups)}</span>
+          <span className={styles.ups}>
+            <Icon name="arrow-up" themeColor="ups" />
+            {reduceCount(ups)}
+          </span>
           <a className={styles.date} target="_blank" href={API_URL + permalink}>
             {prettyTime(createdTime, 'date-time')}
             {editedTime && (
