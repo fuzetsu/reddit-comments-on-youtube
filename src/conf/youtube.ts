@@ -1,6 +1,6 @@
-import { searchPosts } from 'lib/api'
-import { logError, q } from 'lib/util'
-import { Conf } from 'types'
+import { searchPosts } from '@/lib/api'
+import { logError, q } from '@/lib/util'
+import { Conf } from '@/types'
 
 const getVideoIdFromUrl = (url: string) => url.match(/v=([^&]+)/i)?.[1]
 
@@ -13,7 +13,7 @@ export const youtube: Conf = {
     text: { normal: 'var(--yt-spec-text-primary)', subdued: 'var(--yt-spec-text-secondary)' },
     link: { color: 'var(--yt-spec-call-to-action)' },
     button: { background: 'var(--yt-spec-badge-chip-background)' },
-    ups: 'orange'
+    ups: '#ffa500'
   },
   getPosts: async () => {
     const url = location.href

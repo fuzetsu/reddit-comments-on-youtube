@@ -1,4 +1,4 @@
-import { CommentChild } from 'lib/api'
+import { CommentChild } from '@/lib/api'
 
 export interface UpdateFn {
   (fn: (parent: CommentChild[]) => void): void
@@ -6,5 +6,6 @@ export interface UpdateFn {
 
 export interface ChildProps<T extends CommentChild> {
   thing: T
+  reflow(): void
   update: UpdateFn
 }

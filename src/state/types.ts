@@ -1,6 +1,6 @@
 import { FunctionPatch } from 'mergerino'
-import { CommentChild, Post } from 'lib/api'
-import { Conf } from 'types'
+import { CommentChild, Post } from '@/lib/api'
+import { Conf } from '@/types'
 
 export interface State {
   conf: Conf

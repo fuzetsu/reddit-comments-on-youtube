@@ -28,7 +28,7 @@ export const Themes = {
     text: { normal: '#fff', subdued: '#b2b2b2' },
     link: { color: '#6e96b7' },
     button: { background: '#303030' },
-    ups: 'orange'
+    ups: '#ffa500'
   }),
   common: z`
     max-width 1400

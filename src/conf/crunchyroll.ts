@@ -1,6 +1,6 @@
-import { searchPosts } from 'lib/api'
-import { filterForEp, getById, logError, q } from 'lib/util'
-import { Conf } from 'types'
+import { searchPosts } from '@/lib/api'
+import { filterForEp, getById, logError, q } from '@/lib/util'
+import { Conf } from '@/types'
 
 export const crunchyroll: Conf = {
   areaSelector: '.guestbook.comments',

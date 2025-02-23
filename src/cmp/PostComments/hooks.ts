@@ -1,5 +1,5 @@
-import { CommentChild } from 'lib/api'
-import { useRedraw, useUpdatingRef } from 'lib/hooks'
+import { CommentChild } from '@/lib/api'
+import { useRedraw, useUpdatingRef } from '@/lib/hooks'
 import { useCallback } from 'preact/hooks'
 import { UpdateFn } from './types'
 

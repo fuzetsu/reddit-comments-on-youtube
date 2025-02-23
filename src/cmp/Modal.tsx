@@ -1,4 +1,4 @@
-import { Portal } from 'base/Portal'
+import { Portal } from '@/base/Portal'
 import { JSX } from 'preact'
 import z from 'zaftig'
 

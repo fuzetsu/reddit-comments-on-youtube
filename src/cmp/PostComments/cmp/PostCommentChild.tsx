@@ -1,4 +1,4 @@
-import { CommentChild } from 'lib/api'
+import { CommentChild } from '@/lib/api'
 import { ChildProps } from '../types'
 import { LoadMoreButton } from './LoadMoreButton'
 import { PostComment } from './PostComment'

@@ -6,15 +6,23 @@ interface Props {
 
 export const SwitchComments = ({ onSwitch }: Props) => {
   return (
-    <button className={buttonStyle} onClick={onSwitch}>
+    <button className={button.class} onClick={onSwitch}>
       Switch comments
     </button>
   )
 }
 
-const buttonStyle = z`
+const button = z`
   cursor pointer
   border none
-  padding 10
+  background $button-background
+  text-align left
+  transition all 0.2s ease
+  border-radius 6
+  margin-top 10
+  padding 12
   width 100%
-`.class
+  &:hover {
+    opacity 0.8
+  }
+`

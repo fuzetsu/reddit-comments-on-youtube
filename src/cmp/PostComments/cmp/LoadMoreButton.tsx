@@ -1,11 +1,13 @@
 import { useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getMoreComments, LoadMore } from 'lib/api'
-import { createStyles, sleep } from 'lib/util'
-import { ChildProps } from '../types'
-import { useStore } from 'state'
 
-export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
+import { getMoreComments, LoadMore } from '@/lib/api'
+import { createStyles, sleep } from '@/lib/util'
+import { useStore } from '@/state'
+
+import { ChildProps } from '../types'
+
+export const LoadMoreButton = ({ thing, update, reflow }: ChildProps<LoadMore>) => {
   const activePost = useStore(s => s.activePost)
 
   const [loading, setLoading] = useState(false)
@@ -34,6 +36,7 @@ export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
       const currentPosition = parent.indexOf(thing)
       if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
     })
+    requestAnimationFrame(reflow)
   }
 
   return (
