@@ -17,7 +17,7 @@ export const PostSelect = () => {
   let list = showAll ? posts : visiblePosts
 
   // always show selected post
-  if (activePost && !list.includes(activePost)) list = [...list, activePost]
+  if (activePost && list.every(post => post.id !== activePost.id)) list = [...list, activePost]
 
   if (list.length <= 0) return null
 
