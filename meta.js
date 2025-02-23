@@ -9,5 +9,6 @@
 // @match       https://*.funimation.com/*
 // @match       https://dramacool.com.tw/*
 // @match       https://dramacool.com.tr/*
+// @match       https://hianime.to/watch/*
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
