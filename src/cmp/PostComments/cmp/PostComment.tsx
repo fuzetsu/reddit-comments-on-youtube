@@ -1,5 +1,5 @@
 import z from 'zaftig'
-import { useMemo, useRef, useEffect, useState } from 'preact/hooks'
+import { useMemo, useRef, useEffect, useState, useCallback } from 'preact/hooks'
 
 import { API_URL } from '@/constants'
 import { Comment } from '@/lib/api'
@@ -13,7 +13,7 @@ import { useUpdate } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
 import { Icon } from '@/base/Icon'
 
-export const PostComment = ({ thing }: ChildProps<Comment>) => {
+export const PostComment = ({ thing, reflow: parentReflow }: ChildProps<Comment>) => {
   const {
     ups,
     author,
@@ -37,9 +37,19 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
 
   const [collapsed, setCollapsed] = useState(false)
 
+  const updateContentHeight = useCallback(() => {
+    if (contentRef.current)
+      setContentHeight(x => Math.max(x, contentRef.current?.scrollHeight ?? 0))
+  }, [])
+
+  const reflow = useCallback(() => {
+    updateContentHeight()
+    parentReflow()
+  }, [parentReflow, updateContentHeight])
+
   useEffect(() => {
     if (contentRef.current) {
-      setContentHeight(x => Math.max(x, contentRef.current?.scrollHeight ?? 0))
+      updateContentHeight()
       setCollapsed(dataCollapsed)
     }
   }, [html, replies, dataCollapsed])
@@ -60,6 +70,8 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
       ref.current.scrollIntoView()
       if (offset) window.scrollBy(0, -offset)
     }
+
+    requestAnimationFrame(reflow)
   }
 
   const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
@@ -134,7 +146,12 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
               {replies && (
                 <div className={styles.replies}>
                   {replies.data.children.map(child => (
-                    <PostCommentChild key={child.data.id} thing={child} update={update} />
+                    <PostCommentChild
+                      key={child.data.id}
+                      thing={child}
+                      update={update}
+                      reflow={reflow}
+                    />
                   ))}
                 </div>
               )}

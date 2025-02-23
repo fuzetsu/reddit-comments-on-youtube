@@ -5,7 +5,7 @@ import { useStore } from '@/state'
 import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
-import { createStyles } from '@/lib/util'
+import { createStyles, noop } from '@/lib/util'
 import { useDelayedLoadingState } from '@/lib/hooks'
 
 export const PostComments = () => {
@@ -35,7 +35,9 @@ export const PostComments = () => {
           <NoComments />
         </div>
       ) : (
-        things.map(thing => <PostCommentChild key={thing.data.id} thing={thing} update={update} />)
+        things.map(thing => (
+          <PostCommentChild key={thing.data.id} thing={thing} update={update} reflow={noop} />
+        ))
       )}
     </div>
   )

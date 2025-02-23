@@ -4,6 +4,9 @@ import { Post } from './api'
 
 export const getById = (id: string) => document.getElementById(id)
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const noop = () => {}
+
 export const q = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
   ctx.querySelector<T>(sel)
 export const qq = <T extends HTMLElement>(sel: string, ctx: Element | Document = document) =>
