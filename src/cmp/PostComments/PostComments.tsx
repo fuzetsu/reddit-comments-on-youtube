@@ -5,7 +5,7 @@ import { useStore } from '@/state'
 import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
-import { createStyles, noop } from '@/lib/util'
+import { createStyles } from '@/lib/util'
 import { useDelayedLoadingState } from '@/lib/hooks'
 
 export const PostComments = () => {
