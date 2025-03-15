@@ -8,8 +8,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "esbuild src/index.tsx --bundle --inject:./shims/preact.ts --jsx-factory=h --jsx-fragment=Fragment --outfile=dist/bundle.js && npm run dist",
     "dist": "cat ./meta.js ./dist/bundle.js > reddit-comments-on-youtube.user.js",
+    "build": "esbuild src/index.tsx --bundle --inject:./shims/preact.ts --jsx-factory=h --jsx-fragment=Fragment --outfile=dist/bundle.js && npm run dist",
+    "build-copy": "npm run build && cat reddit-comments-on-youtube.user.js | pbcopy",
     "dev": "concurrently --raw --kill-others npm:watch:*",
     "lint": "eslint src/**",
     "type-check": "tsc",
