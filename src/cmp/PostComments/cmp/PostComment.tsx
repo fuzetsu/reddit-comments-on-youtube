@@ -1,5 +1,5 @@
 import z from 'zaftig'
-import { useMemo, useRef, useEffect, useState, useCallback } from 'preact/hooks'
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 
 import { API_URL } from '@/constants'
 import { Comment } from '@/lib/api'
@@ -13,7 +13,7 @@ import { useUpdate } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
 import { Icon } from '@/base/Icon'
 
-export const PostComment = ({ thing, reflow: parentReflow }: ChildProps<Comment>) => {
+export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const {
     ups,
     author,
@@ -33,45 +33,35 @@ export const PostComment = ({ thing, reflow: parentReflow }: ChildProps<Comment>
 
   const ref = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
-  const [contentHeight, setContentHeight] = useState(0)
 
-  const [collapsed, setCollapsed] = useState(false)
-
-  const updateContentHeight = useCallback(() => {
-    if (contentRef.current)
-      setContentHeight(x => Math.max(x, contentRef.current?.scrollHeight ?? 0))
-  }, [])
-
-  const reflow = useCallback(() => {
-    updateContentHeight()
-    parentReflow()
-  }, [parentReflow, updateContentHeight])
-
+  const lastHeight = useRef(0)
   useEffect(() => {
-    if (contentRef.current) {
-      updateContentHeight()
-      setCollapsed(dataCollapsed)
+    if (contentRef.current && dataCollapsed) {
+      lastHeight.current = contentRef.current.scrollHeight
+      contentRef.current.style.maxHeight = '0'
     }
-  }, [html, replies, dataCollapsed])
+  }, [dataCollapsed])
 
-  const [showChildren, setShowChildren] = useState(true)
+  const [collapsed, setCollapsed] = useState(dataCollapsed)
   const toggle = () => {
-    thing.data.collapsed = !dataCollapsed
-    setCollapsed(!dataCollapsed)
-    if (dataCollapsed) setShowChildren(true)
-    else {
-      contentRef.current?.addEventListener('transitionend', () => setShowChildren(false), {
+    const contentElem = contentRef.current
+    if (!contentElem) return
+    if (collapsed) {
+      contentElem.addEventListener('transitionend', () => (contentElem.style.maxHeight = 'none'), {
         once: true
       })
+    } else {
+      lastHeight.current = contentElem.scrollHeight
+      requestAnimationFrame(() => (contentElem.style.maxHeight = '0'))
     }
+    contentElem.style.maxHeight = lastHeight.current + 'px'
+    setCollapsed(!collapsed)
 
     const offset = typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
     if (ref.current && ref.current.getBoundingClientRect().top < (offset ?? 0)) {
       ref.current.scrollIntoView()
       if (offset) window.scrollBy(0, -offset)
     }
-
-    requestAnimationFrame(reflow)
   }
 
   const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
@@ -114,48 +104,36 @@ export const PostComment = ({ thing, reflow: parentReflow }: ChildProps<Comment>
         <div
           className={styles.commentContent}
           ref={contentRef}
-          style={{
-            marginTop: collapsed ? '' : '10px',
-            maxHeight: collapsed ? '0' : contentHeight ? `${contentHeight}px` : 'none',
-            opacity: collapsed ? 0 : 1
-          }}
+          style={{ opacity: collapsed ? 0 : 1 }}
         >
-          {showChildren && (
-            <>
-              <div
-                className={styles.body}
-                dangerouslySetInnerHTML={{ __html: html }}
-                onClick={e => {
-                  if (e.target instanceof HTMLAnchorElement) {
-                    e.preventDefault()
-                    const url = e.target.href
-                    window.open(url.startsWith('/') ? API_URL + url : url)
-                  } else if (e.target instanceof HTMLElement) {
-                    if (e.target.classList.contains('md-spoiler-text')) {
-                      if (spoilerState.has(e.target)) {
-                        e.target.dataset.open = 'false'
-                        spoilerState.delete(e.target)
-                      } else {
-                        e.target.dataset.open = 'true'
-                        spoilerState.add(e.target)
-                      }
-                    }
+          <div style={{ paddingTop: '10px' }} />
+          <div
+            className={styles.body}
+            dangerouslySetInnerHTML={{ __html: html }}
+            onClick={e => {
+              if (e.target instanceof HTMLAnchorElement) {
+                e.preventDefault()
+                const url = e.target.href
+                window.open(url.startsWith('/') ? API_URL + url : url)
+              } else if (e.target instanceof HTMLElement) {
+                if (e.target.classList.contains('md-spoiler-text')) {
+                  if (spoilerState.has(e.target)) {
+                    e.target.dataset.open = 'false'
+                    spoilerState.delete(e.target)
+                  } else {
+                    e.target.dataset.open = 'true'
+                    spoilerState.add(e.target)
                   }
-                }}
-              />
-              {replies && (
-                <div className={styles.replies}>
-                  {replies.data.children.map(child => (
-                    <PostCommentChild
-                      key={child.data.id}
-                      thing={child}
-                      update={update}
-                      reflow={reflow}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+                }
+              }
+            }}
+          />
+          {replies && (
+            <div className={styles.replies}>
+              {replies.data.children.map(child => (
+                <PostCommentChild key={child.data.id} thing={child} update={update} />
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -172,7 +150,7 @@ const styles = createStyles({
   `,
   commentContent: z`
     overflow hidden
-    transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out, margin 0.3s ease-out
+    transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`

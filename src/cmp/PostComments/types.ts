@@ -6,6 +6,5 @@ export interface UpdateFn {
 
 export interface ChildProps<T extends CommentChild> {
   thing: T
-  reflow(): void
   update: UpdateFn
 }
