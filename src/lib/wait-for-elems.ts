@@ -13,7 +13,10 @@ export const waitForElemsWithTimout = ({
   onTimeout,
   ...rest
 }: { timeout: number; onTimeout?(): void } & Omit<Props, 'stopWaiting'>) => {
-  let id = -1
+  const id = setTimeout(() => {
+    stop()
+    onTimeout?.()
+  }, timeout)
   const { stop } = waitForElems({
     ...rest,
     stopWaiting: true,
@@ -22,10 +25,6 @@ export const waitForElemsWithTimout = ({
       rest.onMatch(elem)
     }
   })
-  id = setTimeout(() => {
-    stop()
-    onTimeout?.()
-  }, timeout)
   return {
     stop: () => {
       clearTimeout(id)

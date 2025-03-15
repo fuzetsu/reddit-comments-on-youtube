@@ -1,6 +1,7 @@
-import { APP_ID } from 'constants'
 import { JSX, render } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
+
+import { APP_ID } from '@/constants'
 
 interface Props {
   children: JSX.Element

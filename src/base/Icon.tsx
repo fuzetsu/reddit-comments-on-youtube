@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'preact/hooks'
 import z from 'zaftig'
-import { getCSSVar, subURI } from '../lib/util'
+import { useEffect, useRef, useState } from 'preact/hooks'
+
+import { getCSSVar, subURI } from '@/lib/util'
+
 import { ZaftigStyle } from '../types'
 
 const API = 'https://icongr.am/feather'
 
-type IconName = 'message-circle'
+type IconName = 'message-circle' | 'user' | 'arrow-up' | 'clock'
 
 interface Props {
   name: IconName

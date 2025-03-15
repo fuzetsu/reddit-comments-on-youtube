@@ -1,12 +1,14 @@
 import z from 'zaftig'
-import { PostSelect } from './PostSelect'
 import { useEffect, useState } from 'preact/hooks'
-import { PostComments } from './PostComments'
-import { Conf } from 'types'
-import { useStore } from 'state'
-import { init } from 'state/actions'
-import { subscribe } from 'state/state'
+
+import { Conf } from '@/types'
+import { useStore } from '@/state'
+import { init } from '@/state/actions'
+import { subscribe } from '@/state/state'
+
 import { SwitchComments } from './SwitchComments'
+import { PostSelect } from './PostSelect'
+import { PostComments } from './PostComments'
 import { Modal } from './Modal'
 
 interface Props {
@@ -70,5 +72,5 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
   )
 }
 
-const container = z`d flex;flex-direction column;gap 10`.class
+const container = z`d flex;flex-direction column;gap 5;mt 5`.class
 const modalButton = z`padding 5`.class

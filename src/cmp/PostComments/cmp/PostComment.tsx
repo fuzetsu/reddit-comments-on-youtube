@@ -1,30 +1,61 @@
 import z from 'zaftig'
-import { useMemo, useRef } from 'preact/hooks'
-import { API_URL } from 'constants'
-import { Comment } from 'lib/api'
-import { useRedraw } from 'lib/hooks'
-import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from 'lib/util'
-import { useUpdate } from '../hooks'
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
+
+import { API_URL } from '@/constants'
+import { Comment } from '@/lib/api'
+import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from '@/lib/util'
+import { useStore } from '@/state'
+import { CustomButton } from '@/base/CustomButton'
+import { CommentBorderColors } from '@/theme'
+
 import { ChildProps } from '../types'
+import { useUpdate } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
-import { useStore } from 'state'
-import { CustomButton } from 'base/CustomButton'
-import { CommentBorderColors } from 'theme'
+import { Icon } from '@/base/Icon'
 
 export const PostComment = ({ thing }: ChildProps<Comment>) => {
-  const { ups, author, body_html, replies, collapsed, created_utc, edited, permalink, depth } =
-    thing.data
+  const {
+    ups,
+    author,
+    body_html,
+    replies,
+    collapsed: dataCollapsed,
+    created_utc,
+    edited,
+    permalink,
+    depth
+  } = thing.data
   const html = useMemo(() => decodeHTML(body_html), [body_html])
 
   const spoilerState = useMemo(() => new WeakSet<HTMLElement>(), [])
 
   const conf = useStore(s => s.conf)
 
-  const redraw = useRedraw()
   const ref = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const lastHeight = useRef(0)
+  useEffect(() => {
+    if (contentRef.current && dataCollapsed) {
+      lastHeight.current = contentRef.current.scrollHeight
+      contentRef.current.style.maxHeight = '0'
+    }
+  }, [dataCollapsed])
+
+  const [collapsed, setCollapsed] = useState(dataCollapsed)
   const toggle = () => {
-    thing.data.collapsed = !collapsed
-    redraw()
+    const contentElem = contentRef.current
+    if (!contentElem) return
+    if (collapsed) {
+      contentElem.addEventListener('transitionend', () => (contentElem.style.maxHeight = 'none'), {
+        once: true
+      })
+    } else {
+      lastHeight.current = contentElem.scrollHeight
+      requestAnimationFrame(() => (contentElem.style.maxHeight = '0'))
+    }
+    contentElem.style.maxHeight = lastHeight.current + 'px'
+    setCollapsed(!collapsed)
 
     const offset = typeof conf.scrollOffset === 'function' ? conf.scrollOffset() : conf.scrollOffset
     if (ref.current && ref.current.getBoundingClientRect().top < (offset ?? 0)) {
@@ -51,11 +82,7 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     <div className={styles.comment}>
       <CustomButton tag="div" aria-label={ariaLabel} className={borderClassName} onClick={toggle} />
       <div>
-        <div
-          ref={ref}
-          className={styles.commentInfo}
-          style={{ marginBottom: collapsed ? '' : '10px' }}
-        >
+        <div ref={ref} className={styles.commentInfo}>
           <a
             className={styles.author}
             target="_blank"
@@ -63,7 +90,10 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
           >
             {author}
           </a>
-          <span className={styles.ups}>{reduceCount(ups)}</span>
+          <span className={styles.ups}>
+            <Icon name="arrow-up" themeColor="ups" />
+            {reduceCount(ups)}
+          </span>
           <a className={styles.date} target="_blank" href={API_URL + permalink}>
             {prettyTime(createdTime, 'date-time')}
             {editedTime && (
@@ -71,38 +101,41 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             )}
           </a>
         </div>
-        {!collapsed && (
-          <>
-            <div
-              className={styles.body}
-              dangerouslySetInnerHTML={{ __html: html }}
-              onClick={e => {
-                if (e.target instanceof HTMLAnchorElement) {
-                  e.preventDefault()
-                  const url = e.target.href
-                  window.open(url.startsWith('/') ? API_URL + url : url)
-                } else if (e.target instanceof HTMLElement) {
-                  if (e.target.classList.contains('md-spoiler-text')) {
-                    if (spoilerState.has(e.target)) {
-                      e.target.dataset.open = 'false'
-                      spoilerState.delete(e.target)
-                    } else {
-                      e.target.dataset.open = 'true'
-                      spoilerState.add(e.target)
-                    }
+        <div
+          className={styles.commentContent}
+          ref={contentRef}
+          style={{ opacity: collapsed ? 0 : 1 }}
+        >
+          <div style={{ paddingTop: '10px' }} />
+          <div
+            className={styles.body}
+            dangerouslySetInnerHTML={{ __html: html }}
+            onClick={e => {
+              if (e.target instanceof HTMLAnchorElement) {
+                e.preventDefault()
+                const url = e.target.href
+                window.open(url.startsWith('/') ? API_URL + url : url)
+              } else if (e.target instanceof HTMLElement) {
+                if (e.target.classList.contains('md-spoiler-text')) {
+                  if (spoilerState.has(e.target)) {
+                    e.target.dataset.open = 'false'
+                    spoilerState.delete(e.target)
+                  } else {
+                    e.target.dataset.open = 'true'
+                    spoilerState.add(e.target)
                   }
                 }
-              }}
-            />
-            {replies && (
-              <div className={styles.replies}>
-                {replies.data.children.map(child => (
-                  <PostCommentChild key={child.data.id} thing={child} update={update} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
+              }
+            }}
+          />
+          {replies && (
+            <div className={styles.replies}>
+              {replies.data.children.map(child => (
+                <PostCommentChild key={child.data.id} thing={child} update={update} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -114,6 +147,10 @@ const styles = createStyles({
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
+  `,
+  commentContent: z`
+    overflow hidden
+    transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
   `,
   replies: z`margin-top 18`,
   border: z`

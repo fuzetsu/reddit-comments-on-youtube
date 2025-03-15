@@ -1,6 +1,6 @@
-import { searchPosts } from 'lib/api'
-import { logError, q } from 'lib/util'
-import { Conf } from 'types'
+import { searchPosts } from '@/lib/api'
+import { logError, q } from '@/lib/util'
+import { Conf } from '@/types'
 
 export const dramacool: Conf = {
   areaSelector: '.note',

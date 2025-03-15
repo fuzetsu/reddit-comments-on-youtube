@@ -1,7 +1,7 @@
-import { getComments, Post } from 'lib/api'
-import { keepTrying, log, logError } from 'lib/util'
-import { waitForElemsWithTimout } from 'lib/wait-for-elems'
-import { Conf } from 'types'
+import { getComments, Post } from '@/lib/api'
+import { keepTrying, log, logError } from '@/lib/util'
+import { waitForElemsWithTimout } from '@/lib/wait-for-elems'
+import { Conf } from '@/types'
 import { initialState, setState } from './state'
 import { KeySetter, State } from './types'
 

@@ -11,8 +11,8 @@ export const waitForUrl = ({ matcher = 'any', stopWaiting = false, onmatch }: Pr
     matcher === 'any'
       ? () => true
       : typeof matcher === 'function'
-      ? matcher
-      : (url: string) => matcher.test(url)
+        ? matcher
+        : (url: string) => matcher.test(url)
 
   let lastUrl = ''
   const check = () => {
@@ -42,7 +42,7 @@ export const waitForUrl = ({ matcher = 'any', stopWaiting = false, onmatch }: Pr
     cleanup = undefined
   }
 
-  let id: number
+  let id: ReturnType<typeof setInterval>
   const start = () => {
     stop()
     id = setInterval(check, 500)
