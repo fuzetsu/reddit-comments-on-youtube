@@ -32,6 +32,7 @@ const overlay = z`
   background rgba(0,0,0,0.8)
   d flex;jc center;ai center
 `.class
+
 const card = z`
   bc $background
   p 10

@@ -1,5 +1,4 @@
 import { SCRIPT_NAME } from '@/constants'
-import { ZaftigStyle } from '@/types'
 import { Post } from './api'
 
 export const getById = (id: string) => document.getElementById(id)
@@ -123,18 +122,6 @@ export const reduceCount = (count: number, digits = 1) => {
 
   // Do not reduce if we are below 1000
   return divisor ? (count / divisor).toFixed(digits) + indicator : count
-}
-
-export const getCSSVar = (varName: string, context: HTMLElement) =>
-  getComputedStyle(context)
-    .getPropertyValue('--' + varName)
-    .trim()
-
-export const createStyles = <T extends { [key: string]: ZaftigStyle }>(spec: T) => {
-  return Object.entries(spec).reduce<{ [key in keyof T]: string }>((acc, [name, style]) => {
-    acc[name as keyof T] = style.class
-    return acc
-  }, {} as never)
 }
 
 export const filterForEp = (episode: string, posts: Post[]) => {

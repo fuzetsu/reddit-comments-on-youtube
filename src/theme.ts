@@ -1,4 +1,5 @@
 import z from 'zaftig'
+import { ZaftigStyle } from './types'
 
 export interface Theme {
   background: string
@@ -85,3 +86,27 @@ export const CommentBorderColors = {
     'rgb(54, 141, 238)'
   ]
 } as const
+
+export const getCSSVar = (varName: string, context: HTMLElement) =>
+  getComputedStyle(context)
+    .getPropertyValue('--' + varName)
+    .trim()
+
+type ZaftigMap = { [key: string]: ZaftigStyle }
+type ClassNameMap<T extends ZaftigMap> = { [key in keyof T]: string }
+
+const processSpec = <T extends ZaftigMap>(spec: T) =>
+  Object.entries(spec).reduce<{ [key in keyof T]: string }>((acc, [name, style]) => {
+    acc[name as keyof T] = style.class
+    return acc
+  }, {} as never)
+
+export const createStyles = <T extends ZaftigMap, P extends ZaftigMap>(
+  spec: T,
+  derived?: (spec: ClassNameMap<T>) => P
+): ClassNameMap<T & P> => {
+  const specMap = processSpec<T & P>(spec as T & P)
+  if (!derived) return specMap
+  const derivedMap = processSpec(derived(specMap))
+  return { ...specMap, ...derivedMap }
+}

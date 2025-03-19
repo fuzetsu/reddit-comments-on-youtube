@@ -2,18 +2,18 @@ import z from 'zaftig'
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 
 import { API_URL } from '@/constants'
-import { Comment } from '@/lib/api'
-import { createStyles, decodeHTML, prettyTime, reduceCount, subURI } from '@/lib/util'
+import { Comment, getComments } from '@/lib/api'
+import { decodeHTML, prettyTime, reduceCount, subURI } from '@/lib/util'
 import { useStore } from '@/state'
 import { CustomButton } from '@/base/CustomButton'
-import { CommentBorderColors } from '@/theme'
+import { CommentBorderColors, createStyles } from '@/theme'
 
 import { ChildProps } from '../types'
-import { useUpdate } from '../hooks'
+import { useUpdateComments } from '../hooks'
 import { PostCommentChild } from './PostCommentChild'
 import { Icon } from '@/base/Icon'
 
-export const PostComment = ({ thing }: ChildProps<Comment>) => {
+export const PostComment = ({ thing, update: parentUpdate }: ChildProps<Comment>) => {
   const {
     ups,
     author,
@@ -30,6 +30,8 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
   const spoilerState = useMemo(() => new WeakSet<HTMLElement>(), [])
 
   const conf = useStore(s => s.conf)
+
+  const [refreshing, setRefreshing] = useState(false)
 
   const ref = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -64,7 +66,16 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     }
   }
 
-  const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : [])
+  const update = useUpdateComments(thing.data.replies ? thing.data.replies.data.children : [])
+
+  const handleRefresh = async (e: MouseEvent) => {
+    e.preventDefault()
+    const post = useStore.get().activePost
+    if (!post || refreshing) return
+    setRefreshing(true)
+    parentUpdate.replace(thing, ...(await getComments(post, thing)))
+    setRefreshing(false)
+  }
 
   const createdTime = new Date(created_utc * 1000)
   const editedTime = edited && new Date(edited * 1000)
@@ -78,11 +89,19 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
     z`$color ${borderColors[depth % borderColors.length]}`
   ).class
 
+  const rereshLinkClassName = z.concat(
+    styles.infoLink,
+    styles.infoLinkHidden,
+    refreshing && styles.disabled
+  ).class
+
+  const commentInfoClassName = z.concat(styles.commentInfo, styles.infoLinkHiddenAncestor).class
+
   return (
     <div className={styles.comment}>
       <CustomButton tag="div" aria-label={ariaLabel} className={borderClassName} onClick={toggle} />
       <div>
-        <div ref={ref} className={styles.commentInfo}>
+        <div ref={ref} className={commentInfoClassName}>
           <a
             className={styles.author}
             target="_blank"
@@ -94,11 +113,14 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
             <Icon name="arrow-up" themeColor="ups" />
             {reduceCount(ups)}
           </span>
-          <a className={styles.date} target="_blank" href={API_URL + permalink}>
+          <a className={styles.infoLink} target="_blank" href={API_URL + permalink}>
             {prettyTime(createdTime, 'date-time')}
             {editedTime && (
               <> edited {prettyTime(editedTime, differentDay ? 'date-time' : 'time')}</>
             )}
+          </a>
+          <a className={rereshLinkClassName} href="" onClick={handleRefresh}>
+            {refreshing ? 'refreshing' : 'refresh'}
           </a>
         </div>
         <div
@@ -141,19 +163,20 @@ export const PostComment = ({ thing }: ChildProps<Comment>) => {
   )
 }
 
-const styles = createStyles({
-  comment: z`
+const styles = createStyles(
+  {
+    comment: z`
     display grid
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
   `,
-  commentContent: z`
+    commentContent: z`
     overflow hidden
     transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
   `,
-  replies: z`margin-top 18`,
-  border: z`
+    replies: z`margin-top 18`,
+    border: z`
     position relative
     padding 9
     margin -9
@@ -169,7 +192,7 @@ const styles = createStyles({
       width 4
     }
   `,
-  body: z`
+    body: z`
     blockquote {
       border-left 3 solid $text-subdued
       padding 5 10
@@ -186,8 +209,12 @@ const styles = createStyles({
     ul, ol { margin 18 0; padding-left 30 }
     a { color $link-color !important }
   `,
-  ups: z`color $ups;font-weight bold`,
-  date: z`&& { color $text-subdued }`,
-  commentInfo: z`display flex;gap 10`,
-  author: z`font-weight bold;&& { color $text-primary }`
-})
+    ups: z`color $ups;font-weight bold`,
+    infoLink: z`&& { color $text-subdued }`,
+    infoLinkHidden: z`o 0;transition opacity 0.3s`,
+    disabled: z`pointer-events none;o 0.5`,
+    commentInfo: z`display flex;gap 10`,
+    author: z`font-weight bold;&& { color $text-primary }`
+  },
+  s => ({ infoLinkHiddenAncestor: z`&:hover > a.${s.infoLinkHidden} { o 1 }` })
+)

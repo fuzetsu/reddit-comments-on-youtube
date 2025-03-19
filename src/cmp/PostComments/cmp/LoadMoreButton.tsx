@@ -2,8 +2,9 @@ import { useState } from 'preact/hooks'
 import z from 'zaftig'
 
 import { getMoreComments, LoadMore } from '@/lib/api'
-import { createStyles, sleep } from '@/lib/util'
+import { sleep } from '@/lib/util'
 import { useStore } from '@/state'
+import { createStyles } from '@/theme'
 
 import { ChildProps } from '../types'
 
@@ -32,10 +33,7 @@ export const LoadMoreButton = ({ thing, update }: ChildProps<LoadMore>) => {
       await sleep(1200)
     }
 
-    update(parent => {
-      const currentPosition = parent.indexOf(thing)
-      if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results)
-    })
+    update.replace(thing, ...results)
   }
 
   return (

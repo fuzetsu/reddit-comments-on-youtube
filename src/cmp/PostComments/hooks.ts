@@ -1,14 +1,19 @@
 import { CommentChild } from '@/lib/api'
 import { useRedraw, useUpdatingRef } from '@/lib/hooks'
-import { useCallback } from 'preact/hooks'
-import { UpdateFn } from './types'
+import { useMemo } from 'preact/hooks'
 
-export const useUpdate = (parent: CommentChild[]) => {
+export const useUpdateComments = (parent: CommentChild[]) => {
   const redraw = useRedraw()
   const parentRef = useUpdatingRef(parent)
-  const update: UpdateFn = useCallback(fn => {
-    fn(parentRef.current)
-    redraw()
-  }, [])
-  return update
+
+  return useMemo(
+    () => ({
+      replace(self: CommentChild, ...replacements: CommentChild[]) {
+        const currentPosition = parentRef.current.indexOf(self)
+        if (currentPosition >= 0) parentRef.current.splice(currentPosition, 1, ...replacements)
+        redraw()
+      }
+    }),
+    []
+  )
 }

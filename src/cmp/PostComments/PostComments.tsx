@@ -1,12 +1,12 @@
 import { APP_ID, MIN_LOAD_TIME } from '@/constants'
 import { PostCommentChild } from './cmp/PostCommentChild'
-import { useUpdate } from './hooks'
+import { useUpdateComments } from './hooks'
 import { useStore } from '@/state'
 import { LoadingAnimation } from './LoadingAnimation'
 import { NoComments } from './NoComments'
 import z from 'zaftig'
-import { createStyles } from '@/lib/util'
 import { useDelayedLoadingState } from '@/lib/hooks'
+import { createStyles } from '@/theme'
 
 export const PostComments = () => {
   const [loading, things, activePost] = useStore([
@@ -15,7 +15,7 @@ export const PostComments = () => {
     s => s.activePost
   ])
 
-  const update = useUpdate(things || [])
+  const update = useUpdateComments(things || [])
 
   const delayedLoading = useDelayedLoadingState(loading, MIN_LOAD_TIME)
 

@@ -1,9 +1,10 @@
 import z from 'zaftig'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
-import { getCSSVar, subURI } from '@/lib/util'
+import { subURI } from '@/lib/util'
 
 import { ZaftigStyle } from '../types'
+import { getCSSVar } from '@/theme'
 
 const API = 'https://icongr.am/feather'
 
