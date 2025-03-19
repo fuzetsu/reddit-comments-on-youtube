@@ -1,4 +1,4 @@
-type Cleanup = void | (() => void)
+type Cleanup = undefined | (() => void)
 
 interface Props {
   onmatch(url: string): Cleanup

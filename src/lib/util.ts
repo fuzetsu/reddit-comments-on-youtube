@@ -75,13 +75,13 @@ const makeLog =
 export const log = makeLog('log')
 export const logError = makeLog('error')
 
-export const subURI = (template: string, subs: { [key: string]: string }) =>
+export const subURI = (template: string, subs: Record<string, string>) =>
   Object.entries(subs).reduce(
     (acc, [k, v]) => acc.replace(':' + k, encodeURIComponent(v)),
     template
   )
 
-export const buildQuery = (params: { [key: string]: string | undefined }) => {
+export const buildQuery = (params: Record<string, string | undefined>) => {
   const data = new URLSearchParams()
   Object.entries(params).forEach(([k, v]) => v && data.append(k, v))
   return data.toString()

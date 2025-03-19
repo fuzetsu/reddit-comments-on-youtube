@@ -12,7 +12,9 @@ type CommentPayload = [
   { data: { children: (Comment | LoadMore)[] } }
 ]
 
-type MoreCommentsPayload = { json: { errors: string[]; data: { things: Comment[] } } }
+interface MoreCommentsPayload {
+  json: { errors: string[]; data: { things: Comment[] } }
+}
 
 interface Data {
   id: string

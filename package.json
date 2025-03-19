@@ -29,31 +29,14 @@
     "zaftig": "^0.10.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "@rstacruz/bump-cli": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5",
-    "@typescript-eslint/parser": "^5",
     "chokidar-cli": "^3",
     "concurrently": "^9",
     "esbuild": "^0.25.1",
-    "eslint": "^8",
-    "typescript": "^5.8.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "browser": true
-    },
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "rules": {
-      "@typescript-eslint/explicit-module-boundary-types": "off"
-    }
+    "eslint": "^9.22.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1"
   },
   "prettier": {
     "singleQuote": true,

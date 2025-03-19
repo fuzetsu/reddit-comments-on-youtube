@@ -65,7 +65,7 @@ export function generateTheme(theme: Theme) {
         else acc[cur.join('-')] = v
         return acc
       },
-      {} as { [name: string]: string }
+      {} as Record<string, string>
     )
   return z(Object.entries(getVars(theme)).reduce((acc, [k, v]) => `${acc}$${k} ${v};`, ''))
 }
@@ -92,7 +92,7 @@ export const getCSSVar = (varName: string, context: HTMLElement) =>
     .getPropertyValue('--' + varName)
     .trim()
 
-type ZaftigMap = { [key: string]: ZaftigStyle }
+type ZaftigMap = Record<string, ZaftigStyle>
 type ClassNameMap<T extends ZaftigMap> = { [key in keyof T]: string }
 
 const processSpec = <T extends ZaftigMap>(spec: T) =>
