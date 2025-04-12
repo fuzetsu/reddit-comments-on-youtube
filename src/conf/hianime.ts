@@ -12,11 +12,14 @@ export const hianime: Conf = {
   async getPosts() {
     const titleElem = q('h2 a')
     const title = titleElem?.dataset.jname ?? titleElem?.title
-    if (!title) return logError([], 'could not find title')
+    if (!title) return logError({}, 'could not find title')
     const epNum = q(currentEpisodeSel)?.dataset.number
     const query = epNum ? `${title} episode ${epNum}` : title
     let posts = await searchPosts(`subreddit:anime ${query}`)
     if (posts.length <= 0) posts = await searchPosts(query)
-    return title ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts) : posts
+    const finalPosts = title
+      ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts)
+      : posts
+    return { posts: finalPosts, query }
   }
 }

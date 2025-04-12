@@ -11,6 +11,7 @@ export interface State {
   posts: Post[]
   activePost?: Post
   noContent: boolean
+  searchQuery: string
 }
 
 export type KeySetter<T> = <K extends keyof T>(

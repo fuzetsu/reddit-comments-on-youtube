@@ -14,12 +14,17 @@ export const setCommentsLoading = setter('commentsLoading')
 export const setComments = setter('comments')
 export const setNoContent = setter('noContent')
 export const setFirstLoad = setter('firstLoad')
+export const setSearchQuery = setter('searchQuery')
 
 const loadConf = (conf: Conf) => {
+  setPostsLoading(true)
   conf
     .getPosts()
-    .catch(error => logError([], conf, 'conf.getPosts() threw', error))
-    .then(setPosts)
+    .catch(error => logError({ posts: [], query: '' }, conf, 'conf.getPosts() threw', error))
+    .then(({ posts, query }) => {
+      if (query) setSearchQuery(query)
+      if (posts) setPosts(posts)
+    })
     .finally(() => setPostsLoading(false))
 }
 

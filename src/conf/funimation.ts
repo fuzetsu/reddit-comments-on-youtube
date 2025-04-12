@@ -10,15 +10,17 @@ export const funimation: Conf = {
   getPosts: async () => {
     const [titleElem, epInfoElem] = qq<HTMLLIElement>('.meta-overlay__data-block li')
     const animeName = titleElem.textContent
-    if (!animeName) return logError([], 'unable to find anime name')
+    if (!animeName) return logError({}, 'unable to find anime name')
 
     const url = subURI('https://kitsu.io/api/edge/anime?filter[text]=:animeName', { animeName })
     const data = await fetch(url).then(res => res.json())
     const goodTitle = data.data[0].attributes.canonicalTitle
 
     const epInfo = epInfoElem.textContent?.replace(/\s+/g, ' ').match(/Episode [0-9]+/)?.[0]
-    const posts = await searchPosts(goodTitle + ' ' + epInfo + ' discussion')
+    const query = goodTitle + ' ' + epInfo + ' discussion'
+    const posts = await searchPosts(query)
     const epNum = epInfo?.match(/[0-9]+/)?.[0]
-    return epNum ? filterForEp(epNum, posts) : posts
+    const finalPosts = epNum ? filterForEp(epNum, posts) : posts
+    return { posts: finalPosts, query }
   }
 }

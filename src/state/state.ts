@@ -11,7 +11,8 @@ export const initialState: State = {
   posts: [],
   commentsLoading: true,
   comments: [],
-  noContent: false
+  noContent: false,
+  searchQuery: ''
 }
 
 export const useStore = staterino({

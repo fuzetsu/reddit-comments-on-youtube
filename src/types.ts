@@ -6,7 +6,7 @@ export interface Conf {
   areaSelector: string
   mode?: 'modal' | 'insert' | 'swap'
   isMatch?(url: string): boolean
-  getPosts(): Promise<Post[]>
+  getPosts(): Promise<{ posts?: Post[]; query?: string }>
   dark?: boolean
   theme?: Theme
   waitFor?: string | (() => boolean)

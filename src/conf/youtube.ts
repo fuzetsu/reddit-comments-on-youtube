@@ -18,7 +18,9 @@ export const youtube: Conf = {
   getPosts: async () => {
     const url = location.href
     const id = getVideoIdFromUrl(url)
-    if (!id) return logError([], 'failed to parse video id', url)
-    return searchPosts(`(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`)
+    if (!id) return logError({ posts: [] }, 'failed to parse video id', url)
+    const query = `(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`
+    const posts = await searchPosts(query)
+    return { posts, query }
   }
 }
