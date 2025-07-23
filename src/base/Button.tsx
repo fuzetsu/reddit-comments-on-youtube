@@ -1,13 +1,15 @@
+import { ComponentChildren } from 'preact'
 import z from 'zaftig'
 
 interface Props {
-  onSwitch(): void
+  onClick(): void
+  children: ComponentChildren
 }
 
-export const SwitchComments = ({ onSwitch }: Props) => {
+export const Button = ({ onClick, children }: Props) => {
   return (
-    <button className={button.class} onClick={onSwitch}>
-      Switch comments
+    <button className={button.class} onClick={onClick}>
+      {children}
     </button>
   )
 }

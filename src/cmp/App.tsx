@@ -3,13 +3,14 @@ import { useEffect, useState } from 'preact/hooks'
 
 import { Conf } from '@/types'
 import { useStore } from '@/state'
-import { init } from '@/state/actions'
+import { init, setPosts, setPostsLoading, setSearchQuery } from '@/state/actions'
 import { subscribe } from '@/state/state'
 
-import { SwitchComments } from './SwitchComments'
+import { Button } from '../base/Button'
 import { PostSelect } from './PostSelect'
 import { PostComments } from './PostComments'
 import { Modal } from './Modal'
+import { searchPosts } from '@/lib/api'
 
 interface Props {
   conf: Conf
@@ -17,7 +18,11 @@ interface Props {
 }
 
 export const App = ({ conf, setNativeCommentsVisible }: Props) => {
-  const [postsLoading, noPosts] = useStore([s => s.postsLoading, s => s.posts.length <= 0])
+  const [searchQuery, postsLoading, noPosts] = useStore([
+    s => s.searchQuery,
+    s => s.postsLoading,
+    s => s.posts.length <= 0
+  ])
 
   useEffect(() => {
     init(conf)
@@ -31,6 +36,8 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
     setNativeCommentsVisible(visible)
     setVisible(!visible)
   }
+
+  const [showQuery, setShowQuery] = useState(false)
 
   const message = postsLoading ? 'Loading posts…' : noPosts ? 'No posts found…' : ''
 
@@ -58,9 +65,33 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
 
   const isSwap = !conf.mode || conf.mode === 'swap'
 
+  const searchQueryControl = showQuery ? (
+    <div class={queryGrid}>
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={async event => {
+          const newSearchQuery = event.currentTarget.value
+          if (!newSearchQuery.trim()) return
+          setPostsLoading(true)
+          setSearchQuery(newSearchQuery)
+          const newPosts = await searchPosts(newSearchQuery)
+          setPosts(newPosts)
+          setPostsLoading(false)
+        }}
+      />
+      <Button onClick={() => setShowQuery(false)}>close</Button>
+    </div>
+  ) : (
+    <Button onClick={() => setShowQuery(true)}>Show query</Button>
+  )
+
   return (
     <div className={container}>
-      {isSwap && <SwitchComments onSwitch={toggleVisible} />}
+      <div className={buttons}>
+        {isSwap && <Button onClick={toggleVisible}>Switch comments</Button>}
+        {searchQueryControl}
+      </div>
       {visible &&
         (message || (
           <>
@@ -74,3 +105,5 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
 
 const container = z`d flex;flex-direction column;gap 5;mt 5`.class
 const modalButton = z`padding 5`.class
+const buttons = z`d flex;gap 4;flex-wrap nowrap;> * { flex 1 }`.class
+const queryGrid = z`d grid;gap 4;gtc 1fr auto`.class
