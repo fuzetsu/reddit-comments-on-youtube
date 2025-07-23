@@ -10,7 +10,7 @@ import { Button } from '../base/Button'
 import { PostSelect } from './PostSelect'
 import { PostComments } from './PostComments'
 import { Modal } from './Modal'
-import { searchPosts } from '@/lib/api'
+import { executeSearch } from '@/lib/search'
 
 interface Props {
   conf: Conf
@@ -75,8 +75,13 @@ export const App = ({ conf, setNativeCommentsVisible }: Props) => {
           if (!newSearchQuery.trim()) return
           setPostsLoading(true)
           setSearchQuery(newSearchQuery)
-          const newPosts = await searchPosts(newSearchQuery)
-          setPosts(newPosts)
+          try {
+            const result = await executeSearch(conf, newSearchQuery)
+            setPosts(result.posts)
+          } catch (error) {
+            console.error('Search failed:', error)
+            setPosts([])
+          }
           setPostsLoading(false)
         }}
       />

@@ -1,6 +1,7 @@
 import { getComments, Post } from '@/lib/api'
 import { keepTrying, log, logError } from '@/lib/util'
 import { waitForElemsWithTimout } from '@/lib/wait-for-elems'
+import { executeSearch } from '@/lib/search'
 import { Conf } from '@/types'
 import { initialState, setState } from './state'
 import { KeySetter, State } from './types'
@@ -18,9 +19,15 @@ export const setSearchQuery = setter('searchQuery')
 
 const loadConf = (conf: Conf) => {
   setPostsLoading(true)
-  conf
-    .getPosts()
-    .catch(error => logError({ posts: [], query: '' }, conf, 'conf.getPosts() threw', error))
+  executeSearch(conf)
+    .catch(error =>
+      logError(
+        { posts: [], query: '', context: { baseQuery: '' } },
+        conf,
+        'executeSearch threw',
+        error
+      )
+    )
     .then(({ posts, query }) => {
       if (query) setSearchQuery(query)
       if (posts) setPosts(posts)

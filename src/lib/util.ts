@@ -125,8 +125,15 @@ export const reduceCount = (count: number, digits = 1) => {
 }
 
 export const filterForEp = (episode: string, posts: Post[]) => {
-  const epRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')
-  return posts.filter(post => epRegex.test(post.title))
+  // Try specific "episode X" pattern first (biased towards r/anime format)
+  const episodeWordRegex = new RegExp(`\\bepisode ${episode}\\b`, 'i')
+  const episodeWordFiltered = posts.filter(post => episodeWordRegex.test(post.title))
+
+  if (episodeWordFiltered.length > 0) return episodeWordFiltered
+
+  // Fall back to just matching the episode number anywhere
+  const numberOnlyRegex = new RegExp(`\\b${episode}\\b`)
+  return posts.filter(post => numberOnlyRegex.test(post.title))
 }
 
 const removeExtraRegex = /[^a-z0-9 ]*/gi

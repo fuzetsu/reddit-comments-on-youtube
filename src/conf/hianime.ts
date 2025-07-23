@@ -1,5 +1,4 @@
-import { searchPosts } from 'lib/api'
-import { filterForEp, filterForTitle, logError, q } from 'lib/util'
+import { logError, q } from 'lib/util'
 import { Conf } from 'types'
 
 const currentEpisodeSel = '.ss-list a.active'
@@ -9,17 +8,16 @@ export const hianime: Conf = {
   dark: true,
   mode: 'swap',
   waitFor: currentEpisodeSel,
-  async getPosts() {
+  subredditFilters: ['anime'],
+
+  buildSearchContext() {
     const titleElem = q('h2 a')
     const title = titleElem?.dataset.jname ?? titleElem?.title
-    if (!title) return logError({}, 'could not find title')
-    const epNum = q(currentEpisodeSel)?.dataset.number
-    const query = epNum ? `${title} episode ${epNum}` : title
-    let posts = await searchPosts(`subreddit:anime ${query}`)
-    if (posts.length <= 0) posts = await searchPosts(query)
-    const finalPosts = title
-      ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts)
-      : posts
-    return { posts: finalPosts, query }
+    if (!title) return logError({ baseQuery: '' }, 'could not find title')
+
+    const episode = q(currentEpisodeSel)?.dataset.number
+    const baseQuery = episode ? `${title} episode ${episode}` : title
+
+    return { title, episode, baseQuery }
   }
 }

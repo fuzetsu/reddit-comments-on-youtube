@@ -1,4 +1,3 @@
-import { searchPosts } from '@/lib/api'
 import { logError, q } from '@/lib/util'
 import { Conf } from '@/types'
 
@@ -15,12 +14,12 @@ export const youtube: Conf = {
     button: { background: 'var(--yt-spec-badge-chip-background)' },
     ups: '#ffa500'
   },
-  getPosts: async () => {
-    const url = location.href
-    const id = getVideoIdFromUrl(url)
-    if (!id) return logError({ posts: [] }, 'failed to parse video id', url)
-    const query = `(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`
-    const posts = await searchPosts(query)
-    return { posts, query }
+
+  buildSearchContext() {
+    const id = getVideoIdFromUrl(location.href)
+    if (!id) return logError({ baseQuery: '' }, 'failed to parse video id', location.href)
+
+    const baseQuery = `(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`
+    return { baseQuery }
   }
 }

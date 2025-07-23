@@ -1,5 +1,4 @@
-import { searchPosts } from '@/lib/api'
-import { filterForEp, filterForTitle, logError, q } from '@/lib/util'
+import { logError, q } from '@/lib/util'
 import { Conf } from '@/types'
 
 const currentEpisodeSel = '#episodeMenu'
@@ -9,16 +8,15 @@ export const animepahe: Conf = {
   dark: true,
   mode: 'insert',
   waitFor: currentEpisodeSel,
-  async getPosts() {
+  subredditFilters: ['anime'],
+
+  buildSearchContext() {
     const title = q('h1 a')?.title
-    if (!title) return logError({}, 'could not find title')
-    const epNum = q(currentEpisodeSel)?.textContent?.match(/\d+(\.\d+)?/)?.[0]
-    const query = epNum ? `${title} episode ${epNum}` : title
-    let posts = await searchPosts(`subreddit:anime ${query}`)
-    if (posts.length <= 0) posts = await searchPosts(query)
-    const finalPosts = title
-      ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts)
-      : posts
-    return { posts: finalPosts, query: query }
+    if (!title) return logError({ baseQuery: '' }, 'could not find title')
+
+    const episode = q(currentEpisodeSel)?.textContent?.match(/\d+(\.\d+)?/)?.[0]
+    const baseQuery = episode ? `${title} episode ${episode}` : title
+
+    return { title, episode, baseQuery }
   }
 }
