@@ -4,11 +4,12 @@ import z from 'zaftig'
 interface Props {
   onClick(): void
   children: ComponentChildren
+  className?: string
 }
 
-export const Button = ({ onClick, children }: Props) => {
+export const Button = ({ onClick, children, className }: Props) => {
   return (
-    <button className={button.class} onClick={onClick}>
+    <button className={button.concat(className).class} onClick={onClick}>
       {children}
     </button>
   )
@@ -21,9 +22,7 @@ const button = z`
   text-align left
   transition all 0.2s ease
   border-radius 6
-  margin-top 10
   padding 12
-  width 100%
   &:hover {
     opacity 0.8
   }

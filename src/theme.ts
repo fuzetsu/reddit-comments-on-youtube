@@ -40,6 +40,7 @@ export const Themes = {
     text-align left
 
     button { font-size 16; color $text-normal; background $button-background }
+    input { font-size 16  }
     a {
       color $link-color
       text-decoration none
