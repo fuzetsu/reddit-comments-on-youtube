@@ -4,6 +4,7 @@ import { animepahe } from './animepahe'
 import { funimation } from './funimation'
 import { dramacool } from './dramacool'
 import { hianime } from './hianime'
+import { anikai } from './anikai'
 
 const confs = {
   crunchyroll,
@@ -11,7 +12,8 @@ const confs = {
   animepahe,
   funimation,
   dramacool,
-  hianime
+  hianime,
+  anikai
 } as const
 
 const confNames = Object.keys(confs) as (keyof typeof confs)[]

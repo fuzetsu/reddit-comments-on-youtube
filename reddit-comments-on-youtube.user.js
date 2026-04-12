@@ -2,7 +2,7 @@
 // @name        Reddit Comments on Youtube
 // @description show reddit comments on youtube (and crunchyroll) videos
 // @namespace   RCOY
-// @version     2.0.0
+// @version     2.0.2
 // @match       https://*.youtube.com/*
 // @match       https://*.crunchyroll.com/*
 // @match       https://animepahe.ru/*
@@ -10,6 +10,7 @@
 // @match       https://dramacool.com.tw/*
 // @match       https://dramacool.com.tr/*
 // @match       https://hianime.re/*
+// @match       https://anikai.to/*
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
 "use strict";
@@ -575,6 +576,23 @@
     }
   };
 
+  // src/conf/anikai.ts
+  var currentEpisodeSel3 = ".range .active";
+  var anikai = {
+    areaSelector: "#comment",
+    dark: true,
+    mode: "swap",
+    waitFor: currentEpisodeSel3,
+    subredditFilters: ["anime"],
+    buildSearchContext() {
+      const title = q2(".al-title")?.textContent?.split(";")[0];
+      if (!title) return logError({ baseQuery: "" }, "could not find title");
+      const episode = q2(currentEpisodeSel3)?.textContent?.trim().match(/\d+/)?.[0];
+      const baseQuery = episode ? `${title} episode ${episode}` : title;
+      return { title, episode, baseQuery };
+    }
+  };
+
   // src/conf/index.ts
   var confs = {
     crunchyroll,
@@ -582,7 +600,8 @@
     animepahe,
     funimation,
     dramacool,
-    hianime
+    hianime,
+    anikai
   };
   var confNames = Object.keys(confs);
   var getConf = () => {
