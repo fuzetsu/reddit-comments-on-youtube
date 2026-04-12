@@ -9,7 +9,7 @@
 // @match       https://*.funimation.com/*
 // @match       https://dramacool.com.tw/*
 // @match       https://dramacool.com.tr/*
-// @match       https://hianime.to/watch/*
+// @match       https://hianime.re/*
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
 "use strict";
@@ -346,16 +346,12 @@
     }
     return divisor ? (count / divisor).toFixed(digits) + indicator : count;
   };
-  var getCSSVar = (varName, context) => getComputedStyle(context).getPropertyValue("--" + varName).trim();
-  var createStyles = (spec) => {
-    return Object.entries(spec).reduce((acc, [name, style]) => {
-      acc[name] = style.class;
-      return acc;
-    }, {});
-  };
   var filterForEp = (episode, posts) => {
-    const epRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
-    return posts.filter((post) => epRegex.test(post.title));
+    const episodeWordRegex = new RegExp(`\\bepisode ${episode}\\b`, "i");
+    const episodeWordFiltered = posts.filter((post) => episodeWordRegex.test(post.title));
+    if (episodeWordFiltered.length > 0) return episodeWordFiltered;
+    const numberOnlyRegex = new RegExp(`\\b${episode}\\b`);
+    return posts.filter((post) => numberOnlyRegex.test(post.title));
   };
   var removeExtraRegex = /[^a-z0-9 ]*/gi;
   var cleanTitle = (title) => title.replace(removeExtraRegex, "");
@@ -478,88 +474,16 @@
     return { stop, start };
   };
 
-  // src/lib/api.ts
-  var getJSON = (url) => {
-    if (window.GM_xmlhttpRequest) {
-      return new Promise(
-        (resolve, reject) => (
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          window.GM_xmlhttpRequest({
-            url,
-            responseType: "json",
-            anonymous: true,
-            onerror: (response) => reject(response.responseText),
-            onload: (response) => resolve(response.response)
-          })
-        )
-      );
-    }
-    return fetch(url).then((res) => res.json());
-  };
-  var searchPosts = async (query) => {
-    const payload = await getJSON(
-      API_URL + "/search.json?" + buildQuery({ q: query, limit: "50" })
-    ).catch((error) => logError(null, "api.searchPosts() error", error));
-    if (!payload) return [];
-    return payload.data.children.map(({ data: post }) => ({
-      ...post,
-      title: decodeHTML(post.title)
-    }));
-  };
-  var getComments = async ({ permalink }, parentComment) => {
-    const payload = await getJSON(
-      API_URL + permalink + ".json?" + buildQuery({ comment: parentComment?.data.id })
-    ).catch((error) => logError(null, "api.getComments() error", error));
-    if (!payload) return [];
-    const comments = payload[1].data.children;
-    const post = payload[0].data.children[0].data;
-    if (post.selftext_html) {
-      return [
-        {
-          kind: "t1",
-          data: {
-            ...post,
-            is_submitter: true,
-            depth: 0,
-            body_html: post.selftext_html,
-            parent_id: post.id,
-            collapsed: false,
-            replies: ""
-          }
-        },
-        ...comments
-      ];
-    }
-    return comments;
-  };
-  var getMoreComments = async (link_id, children) => {
-    const payload = await getJSON(
-      API_URL + "/api/morechildren.json?" + buildQuery({ api_type: "json", link_id, children: children.join(",") })
-    ).catch(() => null);
-    if (!payload || payload.json.errors.length > 0)
-      return logError([], "api.getMoreComments() error", payload);
-    const flatComments = payload.json.data.things;
-    const nestedComments = flatComments.reduce((acc, cmt) => {
-      const parent = flatComments.find((x2) => x2.data.name === cmt.data.parent_id);
-      if (parent) {
-        if (parent.data.replies) parent.data.replies.data.children.push(cmt);
-        else parent.data.replies = { data: { children: [cmt] } };
-      } else acc.push(cmt);
-      return acc;
-    }, []);
-    return nestedComments;
-  };
-
   // src/conf/crunchyroll.ts
   var crunchyroll = {
     areaSelector: ".guestbook.comments",
     isMatch: () => !!getById("showmedia_about_media"),
-    getPosts: async () => {
+    buildSearchContext() {
       const animeName = getById("showmedia_about_media")?.textContent?.replace(/\s+/g, " ");
-      if (!animeName) return logError([], "unable to find anime name");
-      const epNum = q2("#showmedia_about_media h4:last-child")?.textContent?.split(",").pop()?.match(/[0-9]+/)?.[0];
-      const posts = await searchPosts(animeName + " discussion");
-      return epNum ? filterForEp(epNum, posts) : posts;
+      if (!animeName) return logError({ baseQuery: "" }, "unable to find anime name");
+      const episode = q2("#showmedia_about_media h4:last-child")?.textContent?.split(",").pop()?.match(/[0-9]+/)?.[0];
+      const baseQuery = animeName + " discussion";
+      return { title: animeName, episode, baseQuery };
     }
   };
 
@@ -576,11 +500,11 @@
       button: { background: "var(--yt-spec-badge-chip-background)" },
       ups: "#ffa500"
     },
-    getPosts: async () => {
-      const url = location.href;
-      const id = getVideoIdFromUrl(url);
-      if (!id) return logError([], "failed to parse video id", url);
-      return searchPosts(`(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`);
+    buildSearchContext() {
+      const id = getVideoIdFromUrl(location.href);
+      if (!id) return logError({ baseQuery: "" }, "failed to parse video id", location.href);
+      const baseQuery = `(url:3D${id} OR url:${id}) (site:youtube.com OR site:youtu.be)`;
+      return { baseQuery };
     }
   };
 
@@ -591,14 +515,13 @@
     dark: true,
     mode: "insert",
     waitFor: currentEpisodeSel,
-    async getPosts() {
+    subredditFilters: ["anime"],
+    buildSearchContext() {
       const title = q2("h1 a")?.title;
-      if (!title) return logError([], "could not find title");
-      const epNum = q2(currentEpisodeSel)?.textContent?.match(/\d+(\.\d+)?/)?.[0];
-      const query = epNum ? `${title} episode ${epNum}` : title;
-      let posts = await searchPosts(`subreddit:anime ${query}`);
-      if (posts.length <= 0) posts = await searchPosts(query);
-      return title ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts) : posts;
+      if (!title) return logError({ baseQuery: "" }, "could not find title");
+      const episode = q2(currentEpisodeSel)?.textContent?.match(/\d+(\.\d+)?/)?.[0];
+      const baseQuery = episode ? `${title} episode ${episode}` : title;
+      return { title, episode, baseQuery };
     }
   };
 
@@ -608,33 +531,29 @@
     mode: "modal",
     dark: true,
     isMatch: (url) => url.includes("/v/"),
-    getPosts: async () => {
+    async buildSearchContext() {
       const [titleElem, epInfoElem] = qq(".meta-overlay__data-block li");
       const animeName = titleElem.textContent;
-      if (!animeName) return logError([], "unable to find anime name");
+      if (!animeName) return logError({ baseQuery: "" }, "unable to find anime name");
       const url = subURI("https://kitsu.io/api/edge/anime?filter[text]=:animeName", { animeName });
       const data = await fetch(url).then((res) => res.json());
       const goodTitle = data.data[0].attributes.canonicalTitle;
       const epInfo = epInfoElem.textContent?.replace(/\s+/g, " ").match(/Episode [0-9]+/)?.[0];
-      const posts = await searchPosts(goodTitle + " " + epInfo + " discussion");
-      const epNum = epInfo?.match(/[0-9]+/)?.[0];
-      return epNum ? filterForEp(epNum, posts) : posts;
+      const episode = epInfo?.match(/[0-9]+/)?.[0];
+      const baseQuery = goodTitle + " " + epInfo + " discussion";
+      return { title: goodTitle, episode, baseQuery };
     }
   };
 
   // src/conf/dramacool.ts
   var dramacool = {
     areaSelector: ".note",
-    getPosts: async () => {
+    buildSearchContext() {
       const title = q2("h1")?.textContent;
-      if (!title) return logError([], "unable to find title");
-      const slicedTitle = title.slice(0, title.toLowerCase().lastIndexOf("english"));
-      const posts = await searchPosts(slicedTitle);
-      const epNum = slicedTitle.match(/episode ([0-9]+)/i)?.[1];
-      if (!epNum) return posts;
-      const regex = new RegExp(`\\b${epNum}\\b`);
-      const found = posts.filter((x2) => regex.test(x2.title));
-      return found.length > 0 ? found : posts;
+      if (!title) return logError({ baseQuery: "" }, "unable to find title");
+      const baseQuery = title.slice(0, title.toLowerCase().lastIndexOf("english"));
+      const episode = baseQuery.match(/episode ([0-9]+)/i)?.[1];
+      return { title, episode, baseQuery };
     }
   };
 
@@ -645,15 +564,14 @@
     dark: true,
     mode: "swap",
     waitFor: currentEpisodeSel2,
-    async getPosts() {
+    subredditFilters: ["anime"],
+    buildSearchContext() {
       const titleElem = q2("h2 a");
-      const title = titleElem?.dataset.jname ?? titleElem?.title;
-      if (!title) return logError([], "could not find title");
-      const epNum = q2(currentEpisodeSel2)?.dataset.number;
-      const query = epNum ? `${title} episode ${epNum}` : title;
-      let posts = await searchPosts(`subreddit:anime ${query}`);
-      if (posts.length <= 0) posts = await searchPosts(query);
-      return title ? filterForTitle(title, epNum ? filterForEp(epNum, posts) : posts) : posts;
+      const title = titleElem?.dataset.jp ?? titleElem?.textContent?.trim();
+      if (!title) return logError({ baseQuery: "" }, "could not find title");
+      const episode = q2(currentEpisodeSel2)?.dataset.num;
+      const baseQuery = episode ? `${title} episode ${episode}` : title;
+      return { title, episode, baseQuery };
     }
   };
 
@@ -827,6 +745,7 @@ ${r4}}
     text-align left
 
     button { font-size 16; color $text-normal; background $button-background }
+    input { font-size 16  }
     a {
       color $link-color
       text-decoration none
@@ -869,6 +788,17 @@ ${r4}}
       "rgb(84, 166, 76)",
       "rgb(54, 141, 238)"
     ]
+  };
+  var getCSSVar = (varName, context) => getComputedStyle(context).getPropertyValue("--" + varName).trim();
+  var processSpec = (spec) => Object.entries(spec).reduce((acc, [name, style]) => {
+    acc[name] = style.class;
+    return acc;
+  }, {});
+  var createStyles = (spec, derived) => {
+    const specMap = processSpec(spec);
+    if (!derived) return specMap;
+    const derivedMap = processSpec(derived(specMap));
+    return { ...specMap, ...derivedMap };
   };
 
   // node_modules/preact/hooks/dist/hooks.module.js
@@ -944,11 +874,6 @@ ${r4}}
     var u5 = p3(t3++, 7);
     return C2(u5.__H, r4) && (u5.__ = n3(), u5.__H = r4, u5.__h = n3), u5.__;
   }
-  function q3(n3, t6) {
-    return o3 = 8, T2(function() {
-      return n3;
-    }, t6);
-  }
   function j2() {
     for (var n3; n3 = f3.shift(); ) if (n3.__P && n3.__H) try {
       n3.__H.__h.forEach(z2), n3.__H.__h.forEach(B2), n3.__H.__h = [];
@@ -1019,6 +944,103 @@ ${r4}}
     return "function" == typeof t6 ? t6(n3) : t6;
   }
 
+  // src/lib/api.ts
+  var getJSON = (url) => {
+    if (window.GM_xmlhttpRequest) {
+      return new Promise(
+        (resolve, reject) => (
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          window.GM_xmlhttpRequest({
+            url,
+            responseType: "json",
+            anonymous: true,
+            onerror: (response) => reject(response.responseText),
+            onload: (response) => resolve(response.response)
+          })
+        )
+      );
+    }
+    return fetch(url).then((res) => res.json());
+  };
+  var searchPosts = async (query) => {
+    const payload = await getJSON(
+      API_URL + "/search.json?" + buildQuery({ q: query, limit: "50" })
+    ).catch((error) => logError(null, "api.searchPosts() error", error));
+    if (!payload) return [];
+    return payload.data.children.map(({ data: post }) => ({
+      ...post,
+      title: decodeHTML(post.title)
+    }));
+  };
+  var getComments = async ({ permalink }, parentComment) => {
+    const payload = await getJSON(
+      API_URL + permalink + ".json?" + buildQuery({ comment: parentComment?.data.id })
+    ).catch((error) => logError(null, "api.getComments() error", error));
+    if (!payload) return [];
+    const comments = payload[1].data.children;
+    const post = payload[0].data.children[0].data;
+    if (post.selftext_html) {
+      return [
+        {
+          kind: "t1",
+          data: {
+            ...post,
+            is_submitter: true,
+            depth: 0,
+            body_html: post.selftext_html,
+            parent_id: post.id,
+            collapsed: false,
+            replies: ""
+          }
+        },
+        ...comments
+      ];
+    }
+    return comments;
+  };
+  var getMoreComments = async (link_id, children) => {
+    const payload = await getJSON(
+      API_URL + "/api/morechildren.json?" + buildQuery({ api_type: "json", link_id, children: children.join(",") })
+    ).catch(() => null);
+    if (!payload || payload.json.errors.length > 0)
+      return logError([], "api.getMoreComments() error", payload);
+    const flatComments = payload.json.data.things;
+    const nestedComments = flatComments.reduce((acc, cmt) => {
+      const parent = flatComments.find((x2) => x2.data.name === cmt.data.parent_id);
+      if (parent) {
+        if (parent.data.replies) parent.data.replies.data.children.push(cmt);
+        else parent.data.replies = { data: { children: [cmt] } };
+      } else acc.push(cmt);
+      return acc;
+    }, []);
+    return nestedComments;
+  };
+
+  // src/lib/search.ts
+  var executeSearch = async (conf2, userQuery) => {
+    const context = await Promise.resolve(conf2.buildSearchContext());
+    const baseQuery = userQuery ?? context.baseQuery;
+    const subredditQueries = conf2.subredditFilters ? conf2.subredditFilters.map((sub) => `subreddit:${sub} ${baseQuery}`) : [];
+    const queries = [...subredditQueries, baseQuery];
+    let posts = [];
+    for (const query of queries) {
+      posts = await searchPosts(query);
+      if (posts.length > 0) break;
+    }
+    let filteredPosts = posts;
+    if (context.episode) {
+      filteredPosts = filterForEp(context.episode, filteredPosts);
+    }
+    if (context.title) {
+      filteredPosts = filterForTitle(context.title, filteredPosts);
+    }
+    return {
+      posts: filteredPosts,
+      query: baseQuery,
+      context
+    };
+  };
+
   // node_modules/staterino/dist/staterino.min.js
   var e4 = (e6, t6) => e6 === t6 || e6.length === t6.length && e6.every((e7, r4) => e7 === t6[r4]);
   var t4 = (e6) => e6;
@@ -1066,7 +1088,8 @@ ${r4}}
     posts: [],
     commentsLoading: true,
     comments: [],
-    noContent: false
+    noContent: false,
+    searchQuery: ""
   };
   var useStore = staterino_min_default({
     state: initialState,
@@ -1084,8 +1107,20 @@ ${r4}}
   var setComments = setter("comments");
   var setNoContent = setter("noContent");
   var setFirstLoad = setter("firstLoad");
+  var setSearchQuery = setter("searchQuery");
   var loadConf = (conf2) => {
-    conf2.getPosts().catch((error) => logError([], conf2, "conf.getPosts() threw", error)).then(setPosts).finally(() => setPostsLoading(false));
+    setPostsLoading(true);
+    executeSearch(conf2).catch(
+      (error) => logError(
+        { posts: [], query: "", context: { baseQuery: "" } },
+        conf2,
+        "executeSearch threw",
+        error
+      )
+    ).then(({ posts, query }) => {
+      if (query) setSearchQuery(query);
+      if (posts) setPosts(posts);
+    }).finally(() => setPostsLoading(false));
   };
   var SEC_TIMEOUT = 5;
   var init = (conf2) => {
@@ -1152,25 +1187,6 @@ ${r4}}
     if ("function" == typeof e6 && (a4 = e6.defaultProps)) for (c4 in a4) void 0 === p4[c4] && (p4[c4] = a4[c4]);
     return l.vnode && l.vnode(l4), l4;
   }
-
-  // src/cmp/SwitchComments.tsx
-  var SwitchComments = ({ onSwitch }) => {
-    return /* @__PURE__ */ u4("button", { className: button.class, onClick: onSwitch, children: "Switch comments" });
-  };
-  var button = zaftig_min_default`
-  cursor pointer
-  border none
-  background $button-background
-  text-align left
-  transition all 0.2s ease
-  border-radius 6
-  margin-top 10
-  padding 12
-  width 100%
-  &:hover {
-    opacity 0.8
-  }
-`;
 
   // src/base/Icon.tsx
   var API = "https://icongr.am/feather";
@@ -1367,10 +1383,7 @@ ${r4}}
         setFailed(true);
         await sleep(1200);
       }
-      update((parent) => {
-        const currentPosition = parent.indexOf(thing);
-        if (currentPosition >= 0) parent.splice(currentPosition, 1, ...results);
-      });
+      update.replace(thing, ...results);
     };
     return /* @__PURE__ */ u4("div", { className: styles2.wrapper, children: /* @__PURE__ */ u4("button", { disabled: loading || failed, className: styles2.button, onClick, children: label }) });
   };
@@ -1428,18 +1441,23 @@ ${r4}}
   };
 
   // src/cmp/PostComments/hooks.ts
-  var useUpdate = (parent) => {
+  var useUpdateComments = (parent) => {
     const redraw = useRedraw();
     const parentRef = useUpdatingRef(parent);
-    const update = q3((fn) => {
-      fn(parentRef.current);
-      redraw();
-    }, []);
-    return update;
+    return T2(
+      () => ({
+        replace(self, ...replacements) {
+          const currentPosition = parentRef.current.indexOf(self);
+          if (currentPosition >= 0) parentRef.current.splice(currentPosition, 1, ...replacements);
+          redraw();
+        }
+      }),
+      []
+    );
   };
 
   // src/cmp/PostComments/cmp/PostComment.tsx
-  var PostComment = ({ thing }) => {
+  var PostComment = ({ thing, update: parentUpdate }) => {
     const {
       ups,
       author,
@@ -1454,6 +1472,7 @@ ${r4}}
     const html = T2(() => decodeHTML(body_html), [body_html]);
     const spoilerState = T2(() => /* @__PURE__ */ new WeakSet(), []);
     const conf2 = useStore((s4) => s4.conf);
+    const [refreshing, setRefreshing] = d3(false);
     const ref = A2(null);
     const contentRef = A2(null);
     const lastHeight = A2(0);
@@ -1483,7 +1502,15 @@ ${r4}}
         if (offset) window.scrollBy(0, -offset);
       }
     };
-    const update = useUpdate(thing.data.replies ? thing.data.replies.data.children : []);
+    const update = useUpdateComments(thing.data.replies ? thing.data.replies.data.children : []);
+    const handleRefresh = async (e6) => {
+      e6.preventDefault();
+      const post = useStore.get().activePost;
+      if (!post || refreshing) return;
+      setRefreshing(true);
+      parentUpdate.replace(thing, ...await getComments(post, thing));
+      setRefreshing(false);
+    };
     const createdTime = new Date(created_utc * 1e3);
     const editedTime = edited && new Date(edited * 1e3);
     const differentDay = editedTime && createdTime.getDate() !== editedTime.getDate();
@@ -1493,10 +1520,16 @@ ${r4}}
       styles3.border,
       zaftig_min_default`$color ${borderColors[depth % borderColors.length]}`
     ).class;
+    const rereshLinkClassName = zaftig_min_default.concat(
+      styles3.infoLink,
+      styles3.infoLinkHidden,
+      refreshing && styles3.disabled
+    ).class;
+    const commentInfoClassName = zaftig_min_default.concat(styles3.commentInfo, styles3.infoLinkHiddenAncestor).class;
     return /* @__PURE__ */ u4("div", { className: styles3.comment, children: [
       /* @__PURE__ */ u4(CustomButton, { tag: "div", "aria-label": ariaLabel, className: borderClassName, onClick: toggle }),
       /* @__PURE__ */ u4("div", { children: [
-        /* @__PURE__ */ u4("div", { ref, className: styles3.commentInfo, children: [
+        /* @__PURE__ */ u4("div", { ref, className: commentInfoClassName, children: [
           /* @__PURE__ */ u4(
             "a",
             {
@@ -1510,13 +1543,14 @@ ${r4}}
             /* @__PURE__ */ u4(Icon, { name: "arrow-up", themeColor: "ups" }),
             reduceCount(ups)
           ] }),
-          /* @__PURE__ */ u4("a", { className: styles3.date, target: "_blank", href: API_URL + permalink, children: [
+          /* @__PURE__ */ u4("a", { className: styles3.infoLink, target: "_blank", href: API_URL + permalink, children: [
             prettyTime(createdTime, "date-time"),
             editedTime && /* @__PURE__ */ u4(k, { children: [
               " edited ",
               prettyTime(editedTime, differentDay ? "date-time" : "time")
             ] })
-          ] })
+          ] }),
+          /* @__PURE__ */ u4("a", { className: rereshLinkClassName, href: "", onClick: handleRefresh, children: refreshing ? "refreshing" : "refresh" })
         ] }),
         /* @__PURE__ */ u4(
           "div",
@@ -1557,19 +1591,20 @@ ${r4}}
       ] })
     ] });
   };
-  var styles3 = createStyles({
-    comment: zaftig_min_default`
+  var styles3 = createStyles(
+    {
+      comment: zaftig_min_default`
     display grid
     grid-template-columns auto 1fr
     :not(:last-child) { margin-bottom 18 }
     gap 18
   `,
-    commentContent: zaftig_min_default`
+      commentContent: zaftig_min_default`
     overflow hidden
     transition max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-out
   `,
-    replies: zaftig_min_default`margin-top 18`,
-    border: zaftig_min_default`
+      replies: zaftig_min_default`margin-top 18`,
+      border: zaftig_min_default`
     position relative
     padding 9
     margin -9
@@ -1585,7 +1620,7 @@ ${r4}}
       width 4
     }
   `,
-    body: zaftig_min_default`
+      body: zaftig_min_default`
     blockquote {
       border-left 3 solid $text-subdued
       padding 5 10
@@ -1602,11 +1637,15 @@ ${r4}}
     ul, ol { margin 18 0; padding-left 30 }
     a { color $link-color !important }
   `,
-    ups: zaftig_min_default`color $ups;font-weight bold`,
-    date: zaftig_min_default`&& { color $text-subdued }`,
-    commentInfo: zaftig_min_default`display flex;gap 10`,
-    author: zaftig_min_default`font-weight bold;&& { color $text-primary }`
-  });
+      ups: zaftig_min_default`color $ups;font-weight bold`,
+      infoLink: zaftig_min_default`&& { color $text-subdued }`,
+      infoLinkHidden: zaftig_min_default`o 0;transition opacity 0.3s`,
+      disabled: zaftig_min_default`pointer-events none;o 0.5`,
+      commentInfo: zaftig_min_default`display flex;gap 10`,
+      author: zaftig_min_default`font-weight bold;&& { color $text-primary }`
+    },
+    (s4) => ({ infoLinkHiddenAncestor: zaftig_min_default`&:hover > a.${s4.infoLinkHidden} { o 1 }` })
+  );
 
   // src/cmp/PostComments/cmp/PostCommentChild.tsx
   function PostCommentChild({ thing, ...rest }) {
@@ -1620,7 +1659,7 @@ ${r4}}
     }
   }
 
-  // src/cmp/PostComments/LoadingAnimation.tsx
+  // src/cmp/PostComments/cmp/LoadingAnimation.tsx
   var spinAnim = zaftig_min_default.anim`
   0% { transform rotate(0deg) }
   100% { transform rotate(360deg) }
@@ -1644,7 +1683,7 @@ ${r4}}
     }
   ) });
 
-  // src/cmp/PostComments/NoComments.tsx
+  // src/cmp/PostComments/cmp/NoComments.tsx
   var styles5 = zaftig_min_default`
   text-align center
   padding 20px
@@ -1682,7 +1721,7 @@ ${r4}}
       (s4) => s4.comments,
       (s4) => s4.activePost
     ]);
-    const update = useUpdate(things || []);
+    const update = useUpdateComments(things || []);
     const delayedLoading = useDelayedLoadingState(loading, MIN_LOAD_TIME);
     if (!activePost) return null;
     return /* @__PURE__ */ u4("div", { id: APP_ID + "PostComments", children: delayedLoading ? /* @__PURE__ */ u4("div", { className: styles6.centerNotice, children: [
@@ -1757,6 +1796,145 @@ ${r4}}
   overflow-y auto
 `.class;
 
+  // src/base/Button.tsx
+  var Button = ({ onClick, children, className }) => {
+    return /* @__PURE__ */ u4("button", { className: button.concat(className).class, onClick, children });
+  };
+  var button = zaftig_min_default`
+  cursor pointer
+  border none
+  background $button-background
+  text-align left
+  transition all 0.2s ease
+  border-radius 6
+  padding 12
+  &:hover {
+    opacity 0.8
+  }
+`;
+
+  // src/cmp/SearchControls.tsx
+  var SearchControls = ({ conf: conf2, visible, onToggleVisible }) => {
+    const [searchQuery] = useStore([(s4) => s4.searchQuery]);
+    const [isEditing, setIsEditing] = d3(false);
+    const [editValue, setEditValue] = d3("");
+    const isSwap = !conf2.mode || conf2.mode === "swap";
+    if (!visible) {
+      return isSwap ? /* @__PURE__ */ u4("div", { className: controls, children: /* @__PURE__ */ u4("div", { className: layout, children: /* @__PURE__ */ u4(Button, { className: switchButtonAlone, onClick: onToggleVisible, children: "Switch to Reddit Posts" }) }) }) : null;
+    }
+    const handleEditClick = () => {
+      setEditValue(searchQuery || "");
+      setIsEditing(true);
+    };
+    const handleSave = async () => {
+      if (!editValue.trim()) {
+        setIsEditing(false);
+        return;
+      }
+      setPostsLoading(true);
+      setSearchQuery(editValue);
+      try {
+        const result = await executeSearch(conf2, editValue);
+        setPosts(result.posts);
+      } catch (error) {
+        console.error("Search failed:", error);
+        setPosts([]);
+      }
+      setPostsLoading(false);
+      setIsEditing(false);
+    };
+    const handleCancel = () => {
+      setIsEditing(false);
+      setEditValue("");
+    };
+    if (isEditing) {
+      return /* @__PURE__ */ u4("div", { className: controls, children: /* @__PURE__ */ u4("div", { className: layout, children: [
+        isSwap && /* @__PURE__ */ u4(Button, { className: switchButton, onClick: onToggleVisible, children: "Switch to Native" }),
+        /* @__PURE__ */ u4(
+          "input",
+          {
+            className: searchInput,
+            type: "text",
+            value: editValue,
+            onInput: (e6) => setEditValue(e6.currentTarget.value),
+            onKeyDown: (e6) => {
+              if (e6.key === "Enter") handleSave();
+              if (e6.key === "Escape") handleCancel();
+            },
+            placeholder: "Enter search query...",
+            autoFocus: true
+          }
+        ),
+        /* @__PURE__ */ u4("div", { className: actionButtons, children: [
+          /* @__PURE__ */ u4(Button, { onClick: handleSave, children: "Save" }),
+          /* @__PURE__ */ u4(Button, { onClick: handleCancel, children: "Cancel" })
+        ] })
+      ] }) });
+    }
+    const queryText = searchQuery ? `Edit Query: "${searchQuery}"` : "Edit Query: No query set";
+    return /* @__PURE__ */ u4("div", { className: controls, children: /* @__PURE__ */ u4("div", { className: layout, children: [
+      isSwap && /* @__PURE__ */ u4(Button, { className: switchButton, onClick: onToggleVisible, children: "Switch to Native" }),
+      /* @__PURE__ */ u4(
+        "button",
+        {
+          className: queryButton,
+          onClick: handleEditClick,
+          title: searchQuery || "No query set",
+          children: queryText
+        }
+      )
+    ] }) });
+  };
+  var controls = zaftig_min_default`
+  d flex
+  flex-direction column
+  gap 8
+  max-width 100%
+`.class;
+  var layout = zaftig_min_default`
+  d flex
+  gap 8
+  align-items center
+  max-width 100%
+  overflow hidden
+`.class;
+  var switchButton = zaftig_min_default`
+  flex-shrink 0
+`.class;
+  var switchButtonAlone = zaftig_min_default`
+  width 100%
+`.class;
+  var queryButton = zaftig_min_default`
+  cursor pointer
+  border none
+  background $button-background
+  text-align left
+  transition all 0.2s ease
+  border-radius 6
+  padding 12
+  flex 1
+  min-width 0
+  overflow hidden
+  text-overflow ellipsis
+  white-space nowrap
+  &:hover {
+    opacity 0.8
+  }
+`.class;
+  var actionButtons = zaftig_min_default`
+  d flex
+  gap 4
+  flex-shrink 0
+`.class;
+  var searchInput = zaftig_min_default`
+  flex 1
+  min-width 0
+  padding 12
+  border 1px solid #ccc
+  border-radius 6
+  box-sizing border-box
+`.class;
+
   // src/cmp/App.tsx
   var App = ({ conf: conf2, setNativeCommentsVisible }) => {
     const [postsLoading, noPosts] = useStore([(s4) => s4.postsLoading, (s4) => s4.posts.length <= 0]);
@@ -1782,16 +1960,15 @@ ${r4}}
         ] }) }) })
       ] });
     }
-    const isSwap = !conf2.mode || conf2.mode === "swap";
     return /* @__PURE__ */ u4("div", { className: container, children: [
-      isSwap && /* @__PURE__ */ u4(SwitchComments, { onSwitch: toggleVisible }),
+      /* @__PURE__ */ u4(SearchControls, { conf: conf2, visible, onToggleVisible: toggleVisible }),
       visible && (message || /* @__PURE__ */ u4(k, { children: [
         /* @__PURE__ */ u4(PostSelect, {}),
         /* @__PURE__ */ u4(PostComments, {})
       ] }))
     ] });
   };
-  var container = zaftig_min_default`d flex;flex-direction column;gap 5;mt 5`.class;
+  var container = zaftig_min_default`d flex;flex-direction column;gap 5;margin-block 10`.class;
   var modalButton = zaftig_min_default`padding 5`.class;
 
   // src/index.tsx

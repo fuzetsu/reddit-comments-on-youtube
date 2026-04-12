@@ -12,10 +12,10 @@ export const hianime: Conf = {
 
   buildSearchContext() {
     const titleElem = q('h2 a')
-    const title = titleElem?.dataset.jname ?? titleElem?.title
+    const title = titleElem?.dataset.jp ?? titleElem?.textContent?.trim()
     if (!title) return logError({ baseQuery: '' }, 'could not find title')
 
-    const episode = q(currentEpisodeSel)?.dataset.number
+    const episode = q(currentEpisodeSel)?.dataset.num
     const baseQuery = episode ? `${title} episode ${episode}` : title
 
     return { title, episode, baseQuery }
